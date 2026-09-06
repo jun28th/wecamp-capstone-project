@@ -1,21 +1,7 @@
-import { useState, useEffect } from 'react'
-import axios from 'axios'
+import AppRouter from './routes/AppRouter'
 
 function App() {
-  const [message, setMessage] = useState('')
-
-  useEffect(() => {
-    axios.get('/api')
-      .then(res => setMessage(res.data))
-      .catch(err => console.error('Lỗi:', err))
-  }, [])
-
-  return (
-    <div>
-      <h1 className="text-2xl font-bold">Frontend - Backend response:</h1>
-      <p>{message || 'Đang tải...'}</p>
-    </div>
-  )
+  return <AppRouter />
 }
 
 export default App
