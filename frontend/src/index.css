@@ -14,32 +14,32 @@
     p-6               → var(--spacing-6)
     text-h1           → var(--text-h1) + its paired line-height
 */
-@import url('https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap");
 
 @import "tailwindcss";
 
 @theme {
   /* Color — brand */
-  --color-primary: #FFAFCC;
-  --color-primary-tint: #FFC8DD;
-  --color-primary-deep: #C0447A;
-  --color-secondary: #CDB4DB;
-  --color-cool-light: #BDE0FE;
-  --color-cool: #A2D2FF;
-  --color-gold: #E9C888;
+  --color-primary: #ffafcc;
+  --color-primary-tint: #ffc8dd;
+  --color-primary-deep: #c0447a;
+  --color-secondary: #cdb4db;
+  --color-cool-light: #bde0fe;
+  --color-cool: #a2d2ff;
+  --color-gold: #e9c888;
 
   /* Color — neutral */
-  --color-ink: #2E2033;
-  --color-ink-soft: #6B5C6E;
-  --color-surface: #FFF8FA;
-  --color-surface-alt: #FFFFFF;
-  --color-border: #F0DCE4;
+  --color-ink: #2e2033;
+  --color-ink-soft: #6b5c6e;
+  --color-surface: #fff8fa;
+  --color-surface-alt: #ffffff;
+  --color-border: #f0dce4;
 
   /* Color — semantic */
-  --color-success: #8FBC94;
-  --color-success-text: #2E7A46;
-  --color-error: #F2705E;
-  --color-error-text: #C23A28;
+  --color-success: #8fbc94;
+  --color-success-text: #2e7a46;
+  --color-error: #f2705e;
+  --color-error-text: #c23a28;
 
   /* 6-token core aliases (design-system-agnostic bindings)
      Namespaced as --color-* so Tailwind generates bg-bg, text-fg, bg-muted, bg-accent, border-border */
@@ -50,8 +50,9 @@
   --color-accent: var(--color-primary);
 
   /* Typography */
-  --font-display: 'Fraunces', serif;
-  --font-body: 'Be Vietnam Pro', system-ui, -apple-system, 'Segoe UI', sans-serif;
+  --font-display: "Fraunces", serif;
+  --font-body:
+    "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
 
   --text-h1: clamp(32px, 5vw, 48px);
   --text-h1--line-height: 1.08;
@@ -125,10 +126,12 @@
     line-height: var(--leading-body);
   }
 
-  h1, h2, .display-numeral {
+  h1,
+  h2,
+  .display-numeral {
     font-family: var(--font-display);
     color: var(--fg);
-    font-variation-settings: 'WONK' 1;
+    font-variation-settings: "WONK" 1;
   }
 
   h1 {
@@ -161,6 +164,7 @@
     font-weight: 500;
     line-height: var(--leading-caption);
     color: var(--muted);
+    min-width: 240px;
   }
 }
 
@@ -186,8 +190,9 @@
     cursor: pointer;
     padding: 12px 24px;
     border-radius: var(--radius-pill);
-    transition: transform var(--duration-fast) var(--ease-out),
-                background var(--duration-fast) var(--ease-out);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background var(--duration-fast) var(--ease-out);
   }
 
   .btn-primary {
@@ -230,6 +235,13 @@
     box-shadow: var(--shadow-3);
     cursor: pointer;
   }
+  .row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
 
   .card {
     background: var(--surface);
@@ -237,8 +249,16 @@
     padding: 20px;
     box-shadow: var(--shadow-1);
   }
+
   .card-today {
     border: 1.5px solid var(--color-primary);
+  }
+
+  .input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 260px;
   }
 
   input[type="text"],
@@ -283,6 +303,13 @@
   .todo-text.done {
     color: var(--muted);
     text-decoration: line-through;
+  }
+
+  .todo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
   }
 
   .tag {
