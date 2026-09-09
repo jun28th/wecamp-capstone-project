@@ -2,12 +2,14 @@ import express from "express";
 import cors from "cors";
 import { sequelize } from "./models/index.js";
 import userRoutes from "./routes/user.routes.js";
+import dailyLogRoutes from "./routes/dailyLog.routes.js"
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Register routes
 app.use("/api/users", userRoutes);
+app.use("/api/dailyLog", dailyLogRoutes);
 // const express = require('express');
 // const cors = require('cors');
 // const itemRoutes = require('./routes/item.routes');
