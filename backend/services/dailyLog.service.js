@@ -23,8 +23,6 @@ class DailyLogService {
   }
   async updateLog(userId, data) {
     const today = new Date().toISOString().slice(0, 10);
-    const { mood, note } = data;
-
     const existingLog = await DailyLogRepository.findByUserAndDate(
       userId,
       today,
@@ -32,16 +30,25 @@ class DailyLogService {
     if (!existingLog) {
       throw new Error("Today's log does not exist");
     }
+    if (existingLog.isFinalized) {
+      throw new Error("This log has been finalized and cannot be edited");
+    }
 
     const updates = {};
-    if (mood !== undefined) updates.mood = mood;
-    if (note !== undefined) updates.note = note;
+    if (data.mood !== undefined) updates.mood = data.mood;
+    if (data.note !== undefined) updates.note = data.note;
 
-    const updatedLog = await DailyLogRepository.updateDailyLog(
-      existingLog.id,
-      updates,
-    );
-    return updatedLog;
+    // Tính giá trị mood/note SAU khi update để check điều kiện finalize
+    const finalMood =
+      updates.mood !== undefined ? updates.mood : existingLog.mood;
+    const finalNote =
+      updates.note !== undefined ? updates.note : existingLog.note;
+
+    if (finalMood != null && finalNote) {
+      updates.isFinalized = true;
+    }
+
+    return await DailyLogRepository.updateDailyLog(existingLog.id, updates);
   }
 }
 
