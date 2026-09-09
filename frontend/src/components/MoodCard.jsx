@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import Loading from "./Loading";
+import dailyLogService from "../api/dailyLogService";
 
 const MOOD_TYPES = [
   { moodNumber: 1, moodLabel: "very-bad", title: "Very Bad", icon: "😢" },
@@ -19,47 +20,65 @@ export default function MoodCard({ fromPage = "Cycle" }) {
   const [error, setError] = useState(null);
   const [hoveredMood, setHoveredMood] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [logExisted, setLogExisted] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
-    setLoading(true);
-    /*
-    const fetchTodayMood = async () => {
-    try {
-      //const res = await axios.get("/api/mood/today");
-      if (cancelled) return;
-      const { mood, note: savedNote } = res.data;
-      if (mood) {
-        setSelectedMood(mood);
-      }
-      if (savedNote) {
-        setNote(savedNote);
-        setFinalize(true);
-      }
-    } catch (err) {
-      // hôm nay chưa có mood/note -> giữ fallback null/"" như hiện tại
-      console.error("Failed to load today's mood:", err);
-    }
-  };
-  fetchTodayMood()
-    */
 
-    setLoading(false);
+    const fetchTodayMood = async () => {
+      try {
+        setLoading(true);
+        const log = await dailyLogService.getTodayLog();
+        if (cancelled) return;
+        if (log === null) {
+          console.log("There are no logs today.");
+          setLoading(false);
+          return;
+        }
+        const { mood, note: savedNote } = log;
+        setLogExisted(true);
+        if (mood) {
+          setSelectedMood(mood);
+        }
+        if (savedNote) {
+          setNote(savedNote);
+          setFinalize(true);
+        }
+      } catch (err) {
+        console.error("Failed to load today's mood:", err);
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchTodayMood();
 
     return () => {
       cancelled = true;
     };
   }, []);
 
-  const handleMoodSelect = (moodNumber) => {
-    // Đã chọn rồi thì không cho chọn lại
+  const handleMoodSelect = async (moodNumber) => {
     if (selectedMood !== null) return;
-
-    // gọi API đến BE setMood. set thành công thì mới gọi:
-    setSelectedMood(moodNumber);
+    try {
+      setLoading(true);
+      setError(null);
+      if (logExisted) {
+        await dailyLogService.updateLog({ mood: moodNumber });
+      } else {
+        await dailyLogService.createLog({ mood: moodNumber });
+        setLogExisted(true);
+      }
+      setSelectedMood(moodNumber);
+    } catch (error) {
+      console.error("Failed to update today's mood:", error);
+      setError("Unable to save mood; please try again.");
+      setTimeout(() => setError(null), 2000);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleSaveNote = () => {
+  const handleSaveNote = async () => {
     if (note === "") {
       setError("Cannot save an empty note.");
       setTimeout(() => setError(null), 2000);
@@ -70,10 +89,23 @@ export default function MoodCard({ fromPage = "Cycle" }) {
       setTimeout(() => setError(null), 2000);
       return;
     }
-
-    // gọi API đến BE setNote. set thành công thì mới gọi:
-    setFinalize(true);
-    setError(null);
+    try {
+      setLoading(true);
+      setError(null);
+      if (logExisted) {
+        await dailyLogService.updateLog({ note });
+      } else {
+        await dailyLogService.createLog({ note });
+        setLogExisted(true);
+      }
+      setFinalize(true);
+    } catch (error) {
+      console.error("Failed to save note:", error);
+      setError("Unable to save note; please try again.");
+      setTimeout(() => setError(null), 2000);
+    } finally {
+      setLoading(false);
+    }
   };
 
   const hasSavedNote = finalize && note.trim() !== "";

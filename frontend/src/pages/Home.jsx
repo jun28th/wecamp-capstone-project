@@ -1,6 +1,7 @@
 import Button from "../components/Button";
 import Card from "../components/Card";
 import Input from "../components/Input";
+import MoodCard from "../components/MoodCard";
 import Tag from "../components/Tag";
 import ToDoCheckbox from "../components/ToDoCheckbox";
 
@@ -8,6 +9,7 @@ import ToDoCheckbox from "../components/ToDoCheckbox";
 function Home() {
   return (
     <div className="flex-col space-y-10">
+      <MoodCard />
       <section>
         <h2>Buttons</h2>
         {/*Chọn 1 variant: default, outline, text, fab. Nếu không chọn sẽ mặc định chọn default*/}
