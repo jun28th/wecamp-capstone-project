@@ -1,1 +1,323 @@
+/*
+  Winx — index.css
+  Design token foundation (Tailwind v4).
+  Tokens are declared once inside @theme — Tailwind auto-generates
+  utility classes AND exposes them as real CSS variables (var(--color-primary), etc.)
+  so both Tailwind classes and hand-written CSS below stay in sync.
+
+  Usage examples once this compiles:
+    bg-primary        → var(--color-primary)
+    text-ink          → var(--color-ink)
+    font-display      → Fraunces
+    rounded-card      → var(--radius-card)
+    shadow-2          → var(--shadow-2)
+    p-6               → var(--spacing-6)
+    text-h1           → var(--text-h1) + its paired line-height
+*/
+@import url("https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght,SOFT,WONK@9..144,300..900,0..100,0..1&family=Be+Vietnam+Pro:wght@300;400;500;600;700&display=swap");
+
 @import "tailwindcss";
+
+@theme {
+  /* Color — brand */
+  --color-primary: #ffafcc;
+  --color-primary-tint: #ffc8dd;
+  --color-primary-deep: #c0447a;
+  --color-secondary: #cdb4db;
+  --color-cool-light: #bde0fe;
+  --color-cool: #a2d2ff;
+  --color-gold: #e9c888;
+
+  /* Color — neutral */
+  --color-ink: #2e2033;
+  --color-ink-soft: #6b5c6e;
+  --color-surface: #fff8fa;
+  --color-surface-alt: #ffffff;
+  --color-border: #f0dce4;
+
+  /* Color — semantic */
+  --color-success: #8fbc94;
+  --color-success-text: #2e7a46;
+  --color-error: #f2705e;
+  --color-error-text: #c23a28;
+
+  /* 6-token core aliases (design-system-agnostic bindings)
+     Namespaced as --color-* so Tailwind generates bg-bg, text-fg, bg-muted, bg-accent, border-border */
+  --color-bg: var(--color-surface);
+  --color-surface-2: var(--color-surface-alt);
+  --color-fg: var(--color-ink);
+  --color-muted: var(--color-ink-soft);
+  --color-accent: var(--color-primary);
+
+  /* Typography */
+  --font-display: "Fraunces", serif;
+  --font-body:
+    "Be Vietnam Pro", system-ui, -apple-system, "Segoe UI", sans-serif;
+
+  --text-h1: clamp(32px, 5vw, 48px);
+  --text-h1--line-height: 1.08;
+  --text-h2: clamp(24px, 3.5vw, 32px);
+  --text-h2--line-height: 1.15;
+  --text-h3: 20px;
+  --text-h3--line-height: 1.3;
+  --text-numeral: 56px;
+  --text-numeral--line-height: 1;
+  --text-body: 16px;
+  --text-body--line-height: 1.6;
+  --text-caption: 14px;
+  --text-caption--line-height: 1.5;
+  --text-button: 15px;
+  --text-button--line-height: 1;
+
+  /* Spacing (base 4px) — additive to Tailwind's default scale */
+  --spacing-1: 4px;
+  --spacing-2: 8px;
+  --spacing-3: 12px;
+  --spacing-4: 16px;
+  --spacing-6: 24px;
+  --spacing-8: 32px;
+  --spacing-12: 48px;
+  --spacing-16: 64px;
+
+  /* Radius (hierarchical — never flatten these to one value) */
+  --radius-card: 20px;
+  --radius-input: 12px;
+  --radius-checkbox: 6px;
+  --radius-pill: 999px;
+
+  /* Elevation — tinted, never plain gray */
+  --shadow-1: 0 2px 8px rgba(46, 32, 51, 0.06);
+  --shadow-2: 0 4px 16px rgba(255, 175, 204, 0.35);
+  --shadow-3: 0 12px 32px rgba(46, 32, 51, 0.14);
+  --shadow-4: 0 16px 40px rgba(46, 32, 51, 0.18);
+
+  /* Motion */
+  --ease-out: cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+/*
+  Aliases kept as plain custom properties (not Tailwind utility tokens),
+  used directly in the hand-written CSS below.
+*/
+:root {
+  --bg: var(--color-bg);
+  --surface: var(--color-surface-2);
+  --fg: var(--color-fg);
+  --muted: var(--color-muted);
+  --border: var(--color-border);
+  --accent: var(--color-accent);
+
+  --leading-tight: 1.08;
+  --leading-snug: 1.15;
+  --leading-normal: 1.3;
+  --leading-body: 1.6;
+  --leading-caption: 1.5;
+
+  --duration-fast: 150ms;
+  --duration-normal: 220ms;
+}
+
+@layer base {
+  body {
+    background: var(--bg);
+    color: var(--fg);
+    font-family: var(--font-body);
+    font-size: var(--text-body);
+    line-height: var(--leading-body);
+  }
+
+  h1,
+  h2,
+  .display-numeral {
+    font-family: var(--font-display);
+    color: var(--fg);
+    font-variation-settings: "WONK" 1;
+  }
+
+  h1 {
+    font-size: var(--text-h1);
+    font-weight: 600;
+    line-height: var(--leading-tight);
+  }
+
+  h2 {
+    font-size: var(--text-h2);
+    font-weight: 500;
+    line-height: var(--leading-snug);
+  }
+
+  h3 {
+    font-family: var(--font-body);
+    font-size: var(--text-h3);
+    font-weight: 600;
+    line-height: var(--leading-normal);
+  }
+
+  .display-numeral {
+    font-size: var(--text-numeral);
+    font-weight: 600;
+    line-height: 1;
+  }
+
+  .text-caption {
+    font-size: var(--text-caption);
+    font-weight: 500;
+    line-height: var(--leading-caption);
+    color: var(--muted);
+    min-width: 240px;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  * {
+    animation-duration: 0.001ms !important;
+    transition-duration: 0.001ms !important;
+  }
+}
+
+/* ---------------------------------------------------------------
+   Component layer — ready-to-use classes; feel free to replace
+   with Tailwind utility combos (see @theme tokens above) as
+   components get built out.
+   --------------------------------------------------------------- */
+@layer components {
+  .btn {
+    font-family: var(--font-body);
+    font-weight: 600;
+    font-size: var(--text-button);
+    letter-spacing: 0.01em;
+    border: none;
+    cursor: pointer;
+    padding: 12px 24px;
+    border-radius: var(--radius-pill);
+    transition:
+      transform var(--duration-fast) var(--ease-out),
+      background var(--duration-fast) var(--ease-out);
+  }
+
+  .btn-primary {
+    background: var(--color-primary);
+    color: var(--color-ink);
+    box-shadow: var(--shadow-2);
+  }
+  .btn-primary:hover {
+    background: var(--color-primary-deep);
+    color: #fff;
+    transform: scale(1.02);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    color: var(--color-ink);
+    border: 1.5px solid var(--color-primary-deep);
+  }
+  .btn-secondary:hover {
+    background: var(--color-primary-tint);
+  }
+
+  .btn-text {
+    background: transparent;
+    color: var(--color-primary-deep);
+    padding: 8px 4px;
+  }
+  .btn-text:hover {
+    text-decoration: underline;
+  }
+
+  .fab {
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: var(--color-primary);
+    color: var(--color-ink);
+    border: none;
+    font-size: 24px;
+    box-shadow: var(--shadow-3);
+    cursor: pointer;
+  }
+  .row {
+    display: flex;
+    gap: 16px;
+    align-items: center;
+    flex-wrap: wrap;
+    margin-top: 16px;
+  }
+
+  .card {
+    background: var(--surface);
+    border-radius: var(--radius-card);
+    padding: 20px;
+    box-shadow: var(--shadow-1);
+  }
+
+  .card-today {
+    border: 1.5px solid var(--color-primary);
+  }
+
+  .input-wrap {
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    width: 260px;
+  }
+
+  input[type="text"],
+  input[type="email"],
+  input[type="password"] {
+    font-family: var(--font-body);
+    font-size: 15px;
+    padding: 12px 16px;
+    border-radius: var(--radius-input);
+    border: 1.5px solid var(--border);
+    background: var(--surface);
+    color: var(--fg);
+  }
+  input:focus {
+    outline: none;
+    border-color: var(--color-primary-deep);
+    box-shadow: 0 0 0 3px rgba(255, 175, 204, 0.35);
+  }
+  input.error {
+    border-color: var(--color-error-text);
+  }
+  .err-msg {
+    font-size: 13px;
+    color: var(--color-error-text);
+  }
+
+  .checkbox {
+    width: 22px;
+    height: 22px;
+    border-radius: var(--radius-checkbox);
+    border: 1.5px solid var(--border);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 13px;
+  }
+  .checkbox.checked {
+    background: var(--color-primary);
+    border-color: var(--color-primary);
+  }
+  .todo-text.done {
+    color: var(--muted);
+    text-decoration: line-through;
+  }
+
+  .todo {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 0;
+  }
+
+  .tag {
+    display: inline-flex;
+    padding: 4px 12px;
+    border-radius: var(--radius-pill);
+    font-size: 13px;
+    font-weight: 600;
+    color: var(--color-ink);
+  }
+}
