@@ -20,7 +20,6 @@ export default function MoodCard({ fromPage = "Cycle" }) {
   const [error, setError] = useState(null);
   const [hoveredMood, setHoveredMood] = useState(null);
   const [loading, setLoading] = useState(false);
-  const [logExisted, setLogExisted] = useState(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -36,14 +35,13 @@ export default function MoodCard({ fromPage = "Cycle" }) {
           return;
         }
         const { mood, note: savedNote } = log;
-        setLogExisted(true);
         if (mood) {
           setSelectedMood(mood);
         }
         if (savedNote) {
           setNote(savedNote);
-          setFinalize(true);
         }
+        setFinalize(true);
       } catch (err) {
         console.error("Failed to load today's mood:", err);
       } finally {
@@ -57,51 +55,45 @@ export default function MoodCard({ fromPage = "Cycle" }) {
     };
   }, []);
 
-  const handleMoodSelect = async (moodNumber) => {
-    if (selectedMood !== null) return;
-    try {
-      setLoading(true);
-      setError(null);
-      if (logExisted) {
-        await dailyLogService.updateLog({ mood: moodNumber });
-      } else {
-        await dailyLogService.createLog({ mood: moodNumber });
-        setLogExisted(true);
-      }
-      setSelectedMood(moodNumber);
-    } catch (error) {
-      console.error("Failed to update today's mood:", error);
-      setError("Unable to save mood; please try again.");
-      setTimeout(() => setError(null), 2000);
-    } finally {
-      setLoading(false);
-    }
+  // const handleMoodSelect = async (moodNumber) => {
+  //   if (selectedMood !== null) return;
+  //   try {
+  //     setLoading(true);
+  //     setError(null);
+  //     if (logExisted) {
+  //       await dailyLogService.updateLog({ mood: moodNumber });
+  //     } else {
+  //       await dailyLogService.createLog({ mood: moodNumber });
+  //       setLogExisted(true);
+  //     }
+  //     setSelectedMood(moodNumber);
+  //   } catch (error) {
+  //     console.error("Failed to update today's mood:", error);
+  //     setError("Unable to save mood; please try again.");
+  //     setTimeout(() => setError(null), 2000);
+  //   } finally {
+  //     setLoading(false);
+  //   }
+  // };
+  
+  const handleMoodSelect = (moodNumber) => {
+    setSelectedMood(moodNumber);
   };
 
-  const handleSaveNote = async () => {
-    if (note === "") {
-      setError("Cannot save an empty note.");
-      setTimeout(() => setError(null), 2000);
-      return;
-    }
-    if (note.length > NOTE_MAX_LENGTH) {
-      setError("The note cannot exceed 60 characters.");
-      setTimeout(() => setError(null), 2000);
-      return;
+  const handleSave = async () => {
+    if (selectedMood===null){
+      setError("Mood isn't chosen yet.")
+      setTimeout(()=>setError(null),2000)
+      return
     }
     try {
+      setError(null)
       setLoading(true);
-      setError(null);
-      if (logExisted) {
-        await dailyLogService.updateLog({ note });
-      } else {
-        await dailyLogService.createLog({ note });
-        setLogExisted(true);
-      }
+      await dailyLogService.createLog({ mood: selectedMood, note });
       setFinalize(true);
     } catch (error) {
-      console.error("Failed to save note:", error);
-      setError("Unable to save note; please try again.");
+      console.error("Failed to save mood:", error);
+      setError("Unable to save mood; please try again.");
       setTimeout(() => setError(null), 2000);
     } finally {
       setLoading(false);
@@ -130,7 +122,6 @@ export default function MoodCard({ fromPage = "Cycle" }) {
         >
           {MOOD_TYPES.map((mood) => {
             const isSelected = selectedMood === mood.moodNumber;
-            const isLocked = selectedMood !== null;
 
             const canShowTooltipOnThis = selectedMood ? isSelected : true;
             const isTooltipVisible =
@@ -187,12 +178,12 @@ export default function MoodCard({ fromPage = "Cycle" }) {
           }
 
           ${
-            isLocked
+            finalize
               ? "cursor-not-allowed opacity-40"
               : "cursor-pointer hover:bg-[var(--color-primary-tint)] hover:scale-110"
           }
 
-          ${isSelected && isLocked ? "opacity-100" : ""}
+          ${isSelected && finalize ? "opacity-100" : ""}
         `}
                 >
                   <span className="text-[32px]">{mood.icon}</span>
@@ -201,14 +192,6 @@ export default function MoodCard({ fromPage = "Cycle" }) {
             );
           })}
         </div>
-        {selectedMood && (
-          <p
-            id="mood-locked-note"
-            className="mt-2 text-center text-[13px] text-[var(--muted)]"
-          >
-            You've logged today's mood. Come back tomorrow to log again.
-          </p>
-        )}
         <div className="mt-4">
           <label
             htmlFor="mood-note"
@@ -249,14 +232,17 @@ export default function MoodCard({ fromPage = "Cycle" }) {
               {note.length}/{NOTE_MAX_LENGTH}
             </span>
           </div>
-          {!finalize && (
-            <Button
-              id="save-mood-btn"
-              className="w-full"
-              onClick={handleSaveNote}
-            >
+          {!finalize ? (
+            <Button id="save-mood-btn" className="w-full" onClick={handleSave}>
               Save
             </Button>
+          ) : (
+            <p
+              id="mood-locked-note"
+              className="mt-2 text-center text-[13px] text-[var(--muted)]"
+            >
+              You've logged today's mood. Come back tomorrow to log again.
+            </p>
           )}
         </div>
       </div>
