@@ -1,7 +1,6 @@
 import express from "express";
 import cors from "cors";
-import sequelize from "./config/database.js";
-import User from "./models/User.js";
+import { sequelize } from "./models/index.js";
 import userRoutes from "./routes/user.routes.js";
 const app = express();
 app.use(cors());
@@ -31,13 +30,10 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
-    await sequelize.sync(); // This create a new table if it doesn't exist (and does nothing if it already exists)
+    await sequelize.sync(); // Creates all 6 tables (users, cycle_logs, user_cycle_stats, daily_logs, tasks, daily_rewards) if they don't exist
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
-    // Create a new user
-    // const jane = await User.create({ firstName: 'Jane', lastName: 'Doe' });
-    // console.log("Jane's auto-generated ID:", jane.id);
   } catch (error) {
     console.error("Unable to connect to the database:", error);
   }
