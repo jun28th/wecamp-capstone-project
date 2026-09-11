@@ -1,5 +1,3 @@
-import { verifyToken, authorize } from "./middlewares/auth.middleware.js";
-
 /* Cách viết route
 
 Không cần xác thực
@@ -12,3 +10,12 @@ Cần cấp quyền, đối số của authorize là những role được ủy 
 router.get("/admin/users", verifyToken, authorize("admin"), getAllUsers);
 
 */
+
+import express from "express";
+import AuthController from "../controllers/auth.controller.js";
+const router = express.Router();
+
+router.post("/sign-up", AuthController.SignUp);
+router.post("/sign-in", AuthController.SignIn);
+
+export default router;
