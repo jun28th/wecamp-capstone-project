@@ -35,20 +35,24 @@ class DailyLogService {
     }
 
     const updates = {};
-    if (data.mood !== undefined) updates.mood = data.mood;
+    updates.mood = data.mood;
+    updates.isFinalized = true;
     if (data.note !== undefined) updates.note = data.note;
 
-    // Tính giá trị mood/note SAU khi update để check điều kiện finalize
-    const finalMood =
-      updates.mood !== undefined ? updates.mood : existingLog.mood;
-    const finalNote =
-      updates.note !== undefined ? updates.note : existingLog.note;
-
-    if (finalMood != null && finalNote) {
-      updates.isFinalized = true;
-    }
-
     return await DailyLogRepository.updateDailyLog(existingLog.id, updates);
+  }
+
+  async getMoodTrend(userId, startDate, endDate) {
+    const logs = await DailyLogRepository.findByUserRange(
+      userId,
+      startDate,
+      endDate,
+    );
+    return logs.map((log) => ({
+      date: log.logDate,
+      mood: log.mood,
+      note: log.note,
+    }));
   }
 }
 

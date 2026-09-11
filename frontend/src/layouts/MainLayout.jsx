@@ -7,7 +7,7 @@ function MainLayout() {
     return (
         <div>
             <Header/>
-            <main>
+            <main className="app-shell">
                 <Outlet/>
             </main>
         </div>
