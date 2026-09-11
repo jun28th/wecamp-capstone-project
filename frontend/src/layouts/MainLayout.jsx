@@ -1,9 +1,20 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
 
 function MainLayout() {
+    const location = useLocation();
+    const isAuthPage = location.pathname.startsWith("/auth");
 
-    // Navbar, footer, sidebar, etc. will be added here
+    if (isAuthPage) {
+        return (
+            <div className="min-h-screen w-full flex flex-col items-center justify-center bg-bg">
+                <main className="w-full max-w-100">
+                    <Outlet/>
+                </main>
+            </div>
+        );
+    }
+
     return (
         <div>
             <Header/>
@@ -13,5 +24,6 @@ function MainLayout() {
         </div>
     )
 }
+
 
 export default MainLayout;
