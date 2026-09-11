@@ -43,6 +43,18 @@ const dailyLogService = {
       throw error;
     }
   },
+  async getMoodTrendData({ startDate, endDate }) {
+    try {
+      const response = await axiosClient.get("/dailyLog/mood-trend", {
+        params: { startDate, endDate },
+        headers: authHeader(),
+      });
+      return response.data;
+    } catch (error) {
+      console.error("getMoodTrendData failed:", error.response?.data ?? error.message);
+      throw error;
+    }
+  },
 };
 
 export default dailyLogService;

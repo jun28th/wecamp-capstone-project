@@ -235,6 +235,24 @@
     box-shadow: var(--shadow-3);
     cursor: pointer;
   }
+  .mini-nav {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--color-ink);
+    font-size: 14px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 150ms ease-out;
+  }
+  .mini-nav:hover {
+    border-color: var(--color-primary-deep);
+    background: var(--color-primary-tint);
+  }
   .row {
     display: flex;
     gap: 16px;
@@ -319,5 +337,22 @@
     font-size: 13px;
     font-weight: 600;
     color: var(--color-ink);
+  }
+  .app-shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    min-height: 100vh;
+    padding: 24px 20px 32px 20px;
+    position: relative;
+  }
+  .section-header-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 12px;
+    gap: 12px;
+  }
+  .section-header-row h2 {
+    margin: 0;
   }
 }

@@ -13,7 +13,7 @@ const MOOD_TYPES = [
 
 const NOTE_MAX_LENGTH = 60;
 
-export default function MoodCard({ fromPage = "Cycle" }) {
+export default function MoodCard({ dashBoard }) {
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState("");
   const [finalize, setFinalize] = useState(false);
@@ -55,27 +55,6 @@ export default function MoodCard({ fromPage = "Cycle" }) {
     };
   }, []);
 
-  // const handleMoodSelect = async (moodNumber) => {
-  //   if (selectedMood !== null) return;
-  //   try {
-  //     setLoading(true);
-  //     setError(null);
-  //     if (logExisted) {
-  //       await dailyLogService.updateLog({ mood: moodNumber });
-  //     } else {
-  //       await dailyLogService.createLog({ mood: moodNumber });
-  //       setLogExisted(true);
-  //     }
-  //     setSelectedMood(moodNumber);
-  //   } catch (error) {
-  //     console.error("Failed to update today's mood:", error);
-  //     setError("Unable to save mood; please try again.");
-  //     setTimeout(() => setError(null), 2000);
-  //   } finally {
-  //     setLoading(false);
-  //   }
-  // };
-  
   const handleMoodSelect = (moodNumber) => {
     setSelectedMood(moodNumber);
   };
@@ -108,10 +87,10 @@ export default function MoodCard({ fromPage = "Cycle" }) {
 
   return (
     <div
-      className={`card mx-auto mb-5 ${fromPage !== "Dashboard" && "max-w-[640px]"}`}
+      className={`card mx-auto mb-5 ${!dashBoard && "max-w-[640px]"}`}
       data-od-id="mood-tracker-card"
     >
-      <div className={`${fromPage === "Dashboard" && "max-w-[640px] mx-auto"}`}>
+      <div className={`${dashBoard && "max-w-[480px] mx-auto"}`}>
         <h3 className="m-0 mb-4 text-base font-semibold">
           How are you feeling today?
         </h3>
