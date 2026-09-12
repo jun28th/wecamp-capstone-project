@@ -1,17 +1,15 @@
 import { Outlet } from "react-router-dom";
-import Header from "../components/Header";
 
-function MainLayout() {
+function NoHeaderLayout() {
 
     // Navbar, footer, sidebar, etc. will be added here
     return (
         <div>
-            <Header/>
-            <main className="app-shell">
+            <main>
                 <Outlet/>
             </main>
         </div>
     )
 }
 
-export default MainLayout;
+export default NoHeaderLayout;
