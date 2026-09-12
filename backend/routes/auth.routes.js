@@ -13,9 +13,12 @@ router.get("/admin/users", verifyToken, authorize("admin"), getAllUsers);
 
 import express from "express";
 import AuthController from "../controllers/auth.controller.js";
+import { verifyToken } from "../middlewares/auth.middleware.js";
 const router = express.Router();
 
 router.post("/sign-up", AuthController.SignUp);
 router.post("/sign-in", AuthController.SignIn);
+router.get("/profile", verifyToken, AuthController.Profile);
+
 
 export default router;

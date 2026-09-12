@@ -19,6 +19,14 @@ class AuthController {
             response.status(400).json({ error: error.message });
         }
     }
+
+    async Profile(request, response) {
+        try {
+            response.status(200).json({ user: request.user });
+        } catch(error) {
+            response.status(500).json({ error: error.message });
+        }
+    }
 }
 
 export default new AuthController();

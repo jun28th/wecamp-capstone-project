@@ -2,6 +2,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
+import { useAuth } from "../../contexts/authContext";
 
 function validateSignUp({ fullName, email, password }) {
     const errors = {};
@@ -27,6 +28,7 @@ function validateSignUp({ fullName, email, password }) {
 
 function Signup() {
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     const [fullName, setFullName] = useState("");
     const [email, setEmail] = useState("");
@@ -47,11 +49,12 @@ function Signup() {
         setSubmitting(true);
         try {
             const response = await authApi.SignUp({ fullName, email, password });
+            setUser(response.user);
             localStorage.setItem("token", response.token);
             navigate("/");
         } catch (err) {
             console.error(err.response?.data?.message || err.message);
-            setErrors({ form: "Something went wrong. Please try again." });
+            setErrors({ form: err.response?.data?.error || "Something went wrong. Please try again." });
         } finally {
             setSubmitting(false);
         }

@@ -2,6 +2,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
+import { useAuth } from "../../contexts/authContext";
 
 function validateSignIn({ email, password }) {
     const errors = {};
@@ -24,6 +25,7 @@ function validateSignIn({ email, password }) {
 
 function Signin() {
     const navigate = useNavigate();
+    const { setUser } = useAuth();
 
     const [email, setEmail] = useState("");
     const [password, setPassword] = useState("");
@@ -43,6 +45,7 @@ function Signin() {
         setSubmitting(true);
         try {
             const response = await authApi.SignIn({ email, password });
+            setUser(response.user);
             localStorage.setItem("token", response.token);
             navigate("/");
         } catch (err) {
@@ -54,7 +57,7 @@ function Signin() {
     };
 
     return (
-        <div>   
+        <div>
             <div className="bg-(--color-surface-alt) rounded-card shadow-(--shadow-1) px-7 py-8">
                 <div className="text-center mb-6">
                     <h1 className="text-2xl font-semibold m-0 mb-1">Welcome back</h1>
@@ -110,7 +113,7 @@ function Signin() {
                     )}
 
                     <Button disabled={submitting}>
-                        <p>{submitting ? "Logging in..." : "Login in"}</p>
+                        <p>{submitting ? "Signing in..." : "Sign in"}</p>
                     </Button>
                 </form>
             </div>
