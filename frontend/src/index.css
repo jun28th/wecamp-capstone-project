@@ -993,7 +993,7 @@
   background: var(--color-primary-tint);
 }
 
-/* Toast */
+/* Toast
 .toast {
   position: fixed;
   bottom: 32px;
@@ -1021,4 +1021,4 @@
     opacity: 1;
     transform: translateX(-50%) translateY(0);
   }
-}
+} */
