@@ -4,7 +4,7 @@ export default function Cycle() {
   return (
     <>
       <CycleCalendar />
-      <DashboardCalendar/>
+      <DashboardCalendar />
     </>
   );
 }
