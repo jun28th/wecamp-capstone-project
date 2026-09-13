@@ -1,6 +1,6 @@
 import { useCallback, useState } from "react";
 import { CycleCalendar } from "../components/cycle-calendar/CycleCalendar";
-import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
+// import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
 
 export default function Cycle() {
   const [refreshSignal, setRefreshSignal] = useState(0);
@@ -12,10 +12,10 @@ export default function Cycle() {
         refreshSignal={refreshSignal}
         onRefreshData={bumpRefresh}
       />
-      <DashboardCalendar
+      {/* <DashboardCalendar
         refreshSignal={refreshSignal}
         onRefreshData={bumpRefresh}
-      />
+      /> */}
     </>
   );
 }

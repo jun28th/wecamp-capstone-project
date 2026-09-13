@@ -5,6 +5,7 @@ import MoodCard from "../components/MoodCard";
 import Card from "../components/Card";
 import dailyLogService from "../api/dailyLogService";
 import Loading from "../components/Loading";
+import {DashboardCalendar} from "../components/dashboard-calendar/DashboardCalendar"
 
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
@@ -160,7 +161,9 @@ function Home() {
   const hasMoodData = points.some((p) => p.value !== null);
 
   //////////////// VIẾT TIẾP CÁC CHỨC NĂNG KHÁC Ở ĐÂY NHA!!! //////////////////
-
+  // Dashboard Calendar
+  const [refreshSignal, setRefreshSignal] = useState(0);
+  const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
 
 
 
@@ -185,7 +188,10 @@ function Home() {
         <h1>What's happening today? ✨</h1>
       </div>
       <MoodCard dashBoard />
-
+      <DashboardCalendar
+        refreshSignal={refreshSignal}
+        onRefreshData={bumpRefresh}
+      />
       <MoodTrend
         moodRange={label}
         points={points}
