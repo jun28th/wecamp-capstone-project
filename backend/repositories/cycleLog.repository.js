@@ -38,13 +38,6 @@ class CycleLogRepository {
   async deleteCycleLog(id) {
     return await CycleLog.destroy({ where: { id } });
   }
-
-  async updateEndDate(id, endDate) {
-    const cycle = await CycleLog.findByPk(id);
-    if (!cycle) return null;
-    cycle.endDate = endDate;
-    return await cycle.save();
-  }
 }
 
 export default new CycleLogRepository();
