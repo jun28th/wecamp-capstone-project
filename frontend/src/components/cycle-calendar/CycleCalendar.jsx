@@ -39,7 +39,9 @@ export const CycleCalendar = React.memo(({ onRefreshData }) => {
   const fetchCycles = useCallback(async () => {
     try {
       const result = await getCycles();
+      console.log(result);
       if (result.success) {
+        console.log("hellooooooooo");
         setCycleLogs(result.data);
       }
     } catch (error) {
@@ -52,10 +54,13 @@ export const CycleCalendar = React.memo(({ onRefreshData }) => {
     fetchCycles();
   }, [fetchCycles]);
 
+  console.log(cycleLogs);
+
   const activeStartDate = useMemo(() => {
     const activeCycle = cycleLogs.find((log) => !log.endDate);
     return activeCycle ? activeCycle.startDate : null;
   }, [cycleLogs]);
+  console.log(activeStartDate);
 
   // 2. Hàm xử lý Action (Phân luồng gọi startCycle / endCycle)
   const handleConfirmAction = useCallback(

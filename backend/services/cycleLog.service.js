@@ -3,7 +3,9 @@ import cycleLogRepository from "../repositories/cycleLog.repository.js";
 class CycleLogService {
   // Lấy danh sách chu kỳ để render lịch FE
   async getUserCycles(userId) {
-    return await cycleLogRepository.findAllByUser(userId);
+    const result = await cycleLogRepository.findAllByUser(userId);
+    console.log(result);
+    return result;
   }
 
   async startCycle(userId, date) {

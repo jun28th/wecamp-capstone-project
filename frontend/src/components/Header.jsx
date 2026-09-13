@@ -5,7 +5,7 @@ import { useAuth } from "../../contexts/authContext";
 const NAV_LINKS = [
   { id: "nav-home", label: "Home", path: "/" },
   { id: "nav-todo", label: "To Do", path: "/to-do" },
-  { id: "nav-cycle", label: "Cycle", path: "/cycle-logs" },
+  { id: "nav-cycle", label: "Cycle", path: "/cycle" },
 ];
 
 function Header() {
