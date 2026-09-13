@@ -32,7 +32,12 @@ CycleLog.init(
     createdAt: "created_at",
     updatedAt: "updated_at",
     indexes: [
-      // 🟢 Giữ lại index tối ưu truy vấn danh sách, xóa bỏ uq_cycle_logs_open
+      {
+        name: "uq_cycle_logs_open",
+        unique: true,
+        fields: ["user_id"],
+        where: { end_date: null },
+      },
       {
         name: "idx_cycle_logs_user_start",
         fields: ["user_id", "start_date"],
