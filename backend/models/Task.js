@@ -20,7 +20,7 @@ Task.init(
     },
     dueDate: {
       type: DataTypes.DATEONLY,
-      allowNull: false,
+      allowNull: true,
       field: "due_date",
     },
     priority: {

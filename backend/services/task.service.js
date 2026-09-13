@@ -1,6 +1,6 @@
 import TaskRepository from "../repositories/task.repository.js";
 
-const REQUIRED_FIELDS = ["title", "dueDate", "priority"];
+const REQUIRED_FIELDS = ["title"];
 
 function validateTaskInput(data) {
   const missing = REQUIRED_FIELDS.filter((field) => !data[field]);
