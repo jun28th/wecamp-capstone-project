@@ -65,7 +65,7 @@ function computeCyclePrediction(cycles, today = new Date()) {
   if (completed.length < MIN_COMPLETE_CYCLES) {
     return {
       hasEnoughData: false,
-      message: "Cần thêm dữ liệu để dự đoán chu kỳ tiếp theo",
+      message: "Not enough data yet to predict your next cycle",
       predictedNextStart: null,
       daysUntilNext: null,
       avgCycleLengthDays: null,
@@ -109,7 +109,7 @@ function computeCyclePrediction(cycles, today = new Date()) {
     cycleLengthStddev,
     isIrregular,
     irregularNote: isIrregular
-      ? "Chu kỳ của bạn không đều, ngày dự đoán chỉ mang tính tham khảo"
+      ? "Your cycles vary a lot — treat this prediction as a rough guide only!"
       : null,
   };
 }

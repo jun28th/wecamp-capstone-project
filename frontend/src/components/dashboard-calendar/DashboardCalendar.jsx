@@ -111,12 +111,12 @@ export const DashboardCalendar = React.memo(
         prediction.predictedNextStart,
       );
       if (prediction.daysUntilNext === 0) {
-        return `Dự kiến chu kỳ tiếp theo vào hôm nay (${dateLabel})`;
+        return `Your next cycle is expected today (${dateLabel})`;
       }
       if (prediction.daysUntilNext > 0) {
-        return `Còn ${prediction.daysUntilNext} ngày nữa đến chu kỳ dự kiến (${dateLabel})`;
+        return `${prediction.daysUntilNext} days to go until your expected next cycle (${dateLabel})`;
       }
-      return `Dự kiến chu kỳ tiếp theo vào ${dateLabel}`;
+      return `Your predicted next cycle is ${dateLabel}`;
     }, [activeStartDate, prediction]);
 
     const days = useMemo(() => {
