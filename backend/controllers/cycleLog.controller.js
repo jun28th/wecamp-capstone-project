@@ -62,6 +62,17 @@ class CycleLogController {
       return res.status(400).json({ success: false, message: error.message });
     }
   }
+
+  // GET /api/cycle-logs/prediction — AC1-AC4, AC7
+  async getPrediction(req, res) {
+    try {
+      const userId = req.user.id; // Lấy từ middleware authen
+      const prediction = await cycleLogService.getPrediction(userId);
+      return res.status(200).json({ success: true, data: prediction });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  }
 }
 
 export default new CycleLogController();

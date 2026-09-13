@@ -6,8 +6,16 @@ import {
 import { CalendarHeader } from "./CalendarHeader";
 import { CalendarGrid } from "./CalendarGrid";
 import CalendarLegend from "./CalendarLegend";
-import { extractPeriodDays } from "../../utils/cycle.utils";
-import { getCycles, startCycle, endCycle } from "../../api/cycleApi";
+import {
+  extractPeriodDays,
+  extractPredictedDays,
+} from "../../utils/cycle.utils";
+import {
+  getCycles,
+  getPrediction,
+  startCycle,
+  endCycle,
+} from "../../api/cycleApi";
 import { useToast } from "../Toast.jsx";
 
 const validateCycleAction = (date, actionType, activeStartDate) => {
@@ -27,8 +35,9 @@ const validateCycleAction = (date, actionType, activeStartDate) => {
   return { isValid: true, message: "" };
 };
 
-export const CycleCalendar = React.memo(({ onRefreshData }) => {
+export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   const [cycleLogs, setCycleLogs] = useState([]);
+  const [prediction, setPrediction] = useState(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
 
   const year = currentDate.getFullYear();
@@ -47,10 +56,24 @@ export const CycleCalendar = React.memo(({ onRefreshData }) => {
     }
   }, []);
 
+  // AC2-AC3, AC7: prediction is computed server-side; refetch whenever cycle
+  // data changes so the calendar overlay stays in sync (AC5) without a reload.
+  const fetchPrediction = useCallback(async () => {
+    try {
+      const result = await getPrediction();
+      if (result.success) {
+        setPrediction(result.data);
+      }
+    } catch (error) {
+      console.error(error.response?.data?.message || error.message);
+    }
+  }, []);
+
   // Gọi API lấy dữ liệu lần đầu khi Mount
   useEffect(() => {
     fetchCycles();
-  }, [fetchCycles]);
+    fetchPrediction();
+  }, [fetchCycles, fetchPrediction, refreshSignal]);
 
   const activeStartDate = useMemo(() => {
     const activeCycle = cycleLogs.find((log) => !log.endDate);
@@ -84,6 +107,7 @@ export const CycleCalendar = React.memo(({ onRefreshData }) => {
 
         if (result && result.success) {
           await fetchCycles();
+          await fetchPrediction();
           if (onRefreshData) onRefreshData();
         }
       } catch (error) {
@@ -92,7 +116,7 @@ export const CycleCalendar = React.memo(({ onRefreshData }) => {
         alert(errorMessage);
       }
     },
-    [fetchCycles, onRefreshData, activeStartDate, showToast],
+    [fetchCycles, fetchPrediction, onRefreshData, activeStartDate, showToast],
   );
 
   const today = new Date();
@@ -105,6 +129,15 @@ export const CycleCalendar = React.memo(({ onRefreshData }) => {
     const daysArray = extractPeriodDays(cycleLogs);
     return new Set(daysArray);
   }, [cycleLogs]);
+
+  const predictedDaysSet = useMemo(() => {
+    if (!prediction?.hasEnoughData) return new Set();
+    const daysArray = extractPredictedDays(
+      prediction.predictedNextStart,
+      prediction.avgPeriodLengthDays,
+    );
+    return new Set(daysArray);
+  }, [prediction]);
 
   const days = useMemo(() => {
     return generateCalendarDays(year, month);
@@ -138,11 +171,30 @@ export const CycleCalendar = React.memo(({ onRefreshData }) => {
       <CalendarGrid
         days={days}
         periodDaysSet={periodDaysSet}
+        predictedDaysSet={predictedDaysSet}
         todayString={todayString}
         activeStartDate={activeStartDate}
         onConfirmCycleAction={handleConfirmAction}
       />
       <CalendarLegend />
+      {prediction && !prediction.hasEnoughData && (
+        <p
+          id="prediction-status"
+          className="text-caption"
+          style={{ marginTop: "12px", textAlign: "center" }}
+        >
+          {prediction.message}
+        </p>
+      )}
+      {prediction?.isIrregular && (
+        <p
+          id="prediction-irregular-note"
+          className="text-caption"
+          style={{ marginTop: "12px", textAlign: "center" }}
+        >
+          {prediction.irregularNote}
+        </p>
+      )}
     </div>
   );
 });

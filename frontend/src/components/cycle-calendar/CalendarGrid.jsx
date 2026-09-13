@@ -5,6 +5,7 @@ export const CalendarGrid = React.memo(
   ({
     days,
     periodDaysSet,
+    predictedDaysSet,
     todayString,
     activeStartDate,
     onConfirmCycleAction,
@@ -27,9 +28,12 @@ export const CalendarGrid = React.memo(
             const dateString = day.dateString;
             const isToday = dateString === todayString;
             const isPeriod = dateString ? periodDaysSet.has(dateString) : false;
-            // const isPredicted = dateString
-            //   ? predictedDaysSet.has(dateString)
-            //   : false;
+            // Logged period days always win over a predicted overlay (AC3
+            // distinguishes the two visually — a day can't be both).
+            const isPredicted =
+              dateString && !isPeriod
+                ? (predictedDaysSet?.has(dateString) ?? false)
+                : false;
             const isFuture = dateString ? dateString > todayString : false;
             return (
               <DayCell
@@ -39,8 +43,8 @@ export const CalendarGrid = React.memo(
                 isToday={isToday}
                 isFuture={isFuture}
                 isPeriod={isPeriod}
+                isPredicted={isPredicted}
                 onConfirmCycleAction={onConfirmCycleAction}
-                // isPredicted={isPredicted}
               />
             );
           })}

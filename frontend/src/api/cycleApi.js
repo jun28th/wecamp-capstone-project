@@ -29,6 +29,18 @@ export const startCycle = async (date) => {
   }
 };
 
+export const getPrediction = async () => {
+  try {
+    const response = await axiosClient.get("/cycle-logs/prediction", {
+      headers: authHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching cycle prediction:", error);
+    throw error;
+  }
+};
+
 export const endCycle = async (date) => {
   try {
     const response = await axiosClient.put(
