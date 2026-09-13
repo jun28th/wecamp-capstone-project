@@ -13,7 +13,7 @@ function AppRouter() {
                 <Route path="/">
                     <Route path="sign-up" element={<Signup />} />
                     <Route path="sign-in" element={<Signin />} />
-                    <Route path="cycle-logs" element={<Cycle/>}/>
+                    <Route path="cycle" element={<Cycle/>}/>
                 </Route>
             </Route>
         </Routes>
