@@ -1,5 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
 import Header from "../components/Header";
+import { ToastProvider } from "../components/Toast";
 
 function MainLayout() {
     const location = useLocation();
@@ -26,13 +27,16 @@ function MainLayout() {
 
     return (
         <div>
-            <Header/>
-            <main className="app-shell">
-                <Outlet/>
-            </main>
+           <Header />
+      <ToastProvider>
+        <main className="app-shell">
+          <Outlet />
+        </main>
+      </ToastProvider>
         </div>
     )
 }
 
 
 export default MainLayout;
+
