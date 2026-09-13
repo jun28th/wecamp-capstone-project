@@ -6,11 +6,14 @@ import userRoutes from "./routes/user.routes.js";
 import dailyLogRoutes from "./routes/dailyLog.routes.js"
 import taskRoutes from "./routes/task.routes.js";
 import cycleLogRoute from "./routes/cycleLog.routes.js"
+import authRoutes from "./routes/auth.routes.js";
+
 const app = express();
 app.use(cors());
 app.use(express.json());
 
 // Register routes
+app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dailyLog", dailyLogRoutes);
 app.use("/api/tasks", taskRoutes);

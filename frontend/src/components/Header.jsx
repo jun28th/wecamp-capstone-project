@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import Button from "./Button";
+import { useAuth } from "../../contexts/authContext";
 
 const NAV_LINKS = [
   { id: "nav-home", label: "Home", path: "/" },
@@ -8,6 +9,7 @@ const NAV_LINKS = [
 ];
 
 function Header() {
+  const { logout } = useAuth();
   const [currentPath, setCurrentPath] = useState("");
 
   useEffect(() => {
@@ -21,7 +23,7 @@ function Header() {
   };
 
   const handleLogOut = () => {
-    // xóa localStorage
+    logout();
     window.location.href = "/auth/sign-in";
   };
   return (
