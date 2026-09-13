@@ -3,26 +3,21 @@ import Signup from "../pages/Signup";
 import MainLayout from "../layouts/MainLayout";
 import Home from "../pages/Home";
 import Signin from "../pages/Signin";
-import NoHeaderLayout from "../layouts/NoHeaderLayout";
-import ToDo from "../pages/ToDo";
 import Cycle from "../pages/Cycle";
-
 function AppRouter() {
-  return (
-    <Routes>
-      <Route element={<MainLayout />}>
-        <Route path="/" element={<Home />} />
-        <Route path="/to-do" element={<ToDo />} />
-        <Route path="/cycle" element={<Cycle />} />
-      </Route>
-      <Route element={<NoHeaderLayout />}>
-        <Route path="/auth">
-          <Route path="sign-up" element={<Signup />} />
-          <Route path="sign-in" element={<Signin />} />
-        </Route>
-      </Route>
-    </Routes>
-  );
+    return (
+        <Routes>
+            <Route element={<MainLayout />}>
+                <Route path="/" element={<Home />} />
+
+                <Route path="/">
+                    <Route path="sign-up" element={<Signup />} />
+                    <Route path="sign-in" element={<Signin />} />
+                    <Route path="cycle-logs" element={<Cycle/>}/>
+                </Route>
+            </Route>
+        </Routes>
+    )
 }
 
 export default AppRouter;
