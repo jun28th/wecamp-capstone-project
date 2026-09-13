@@ -1,30 +1,22 @@
-import { useEffect, useState } from "react";
-import taskApi from "../api/taskApi";
-import { useToast } from "../components/Toast";
-import Button from "../components/Button";
+import { useState } from "react";
+import { useTasks } from "../hooks/useTasks";
 import Modal from "../components/Modal";
 import TaskForm from "../components/TaskForm";
-import TaskItem from "../components/TaskItem";
+import TaskList from "../components/TaskList";
+
+function todayEyebrow() {
+  return new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
 
 function ToDo() {
-  const [tasks, setTasks] = useState([]);
+  const { tasks, addTask, editTask, removeTask, toggleComplete } = useTasks();
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
-  const showToast = useToast();
-
-  useEffect(() => {
-    loadTasks();
-  }, []);
-
-  async function loadTasks() {
-    try {
-      const data = await taskApi.getTasks();
-      setTasks(data);
-    } catch (error) {
-      showToast("Failed to load tasks", "error");
-    }
-  }
 
   function openCreateForm() {
     setEditingTask(null);
@@ -37,88 +29,59 @@ function ToDo() {
   }
 
   async function handleSave(data) {
-    try {
-      if (editingTask) {
-        await taskApi.updateTask(editingTask.id, data);
-        showToast("Task updated successfully");
-      } else {
-        await taskApi.createTask(data);
-        showToast("Task added successfully");
-      }
+    const success = editingTask ? await editTask(editingTask.id, data) : await addTask(data);
+    if (success) {
       setFormOpen(false);
       setEditingTask(null);
-      await loadTasks();
-    } catch (error) {
-      showToast("Something went wrong, please try again", "error");
-    }
-  }
-
-  async function handleToggleComplete(task) {
-    try {
-      await taskApi.toggleComplete(task.id, !task.isCompleted);
-      await loadTasks();
-    } catch (error) {
-      showToast("Failed to update task", "error");
     }
   }
 
   async function handleConfirmDelete() {
-    try {
-      await taskApi.deleteTask(taskPendingDelete.id);
-      showToast("Task deleted successfully");
+    const success = await removeTask(taskPendingDelete.id);
+    if (success) {
       setTaskPendingDelete(null);
-      await loadTasks();
-    } catch (error) {
-      showToast("Failed to delete task", "error");
     }
   }
 
   return (
     <div className="app-shell">
-      <div className="section-header-row">
-        <h2>To-do list</h2>
-        <Button variant="fab" onClick={openCreateForm}>
-          +
-        </Button>
-      </div>
+      <header className="app-header">
+        <p className="eyebrow">{todayEyebrow()}</p>
+        <h1>Today's Tasks</h1>
+      </header>
 
-      {tasks.length === 0 ? (
-        <div className="empty-state">
-          <div className="empty-state-icon">📝</div>
-          <p>No tasks yet. Click "Add task" to get started!</p>
+      <section>
+        <div className="section-header-row">
+          <h2>Task List</h2>
+          <button className="btn-add-task" onClick={openCreateForm}>
+            + Add Task
+          </button>
         </div>
-      ) : (
-        <div>
-          {tasks.map((task) => (
-            <TaskItem
-              key={task.id}
-              task={task}
-              onToggleComplete={handleToggleComplete}
-              onEdit={openEditForm}
-              onDelete={setTaskPendingDelete}
-            />
-          ))}
-        </div>
-      )}
 
-      {formOpen ? (
-        <Modal open title={editingTask ? "Edit task" : "Add task"} onCancel={() => setFormOpen(false)} onConfirm={undefined}>
-          <TaskForm
-            initialTask={editingTask ?? undefined}
-            onSave={handleSave}
-            onCancel={() => setFormOpen(false)}
+        <div className="card">
+          <TaskList
+            tasks={tasks}
+            onToggleComplete={toggleComplete}
+            onEdit={openEditForm}
+            onDelete={setTaskPendingDelete}
           />
-        </Modal>
-      ) : null}
+        </div>
+      </section>
+
+      <Modal open={formOpen} title={editingTask ? "Edit Task" : "Add New Task"} onCancel={() => setFormOpen(false)}>
+        <TaskForm initialTask={editingTask} onSave={handleSave} onCancel={() => setFormOpen(false)} />
+      </Modal>
 
       <Modal
         open={Boolean(taskPendingDelete)}
-        title={`Delete task "${taskPendingDelete?.title}"?`}
+        title="Delete task?"
         confirmLabel="Delete"
         onConfirm={handleConfirmDelete}
         onCancel={() => setTaskPendingDelete(null)}
       >
-        Are you sure you want to delete this task?
+        <p style={{ margin: 0, color: "var(--color-ink)", fontSize: "15px" }}>
+          Are you sure you want to delete "{taskPendingDelete?.title}"?
+        </p>
       </Modal>
     </div>
   );

@@ -1,21 +1,19 @@
-import Button from "./Button";
-
-export default function Modal({ open, title, children, onConfirm, onCancel, confirmLabel = "Confirm", cancelLabel = "Cancel" }) {
+export default function Modal({ open, title, children, onConfirm, onCancel, confirmLabel = "Delete" }) {
   if (!open) return null;
 
   return (
-    <div className="modal-backdrop" onClick={onCancel}>
+    <div className="modal-overlay open" onClick={onCancel}>
       <div className="modal-card" onClick={(event) => event.stopPropagation()}>
         {title ? <h3>{title}</h3> : null}
-        <div className="modal-body">{children}</div>
+        {children}
         {onConfirm ? (
-          <div className="row" style={{ justifyContent: "flex-end" }}>
-            <Button variant="outline" onClick={onCancel}>
-              {cancelLabel}
-            </Button>
-            <Button variant="default" onClick={onConfirm}>
+          <div className="modal-actions">
+            <button className="btn-cancel" onClick={onCancel}>
+              Cancel
+            </button>
+            <button className="btn-confirm-delete" onClick={onConfirm}>
               {confirmLabel}
-            </Button>
+            </button>
           </div>
         ) : null}
       </div>

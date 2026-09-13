@@ -20,7 +20,10 @@ export function ToastProvider({ children }) {
       {children}
       <div className="toast-stack">
         {toasts.map((toast) => (
-          <div key={toast.id} className={`toast toast-${toast.variant}`}>
+          <div
+            key={toast.id}
+            className={toast.variant === "error" ? "toast toast-error" : "toast"}
+          >
             {toast.message}
           </div>
         ))}
