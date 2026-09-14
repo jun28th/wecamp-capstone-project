@@ -272,6 +272,66 @@
     border: 1.5px solid var(--color-primary);
   }
 
+  .reward-card-unlocked {
+    border: 1.5px solid var(--color-gold);
+  }
+
+  .app-shell > .card {
+    margin-bottom: 20px;
+  }
+
+  .progress-track {
+    height: 8px;
+    background: var(--color-border);
+    border-radius: var(--radius-pill);
+    overflow: hidden;
+  }
+  .progress-fill {
+    height: 100%;
+    background: var(--color-primary);
+    border-radius: var(--radius-pill);
+    transition: width 200ms ease-out;
+  }
+
+  .celebration-card {
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    padding-top: 32px;
+  }
+  .celebration-icon {
+    font-size: 40px;
+    margin-bottom: 8px;
+  }
+  .celebration-card h3 {
+    text-align: center;
+  }
+  .confetti {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    overflow: hidden;
+  }
+  .confetti-piece {
+    position: absolute;
+    top: -10px;
+    width: 8px;
+    height: 8px;
+    border-radius: 2px;
+    animation: confetti-fall 1400ms ease-in forwards;
+  }
+  @keyframes confetti-fall {
+    to {
+      transform: translateY(420px) rotate(360deg);
+      opacity: 0;
+    }
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .confetti-piece {
+      display: none;
+    }
+  }
+
   .input-wrap {
     display: flex;
     flex-direction: column;

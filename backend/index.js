@@ -5,6 +5,7 @@ import { ensureDefaultUser } from "./config/defaultUser.js";
 import userRoutes from "./routes/user.routes.js";
 import dailyLogRoutes from "./routes/dailyLog.routes.js"
 import taskRoutes from "./routes/task.routes.js";
+import goalRoutes from "./routes/goal.routes.js";
 import cycleLogRoute from "./routes/cycleLog.routes.js"
 import authRoutes from "./routes/auth.routes.js";
 
@@ -17,6 +18,7 @@ app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dailyLog", dailyLogRoutes);
 app.use("/api/tasks", taskRoutes);
+app.use("/api/goals", goalRoutes);
 app.use("/api/cycle-logs", cycleLogRoute)
 // const express = require('express');
 // const cors = require('cors');
