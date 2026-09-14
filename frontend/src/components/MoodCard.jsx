@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from "react";
 import Button from "./Button";
 import Loading from "./Loading";
-import dailyLogService from "../api/dailyLogService";
+import dailyLogApi from "../api/dailyLogApi";
 
 const MOOD_TYPES = [
   { moodNumber: 1, moodLabel: "very-bad", title: "Very Bad", icon: "😢" },
@@ -27,7 +27,7 @@ export default function MoodCard({ dashBoard }) {
     const fetchTodayMood = async () => {
       try {
         setLoading(true);
-        const log = await dailyLogService.getTodayLog();
+        const log = await dailyLogApi.getTodayLog();
         if (cancelled) return;
         if (log === null) {
           console.log("There are no logs today.");
@@ -68,7 +68,7 @@ export default function MoodCard({ dashBoard }) {
     try {
       setError(null)
       setLoading(true);
-      await dailyLogService.createLog({ mood: selectedMood, note });
+      await dailyLogApi.createLog({ mood: selectedMood, note });
       setFinalize(true);
     } catch (error) {
       console.error("Failed to save mood:", error);

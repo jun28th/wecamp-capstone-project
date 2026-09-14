@@ -3,7 +3,7 @@ import { toPng } from "html-to-image";
 import Button from "../components/Button";
 import MoodCard from "../components/MoodCard";
 import Card from "../components/Card";
-import dailyLogService from "../api/dailyLogService";
+import dailyLogApi from "../api/dailyLogApi";
 import Loading from "../components/Loading";
 import {DashboardCalendar} from "../components/dashboard-calendar/DashboardCalendar"
 
@@ -96,7 +96,7 @@ function Home() {
     setIsLoadingMood(true);
     setMoodError(null);
     try {
-      const data = await dailyLogService.getMoodTrendData({
+      const data = await dailyLogApi.getMoodTrendData({
         startDate,
         endDate,
       });
