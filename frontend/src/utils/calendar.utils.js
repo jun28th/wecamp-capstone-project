@@ -45,3 +45,21 @@ export const generateCalendarDays = (year, month) => {
 
   return days;
 };
+
+export const formatDateWithYear = (isoStr) => {
+  const dateOnly = isoStr.split("T")[0];
+  const [y, m, d] = dateOnly.split("-").map(Number);
+  return new Intl.DateTimeFormat("en-US", {
+    month: "short",
+    day: "numeric",
+    year: "numeric",
+  }).format(new Date(y, m - 1, d));
+};
+
+export const getDayCount = (startStr, endStr) => {
+  const start = new Date(startStr.split("T")[0]);
+  const end = new Date(endStr.split("T")[0]);
+  const diffMs = end.getTime() - start.getTime();
+  const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1; // +1 để tính cả ngày bắt đầu
+  return diffDays;
+};
