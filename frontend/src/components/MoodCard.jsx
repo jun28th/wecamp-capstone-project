@@ -56,6 +56,7 @@ export default function MoodCard({ dashBoard }) {
   }, []);
 
   const handleMoodSelect = (moodNumber) => {
+    if (finalize) return;
     setSelectedMood(moodNumber);
   };
 
