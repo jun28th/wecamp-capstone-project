@@ -5,7 +5,11 @@ import MoodCard from "../components/MoodCard";
 import Card from "../components/Card";
 import dailyLogApi from "../api/dailyLogApi";
 import Loading from "../components/Loading";
-import {DashboardCalendar} from "../components/dashboard-calendar/DashboardCalendar"
+import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
+import GoalCard from "../components/GoalCard";
+import ProgressCard from "../components/ProgressCard";
+import { useGoal } from "../hooks/useGoal";
+import { useTasks } from "../hooks/useTasks";
 
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
@@ -160,25 +164,15 @@ function Home() {
 
   const hasMoodData = points.some((p) => p.value !== null);
 
-  //////////////// VIẾT TIẾP CÁC CHỨC NĂNG KHÁC Ở ĐÂY NHA!!! //////////////////
   // Dashboard Calendar
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
+  // To do
+  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
+    useTasks();
+  const { goal, saveGoal, removeGoal } = useGoal();
+  const unlocked = progress.pct === 100;
 
   ////////////////// RENDER ///////////////////
   return (
@@ -188,10 +182,28 @@ function Home() {
         <h1>What's happening today? ✨</h1>
       </div>
       <MoodCard dashBoard />
-      <DashboardCalendar
-        refreshSignal={refreshSignal}
-        onRefreshData={bumpRefresh}
-      />
+
+      <div class="card-grid cols-2">
+        <div className="col-grid-1" data-od-id="home-cycle-card">
+          <DashboardCalendar
+            refreshSignal={refreshSignal}
+            onRefreshData={bumpRefresh}
+          />
+        </div>
+        <div className="col-grid-1 flex-col space-y-2" data-od-id="home-progress-and-tasks-column">
+          <GoalCard
+            goal={goal}
+            unlocked={unlocked}
+            onSave={saveGoal}
+            onRemove={removeGoal}
+          />
+          <ProgressCard progress={progress} />
+
+          {/*Tasks Component*/}
+          
+        </div>
+      </div>
+
       <MoodTrend
         moodRange={label}
         points={points}
@@ -253,12 +265,17 @@ function MoodTrend({
   // ---- Chart geometry & derived data (chỉ tính khi có data để vẽ) ----
   const width = Math.max(720, points.length * 22);
   const height = 240;
-  const padLeft = 44, padRight = 16, padTop = 16, padBottom = 28;
+  const padLeft = 44,
+    padRight = 16,
+    padTop = 16,
+    padBottom = 28;
   const plotW = width - padLeft - padRight;
   const plotH = height - padTop - padBottom;
 
   const yFor = (value) => padTop + plotH - ((value - 1) / 4) * plotH;
-  const xFor = (i) => padLeft + (points.length === 1 ? plotW / 2 : (i / (points.length - 1)) * plotW);
+  const xFor = (i) =>
+    padLeft +
+    (points.length === 1 ? plotW / 2 : (i / (points.length - 1)) * plotW);
   const labelStep = Math.max(1, Math.ceil(points.length / 6));
 
   const segments = useMemo(() => {
@@ -283,7 +300,10 @@ function MoodTrend({
     let nearestDist = Infinity;
     points.forEach((p, i) => {
       const dist = Math.abs(xFor(i) - svgX);
-      if (dist < nearestDist) { nearestDist = dist; nearest = i; }
+      if (dist < nearestDist) {
+        nearestDist = dist;
+        nearest = i;
+      }
     });
     setHover(nearest);
   };
@@ -308,10 +328,19 @@ function MoodTrend({
 
       <Card data-od-id="mood-chart-card">
         <div className="flex items-center justify-center gap-4 mb-4">
-          <Button variant="miniNav" id="mood-chart-prev" aria-label="Previous month" onClick={handlePrevMoodTrend} disabled={isLoading}>
+          <Button
+            variant="miniNav"
+            id="mood-chart-prev"
+            aria-label="Previous month"
+            onClick={handlePrevMoodTrend}
+            disabled={isLoading}
+          >
             ‹
           </Button>
-          <h4 id="mood-chart-month-label" className="text-base font-semibold min-w-[160px] text-center">
+          <h4
+            id="mood-chart-month-label"
+            className="text-base font-semibold min-w-[160px] text-center"
+          >
             {moodRange}
           </h4>
           <Button
@@ -331,12 +360,16 @@ function MoodTrend({
         ) : error ? (
           <div className="text-center px-8 py-5">
             <p className="text-caption">Không tải được dữ liệu mood.</p>
-            <Button className="mt-3" onClick={onRetry}>Thử lại</Button>
+            <Button className="mt-3" onClick={onRetry}>
+              Thử lại
+            </Button>
           </div>
         ) : !hasData ? (
           <div id="mood-chart-empty" className="text-center px-8 py-5">
             <div className="text-[32px] opacity-[0.35] mb-3">📈</div>
-            <p className="text-caption">No mood data yet. Log your mood every day to see trends!</p>
+            <p className="text-caption">
+              No mood data yet. Log your mood every day to see trends!
+            </p>
           </div>
         ) : (
           <div id="mood-chart-wrap" className="relative" ref={wrapRef}>
@@ -350,8 +383,22 @@ function MoodTrend({
                 const y = yFor(level);
                 return (
                   <g key={level}>
-                    <line x1={padLeft} x2={width - padRight} y1={y} y2={y} stroke="var(--color-border)" strokeWidth={1} />
-                    <text x={padLeft - 12} y={y + 5} textAnchor="end" fontSize={13}>{MOOD_ICONS[level]}</text>
+                    <line
+                      x1={padLeft}
+                      x2={width - padRight}
+                      y1={y}
+                      y2={y}
+                      stroke="var(--color-border)"
+                      strokeWidth={1}
+                    />
+                    <text
+                      x={padLeft - 12}
+                      y={y + 5}
+                      textAnchor="end"
+                      fontSize={13}
+                    >
+                      {MOOD_ICONS[level]}
+                    </text>
                   </g>
                 );
               })}
@@ -360,35 +407,74 @@ function MoodTrend({
                 if (i % labelStep !== 0 && i !== points.length - 1) return null;
                 const d = new Date(p.date + "T00:00:00");
                 return (
-                  <text key={p.date} x={xFor(i)} y={height - 8} textAnchor="middle" fontSize={11} fill="var(--muted)">
-                    {d.toLocaleDateString("en-US", { month: "short", day: "numeric" })}
+                  <text
+                    key={p.date}
+                    x={xFor(i)}
+                    y={height - 8}
+                    textAnchor="middle"
+                    fontSize={11}
+                    fill="var(--muted)"
+                  >
+                    {d.toLocaleDateString("en-US", {
+                      month: "short",
+                      day: "numeric",
+                    })}
                   </text>
                 );
               })}
 
               {segments.map((seg, segIdx) => {
                 if (seg.length <= 1) return null;
-                const linePath = seg.map((p, idx) => `${idx === 0 ? "M" : "L"} ${xFor(p.i)} ${yFor(p.value)}`).join(" ");
+                const linePath = seg
+                  .map(
+                    (p, idx) =>
+                      `${idx === 0 ? "M" : "L"} ${xFor(p.i)} ${yFor(p.value)}`,
+                  )
+                  .join(" ");
                 const areaPath = `${linePath} L ${xFor(seg[seg.length - 1].i)} ${padTop + plotH} L ${xFor(seg[0].i)} ${padTop + plotH} Z`;
                 return (
                   <g key={segIdx}>
-                    <path d={areaPath} fill="var(--color-primary-deep)" opacity={0.1} />
-                    <path d={linePath} fill="none" stroke="var(--color-primary-deep)" strokeWidth={2} strokeLinecap="round" strokeLinejoin="round" />
+                    <path
+                      d={areaPath}
+                      fill="var(--color-primary-deep)"
+                      opacity={0.1}
+                    />
+                    <path
+                      d={linePath}
+                      fill="none"
+                      stroke="var(--color-primary-deep)"
+                      strokeWidth={2}
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                    />
                   </g>
                 );
               })}
 
               {points.map((p, i) =>
                 p.value === null ? null : (
-                  <circle key={p.date} cx={xFor(i)} cy={yFor(p.value)} r={6} fill="var(--color-primary-deep)" stroke="var(--color-surface-alt)" strokeWidth={2} />
-                )
+                  <circle
+                    key={p.date}
+                    cx={xFor(i)}
+                    cy={yFor(p.value)}
+                    r={6}
+                    fill="var(--color-primary-deep)"
+                    stroke="var(--color-surface-alt)"
+                    strokeWidth={2}
+                  />
+                ),
               )}
 
               {hover !== null && (
                 <line
                   data-export-ignore="true"
-                  x1={xFor(hover)} x2={xFor(hover)} y1={padTop} y2={padTop + plotH}
-                  stroke="var(--color-primary-deep)" strokeWidth={1} strokeDasharray="3,3"
+                  x1={xFor(hover)}
+                  x2={xFor(hover)}
+                  y1={padTop}
+                  y2={padTop + plotH}
+                  stroke="var(--color-primary-deep)"
+                  strokeWidth={1}
+                  strokeDasharray="3,3"
                 />
               )}
 
@@ -410,13 +496,23 @@ function MoodTrend({
               <div
                 id="mood-chart-tooltip"
                 className="absolute bg-[var(--color-ink)] text-white px-3 py-2 rounded-[var(--radius-input)] text-xs max-w-[200px] z-[300] pointer-events-none shadow-[var(--shadow-3)]"
-                style={{ left: `clamp(0px, calc(${tooltipLeftPct}% - 60px), calc(100% - 160px))`, top: 0 }}
+                style={{
+                  left: `clamp(0px, calc(${tooltipLeftPct}% - 60px), calc(100% - 160px))`,
+                  top: 0,
+                }}
               >
                 <div className="font-semibold">
-                  {new Date(hoverPoint.date + "T00:00:00").toLocaleDateString("en-US", { weekday: "short", month: "short", day: "numeric" })}
+                  {new Date(hoverPoint.date + "T00:00:00").toLocaleDateString(
+                    "en-US",
+                    { weekday: "short", month: "short", day: "numeric" },
+                  )}
                 </div>
-                <div>{MOOD_ICONS[hoverPoint.mood]} {MOOD_LABELS[hoverPoint.mood]}</div>
-                {hoverPoint.note && <div className="mt-1 opacity-85">{hoverPoint.note}</div>}
+                <div>
+                  {MOOD_ICONS[hoverPoint.mood]} {MOOD_LABELS[hoverPoint.mood]}
+                </div>
+                {hoverPoint.note && (
+                  <div className="mt-1 opacity-85">{hoverPoint.note}</div>
+                )}
               </div>
             )}
           </div>
