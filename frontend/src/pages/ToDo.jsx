@@ -45,7 +45,6 @@ function ToDo() {
     }
   }
 
-  // Không cần useCallback phức tạp nếu chỉ dùng nội bộ trong useEffect
   useEffect(() => {
     async function loadPhaseMessage() {
       try {
