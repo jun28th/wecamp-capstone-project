@@ -1,19 +1,12 @@
 import { useCallback, useEffect, useState } from "react";
 import taskApi from "../api/taskApi";
 import { useToast } from "../components/Toast";
+import { getTaskSortRank, todayDateOnly } from "../utils/task.utils";
 
+// Urgent overdue > Normal overdue > Urgent due today > Normal due today >
+// Urgent future due date > Normal future due date > Urgent no due date > Normal no due date
 function sortTasks(tasks) {
-  return tasks
-    .slice()
-    .sort((a, b) => (b.priority === "urgent" ? 1 : 0) - (a.priority === "urgent" ? 1 : 0));
-}
-
-function todayDateOnly() {
-  const now = new Date();
-  const year = now.getFullYear();
-  const month = String(now.getMonth() + 1).padStart(2, "0");
-  const day = String(now.getDate()).padStart(2, "0");
-  return `${year}-${month}-${day}`;
+  return tasks.slice().sort((a, b) => getTaskSortRank(a) - getTaskSortRank(b));
 }
 
 // Today's progress/reward should only depend on tasks due today or with no
