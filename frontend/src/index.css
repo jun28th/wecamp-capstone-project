@@ -283,6 +283,7 @@
   .card-grid {
     display: grid;
     gap: 16px;
+    align-items: stretch;
   }
   @media (min-width: 1024px) {
     .card-grid.cols-3 {

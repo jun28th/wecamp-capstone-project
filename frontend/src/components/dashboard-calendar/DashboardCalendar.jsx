@@ -126,7 +126,7 @@ export const DashboardCalendar = React.memo(
     const monthYearLabel = formatMonthYear(year, month);
 
     return (
-      <div className="card card-today" data-od-id="home-cycle-card">
+      <div className="card card-today h-full" data-od-id="home-cycle-card">
         <p className="text-caption" style={{ margin: "0 0 12px 0" }}>
           Cycle Tracking
         </p>
