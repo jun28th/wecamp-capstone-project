@@ -1,10 +1,14 @@
-import { useState, useEffect } from "react";
+import { useEffect, useRef, useState } from "react";
 import { useTasks } from "../hooks/useTasks";
+import { useGoal } from "../hooks/useGoal";
 import Modal from "../components/Modal";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
 import PhaseMessage from "../components/PhaseMessage";
 import { getPhaseMessage } from "../api/cycleApi";
+import GoalCard from "../components/GoalCard";
+import ProgressCard from "../components/ProgressCard";
+import CelebrationModal from "../components/CelebrationModal";
 
 function todayEyebrow() {
   return new Date().toLocaleDateString("en-US", {
@@ -15,11 +19,23 @@ function todayEyebrow() {
 }
 
 function ToDo() {
-  const { tasks, addTask, editTask, removeTask, toggleComplete } = useTasks();
+  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } = useTasks();
+  const { goal, saveGoal, removeGoal } = useGoal();
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
   const [phaseMessage, setPhaseMessage] = useState(null);
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
+  const previousPctRef = useRef(null);
+  const unlocked = progress.pct === 100;
+
+  useEffect(() => {
+    if (goal && unlocked && previousPctRef.current !== null && previousPctRef.current < 100) {
+      setCelebrationOpen(true);
+    }
+    previousPctRef.current = progress.pct;
+  }, [progress.pct, unlocked, goal]);
+
   function openCreateForm() {
     setEditingTask(null);
     setFormOpen(true);
@@ -66,6 +82,10 @@ function ToDo() {
         <h1>Today's Tasks</h1>
       </header>
       <PhaseMessage phaseMessage={phaseMessage}/>
+
+      <GoalCard goal={goal} unlocked={unlocked} onSave={saveGoal} onRemove={removeGoal} />
+      <ProgressCard progress={progress} />
+
       <section>
         <div className="section-header-row">
           <h2>Task List</h2>
@@ -99,6 +119,12 @@ function ToDo() {
           Are you sure you want to delete "{taskPendingDelete?.title}"?
         </p>
       </Modal>
+
+      <CelebrationModal
+        open={celebrationOpen}
+        rewardText={goal?.rewardText}
+        onClose={() => setCelebrationOpen(false)}
+      />
     </div>
   );
 }

@@ -23,6 +23,12 @@ class DailyRewardRepository {
     });
   }
 
+  async updateDailyReward(id, updates) {
+    const reward = await this.findById(id);
+    if (!reward) return null;
+    return await reward.update(updates);
+  }
+
   async unlockReward(id) {
     const reward = await DailyReward.findByPk(id);
     if (!reward) return null;

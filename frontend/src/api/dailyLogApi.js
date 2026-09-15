@@ -5,7 +5,7 @@ function authHeader() {
   return token ? { Authorization: `Bearer ${token}` } : {};
 }
 
-const dailyLogService = {
+const dailyLogApi = {
   async getTodayLog() {
     try {
       const response = await axiosClient.get("/dailyLog/", {
@@ -57,4 +57,4 @@ const dailyLogService = {
   },
 };
 
-export default dailyLogService;
+export default dailyLogApi;

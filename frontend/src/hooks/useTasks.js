@@ -8,6 +8,20 @@ function sortTasks(tasks) {
     .sort((a, b) => (b.priority === "urgent" ? 1 : 0) - (a.priority === "urgent" ? 1 : 0));
 }
 
+function todayDateOnly() {
+  const now = new Date();
+  const year = now.getFullYear();
+  const month = String(now.getMonth() + 1).padStart(2, "0");
+  const day = String(now.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+}
+
+// Today's progress/reward should only depend on tasks due today or with no
+// due date - a task due later shouldn't block unlocking today's reward.
+function isDueTodayOrUndated(task) {
+  return !task.dueDate || task.dueDate <= todayDateOnly();
+}
+
 // Shared task data + actions, reusable by both the full /to-do page and a
 // dashboard preview card (both need the same fetch/add/edit/delete/toggle
 // behavior and toast feedback, just rendered differently).
@@ -85,8 +99,9 @@ export function useTasks() {
     [loadTasks, showToast],
   );
 
-  const total = tasks.length;
-  const done = tasks.filter((task) => task.isCompleted).length;
+  const tasksForProgress = tasks.filter(isDueTodayOrUndated);
+  const total = tasksForProgress.length;
+  const done = tasksForProgress.filter((task) => task.isCompleted).length;
 
   return {
     tasks: sortTasks(tasks),

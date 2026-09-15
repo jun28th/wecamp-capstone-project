@@ -3,11 +3,19 @@ import { toPng } from "html-to-image";
 import Button from "../components/Button";
 import MoodCard from "../components/MoodCard";
 import Card from "../components/Card";
-import dailyLogService from "../api/dailyLogService";
+import dailyLogApi from "../api/dailyLogApi";
 import Loading from "../components/Loading";
 import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
 import { getPhaseMessage } from "../api/cycleApi";
 import PhaseMessage from "../components/PhaseMessage";
+import GoalCard from "../components/GoalCard";
+import ProgressCard from "../components/ProgressCard";
+import { useGoal } from "../hooks/useGoal";
+import { useTasks } from "../hooks/useTasks";
+import { CycleStats } from "../components/cycle-calendar/CycleStats";
+import { computeCycleStats } from "../utils/cycle.utils";
+import { getCycles } from "../api/cycleApi";
+
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
   1: "Very Bad",
@@ -97,7 +105,7 @@ function Home() {
     setIsLoadingMood(true);
     setMoodError(null);
     try {
-      const data = await dailyLogService.getMoodTrendData({
+      const data = await dailyLogApi.getMoodTrendData({
         startDate,
         endDate,
       });
@@ -161,7 +169,6 @@ function Home() {
 
   const hasMoodData = points.some((p) => p.value !== null);
 
-  //////////////// VIẾT TIẾP CÁC CHỨC NĂNG KHÁC Ở ĐÂY NHA!!! //////////////////
   // Dashboard Calendar
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
@@ -181,6 +188,37 @@ function Home() {
 
     loadPhaseMessage();
   }, []); // Mảng rỗng [] nghĩa là chỉ gọi 1 lần duy nhất khi component mount
+  // Cycle stats cards — fetched here (not inside DashboardCalendar) so they
+  // stay full-width on Home regardless of the 2-column grid below.
+  const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await getCycles();
+        if (!cancelled && result.success) {
+          setCycleLogsForStats(result.data);
+        }
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshSignal]);
+
+  const cycleStats = useMemo(
+    () => computeCycleStats(cycleLogsForStats),
+    [cycleLogsForStats],
+  );
+
+  // To do
+  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
+    useTasks();
+  const { goal, saveGoal, removeGoal } = useGoal();
+  const unlocked = progress.pct === 100;
 
   ////////////////// RENDER ///////////////////
   return (
@@ -191,10 +229,32 @@ function Home() {
       </div>
       <PhaseMessage phaseMessage={phaseMessage} />
       <MoodCard dashBoard />
-      <DashboardCalendar
-        refreshSignal={refreshSignal}
-        onRefreshData={bumpRefresh}
-      />
+
+      <CycleStats stats={cycleStats} fullWidth />
+
+      <div class="card-grid cols-2">
+        <div className="col-grid-1" data-od-id="home-cycle-card">
+          <DashboardCalendar
+            refreshSignal={refreshSignal}
+            onRefreshData={bumpRefresh}
+          />
+        </div>
+        <div
+          className="col-grid-1 flex-col space-y-2"
+          data-od-id="home-progress-and-tasks-column"
+        >
+          <GoalCard
+            goal={goal}
+            unlocked={unlocked}
+            onSave={saveGoal}
+            onRemove={removeGoal}
+          />
+          <ProgressCard progress={progress} />
+
+          {/*Tasks Component*/}
+        </div>
+      </div>
+
       <MoodTrend
         moodRange={label}
         points={points}

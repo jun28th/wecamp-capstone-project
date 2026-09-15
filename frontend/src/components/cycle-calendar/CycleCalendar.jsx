@@ -9,7 +9,9 @@ import CalendarLegend from "./CalendarLegend";
 import {
   extractPeriodDays,
   extractPredictedDays,
+  computeCycleStats,
 } from "../../utils/cycle.utils";
+import { CycleStats } from "./CycleStats";
 import {
   getCycles,
   getPrediction,
@@ -130,6 +132,8 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
     return new Set(daysArray);
   }, [cycleLogs]);
 
+  const cycleStats = useMemo(() => computeCycleStats(cycleLogs), [cycleLogs]);
+
   const predictedDaysSet = useMemo(() => {
     if (!prediction?.hasEnoughData) return new Set();
     const daysArray = extractPredictedDays(
@@ -158,43 +162,46 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   }, []);
 
   return (
-    <div
-      className="card"
-      data-od-id="cycle-calendar-card"
-      style={{ maxWidth: "640px", marginLeft: "auto", marginRight: "auto" }}
-    >
-      <CalendarHeader
-        monthYearLabel={monthYearLabel}
-        onPrevMonth={handlePrevMonth}
-        onNextMonth={handleNextMonth}
-      />
-      <CalendarGrid
-        days={days}
-        periodDaysSet={periodDaysSet}
-        predictedDaysSet={predictedDaysSet}
-        todayString={todayString}
-        activeStartDate={activeStartDate}
-        onConfirmCycleAction={handleConfirmAction}
-      />
-      <CalendarLegend />
-      {prediction && !prediction.hasEnoughData && (
-        <p
-          id="prediction-status"
-          className="text-caption"
-          style={{ marginTop: "12px", textAlign: "center" }}
-        >
-          {prediction.message}
-        </p>
-      )}
-      {prediction?.isIrregular && (
-        <p
-          id="prediction-irregular-note"
-          className="text-caption"
-          style={{ marginTop: "12px", textAlign: "center" }}
-        >
-          {prediction.irregularNote}
-        </p>
-      )}
-    </div>
+    <>
+      <CycleStats stats={cycleStats} />
+      <div
+        className="card"
+        data-od-id="cycle-calendar-card"
+        style={{ maxWidth: "640px", marginLeft: "auto", marginRight: "auto" }}
+      >
+        <CalendarHeader
+          monthYearLabel={monthYearLabel}
+          onPrevMonth={handlePrevMonth}
+          onNextMonth={handleNextMonth}
+        />
+        <CalendarGrid
+          days={days}
+          periodDaysSet={periodDaysSet}
+          predictedDaysSet={predictedDaysSet}
+          todayString={todayString}
+          activeStartDate={activeStartDate}
+          onConfirmCycleAction={handleConfirmAction}
+        />
+        <CalendarLegend />
+        {prediction && !prediction.hasEnoughData && (
+          <p
+            id="prediction-status"
+            className="text-caption"
+            style={{ marginTop: "12px", textAlign: "center" }}
+          >
+            {prediction.message}
+          </p>
+        )}
+        {prediction?.isIrregular && (
+          <p
+            id="prediction-irregular-note"
+            className="text-caption"
+            style={{ marginTop: "12px", textAlign: "center" }}
+          >
+            {prediction.irregularNote}
+          </p>
+        )}
+      </div>
+    </>
   );
 });
