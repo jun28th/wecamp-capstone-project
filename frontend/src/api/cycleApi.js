@@ -54,3 +54,15 @@ export const endCycle = async (date) => {
     throw error;
   }
 };
+
+export const getPhaseMessage = async () => {
+  try {
+    const response = await axiosClient.get("/cycle-logs/phase-message", {
+      headers: authHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching cycles:", error);
+    throw error; // Ném lỗi ra để component gọi API (như fetchCycles) bắt được trong catch
+  }
+};

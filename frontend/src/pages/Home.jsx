@@ -6,6 +6,8 @@ import Card from "../components/Card";
 import dailyLogApi from "../api/dailyLogApi";
 import Loading from "../components/Loading";
 import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
+import { getPhaseMessage } from "../api/cycleApi";
+import PhaseMessage from "../components/PhaseMessage";
 import GoalCard from "../components/GoalCard";
 import ProgressCard from "../components/ProgressCard";
 import { useGoal } from "../hooks/useGoal";
@@ -170,7 +172,22 @@ function Home() {
   // Dashboard Calendar
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
+  // Phase Message
+  const [phaseMessage, setPhaseMessage] = useState(null);
+  useEffect(() => {
+    async function loadPhaseMessage() {
+      try {
+        const result = await getPhaseMessage();
+        if (result.success) {
+          setPhaseMessage(result.data);
+        }
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    }
 
+    loadPhaseMessage();
+  }, []); // Mảng rỗng [] nghĩa là chỉ gọi 1 lần duy nhất khi component mount
   // Cycle stats cards — fetched here (not inside DashboardCalendar) so they
   // stay full-width on Home regardless of the 2-column grid below.
   const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
@@ -210,6 +227,7 @@ function Home() {
         <p className="mb-1 text-[13px] text-[var(--muted)]">Good morning,</p>
         <h1>What's happening today? ✨</h1>
       </div>
+      <PhaseMessage phaseMessage={phaseMessage} />
       <MoodCard dashBoard />
 
       <CycleStats stats={cycleStats} fullWidth />

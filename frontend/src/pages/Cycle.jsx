@@ -3,7 +3,6 @@ import { CycleCalendar } from "../components/cycle-calendar/CycleCalendar";
 import MoodCard from "../components/MoodCard";
 import {
   formatDateWithYear,
-  formatStringDateToMonthDay,
   getDayCount,
 } from "../utils/calendar.utils";
 import { getCycles } from "../api/cycleApi";
