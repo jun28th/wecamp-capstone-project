@@ -52,7 +52,7 @@ const StatCard = ({ label, value, unit, note, id }) => (
   </div>
 );
 
-export const CycleStats = React.memo(({ stats }) => {
+export const CycleStats = React.memo(({ stats, fullWidth = false }) => {
   if (!stats || !stats.hasData) return null;
 
   const {
@@ -69,10 +69,11 @@ export const CycleStats = React.memo(({ stats }) => {
         display: "flex",
         gap: "16px",
         flexWrap: "wrap",
-        maxWidth: "640px",
-        marginLeft: "auto",
-        marginRight: "auto",
         marginBottom: "20px",
+        width: "100%",
+        maxWidth: fullWidth ? "none" : "640px",
+        marginLeft: fullWidth ? "0" : "auto",
+        marginRight: fullWidth ? "0" : "auto",
       }}
     >
       <StatCard

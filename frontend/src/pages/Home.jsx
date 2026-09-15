@@ -10,6 +10,9 @@ import GoalCard from "../components/GoalCard";
 import ProgressCard from "../components/ProgressCard";
 import { useGoal } from "../hooks/useGoal";
 import { useTasks } from "../hooks/useTasks";
+import { CycleStats } from "../components/cycle-calendar/CycleStats";
+import { computeCycleStats } from "../utils/cycle.utils";
+import { getCycles } from "../api/cycleApi";
 
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
@@ -168,6 +171,32 @@ function Home() {
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
 
+  // Cycle stats cards — fetched here (not inside DashboardCalendar) so they
+  // stay full-width on Home regardless of the 2-column grid below.
+  const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await getCycles();
+        if (!cancelled && result.success) {
+          setCycleLogsForStats(result.data);
+        }
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshSignal]);
+
+  const cycleStats = useMemo(
+    () => computeCycleStats(cycleLogsForStats),
+    [cycleLogsForStats],
+  );
+
   // To do
   const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
     useTasks();
@@ -183,6 +212,8 @@ function Home() {
       </div>
       <MoodCard dashBoard />
 
+      <CycleStats stats={cycleStats} fullWidth />
+
       <div class="card-grid cols-2">
         <div className="col-grid-1" data-od-id="home-cycle-card">
           <DashboardCalendar
@@ -190,7 +221,10 @@ function Home() {
             onRefreshData={bumpRefresh}
           />
         </div>
-        <div className="col-grid-1 flex-col space-y-2" data-od-id="home-progress-and-tasks-column">
+        <div
+          className="col-grid-1 flex-col space-y-2"
+          data-od-id="home-progress-and-tasks-column"
+        >
           <GoalCard
             goal={goal}
             unlocked={unlocked}
@@ -200,7 +234,6 @@ function Home() {
           <ProgressCard progress={progress} />
 
           {/*Tasks Component*/}
-          
         </div>
       </div>
 
