@@ -4,6 +4,8 @@ import { useGoal } from "../hooks/useGoal";
 import Modal from "../components/Modal";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
+import PhaseMessage from "../components/PhaseMessage";
+import { getPhaseMessage } from "../api/cycleApi";
 import GoalCard from "../components/GoalCard";
 import ProgressCard from "../components/ProgressCard";
 import CelebrationModal from "../components/CelebrationModal";
@@ -22,6 +24,7 @@ function ToDo() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
+  const [phaseMessage, setPhaseMessage] = useState(null);
   const [celebrationOpen, setCelebrationOpen] = useState(false);
   const previousPctRef = useRef(null);
   const unlocked = progress.pct === 100;
@@ -58,12 +61,27 @@ function ToDo() {
     }
   }
 
+  useEffect(() => {
+    async function loadPhaseMessage() {
+      try {
+        const result = await getPhaseMessage();
+        if (result.success) {
+          setPhaseMessage(result.data);
+        }
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    }
+
+    loadPhaseMessage();
+  }, []); // Mảng rỗng [] nghĩa là chỉ gọi 1 lần duy nhất khi component mount
   return (
     <div className="app-shell">
       <header className="app-header">
         <p className="eyebrow">{todayEyebrow()}</p>
         <h1>Today's Tasks</h1>
       </header>
+      <PhaseMessage phaseMessage={phaseMessage}/>
 
       <GoalCard goal={goal} unlocked={unlocked} onSave={saveGoal} onRemove={removeGoal} />
       <ProgressCard progress={progress} />

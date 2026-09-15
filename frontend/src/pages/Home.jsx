@@ -6,13 +6,14 @@ import Card from "../components/Card";
 import dailyLogApi from "../api/dailyLogApi";
 import Loading from "../components/Loading";
 import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
+import { getPhaseMessage } from "../api/cycleApi";
+import PhaseMessage from "../components/PhaseMessage";
 import GoalCard from "../components/GoalCard";
 import ProgressCard from "../components/ProgressCard";
-import { useGoal } from "../hooks/useGoal";
-import { useTasks } from "../hooks/useTasks";
 import { CycleStats } from "../components/cycle-calendar/CycleStats";
 import { computeCycleStats } from "../utils/cycle.utils";
 import { getCycles } from "../api/cycleApi";
+import DashboardTask from "../components/DashboardTask";
 
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
@@ -170,7 +171,22 @@ function Home() {
   // Dashboard Calendar
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
+  // Phase Message
+  const [phaseMessage, setPhaseMessage] = useState(null);
+  useEffect(() => {
+    async function loadPhaseMessage() {
+      try {
+        const result = await getPhaseMessage();
+        if (result.success) {
+          setPhaseMessage(result.data);
+        }
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    }
 
+    loadPhaseMessage();
+  }, []); // Mảng rỗng [] nghĩa là chỉ gọi 1 lần duy nhất khi component mount
   // Cycle stats cards — fetched here (not inside DashboardCalendar) so they
   // stay full-width on Home regardless of the 2-column grid below.
   const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
@@ -197,12 +213,6 @@ function Home() {
     [cycleLogsForStats],
   );
 
-  // To do
-  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
-    useTasks();
-  const { goal, saveGoal, removeGoal } = useGoal();
-  const unlocked = progress.pct === 100;
-
   ////////////////// RENDER ///////////////////
   return (
     <div className="flex-col space-y-10">
@@ -210,30 +220,20 @@ function Home() {
         <p className="mb-1 text-[13px] text-[var(--muted)]">Good morning,</p>
         <h1>What's happening today? ✨</h1>
       </div>
+      <PhaseMessage phaseMessage={phaseMessage} />
       <MoodCard dashBoard />
 
       <CycleStats stats={cycleStats} fullWidth />
 
       <div class="card-grid cols-2">
-        <div className="col-grid-1" data-od-id="home-cycle-card">
+        <div className="col-grid-1 h-full" data-od-id="home-cycle-card">
           <DashboardCalendar
             refreshSignal={refreshSignal}
             onRefreshData={bumpRefresh}
           />
         </div>
-        <div
-          className="col-grid-1 flex-col space-y-2"
-          data-od-id="home-progress-and-tasks-column"
-        >
-          <GoalCard
-            goal={goal}
-            unlocked={unlocked}
-            onSave={saveGoal}
-            onRemove={removeGoal}
-          />
-          <ProgressCard progress={progress} />
-
-          {/*Tasks Component*/}
+        <div className="col-grid-1" data-od-id="home-progress-and-tasks-column">
+          <DashboardTask />
         </div>
       </div>
 

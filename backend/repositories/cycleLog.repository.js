@@ -45,6 +45,14 @@ class CycleLogRepository {
     cycle.endDate = endDate;
     return await cycle.save();
   }
+
+  async getRecentLogs(userId, limit = 6) {
+    return await CycleLog.findAll({
+      where: { userId },
+      order: [['startDate', 'DESC']],
+      limit,
+    });
+  }
 }
 
 export default new CycleLogRepository();
