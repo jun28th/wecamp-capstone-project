@@ -91,8 +91,9 @@ export const computeCycleStats = (cycleLogs = []) => {
     }
   }
 
-  // AC4/AC5: cycle length variation needs >= 3 computed cycle lengths (i.e.
-  // >= 4 logged start dates); uses at most the 6 most recent gaps.
+  // AC4/AC5: cycle length variation needs >= 3 logged cycles (i.e. >= 2
+  // gaps between consecutive start dates); uses at most the 6 most recent
+  // gaps. With exactly 3 cycles logged (2 gaps), variation is still shown.
   const allGaps = [];
   for (let i = 1; i < chronological.length; i++) {
     allGaps.push(
@@ -100,7 +101,7 @@ export const computeCycleStats = (cycleLogs = []) => {
     );
   }
   const recentGaps = allGaps.slice(-6);
-  const hasEnoughVariationData = recentGaps.length >= 3;
+  const hasEnoughVariationData = chronological.length >= 3;
   const variation = hasEnoughVariationData
     ? Math.max(...recentGaps) - Math.min(...recentGaps)
     : null;
