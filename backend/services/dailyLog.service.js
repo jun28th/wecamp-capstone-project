@@ -1,13 +1,21 @@
 import DailyLogRepository from "../repositories/dailyLog.repository.js";
 
+function getVietnamDateString(date = new Date()) {
+  // en-CA format cho ra chuỗi "YYYY-MM-DD" sẵn
+  return new Intl.DateTimeFormat("en-CA", {
+    timeZone: "Asia/Ho_Chi_Minh",
+  }).format(date);
+}
+
 class DailyLogService {
   async getTodayLog(userId) {
-    const today = new Date().toISOString().slice(0, 10); // "YYYY-MM-DD"
+    const today = getVietnamDateString();
     const todayLog = await DailyLogRepository.findByUserAndDate(userId, today);
     return todayLog;
   }
+
   async createLog(userId, data) {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getVietnamDateString();
     const { mood, note } = data;
 
     if (mood == null && note == null) {
@@ -21,8 +29,9 @@ class DailyLogService {
     const newLog = await DailyLogRepository.createDailyLog(payload);
     return newLog;
   }
+
   async updateLog(userId, data) {
-    const today = new Date().toISOString().slice(0, 10);
+    const today = getVietnamDateString();
     const existingLog = await DailyLogRepository.findByUserAndDate(
       userId,
       today,
