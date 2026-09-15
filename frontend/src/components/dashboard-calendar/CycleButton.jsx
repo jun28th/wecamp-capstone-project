@@ -1,16 +1,6 @@
 import React from "react";
-import { useToast } from "../Toast";
 export const CycleButton = React.memo(
-  ({ date, actionType, statusText, onConfirmCycleAction }) => {
-    const showToast = useToast();
-    const handleConfirm = () => {
-      onConfirmCycleAction(date, actionType);
-      const msg =
-        actionType == "START"
-          ? "Cycle logged successfully"
-          : "Cycle ended successfully";
-      showToast(msg);
-    };
+  ({ actionType, statusText, onOpenConfirm }) => {
     const msg = actionType == "START" ? "Start cycle" : "End cycle";
     return (
       <div style={{ maxWidth: "560px", margin: "0 auto" }}>
@@ -27,7 +17,7 @@ export const CycleButton = React.memo(
           id="cycle-quick-action"
           className="btn btn-primary"
           style={{ width: "100%" }}
-          onClick={handleConfirm}
+          onClick={onOpenConfirm}
         >
           {msg}
         </button>
