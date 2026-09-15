@@ -1,8 +1,10 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useTasks } from "../hooks/useTasks";
 import Modal from "../components/Modal";
 import TaskForm from "../components/TaskForm";
 import TaskList from "../components/TaskList";
+import PhaseMessage from "../components/PhaseMessage";
+import { getPhaseMessage } from "../api/cycleApi";
 
 function todayEyebrow() {
   return new Date().toLocaleDateString("en-US", {
@@ -17,7 +19,7 @@ function ToDo() {
   const [formOpen, setFormOpen] = useState(false);
   const [editingTask, setEditingTask] = useState(null);
   const [taskPendingDelete, setTaskPendingDelete] = useState(null);
-
+  const [phaseMessage, setPhaseMessage] = useState(null);
   function openCreateForm() {
     setEditingTask(null);
     setFormOpen(true);
@@ -43,13 +45,28 @@ function ToDo() {
     }
   }
 
+  // Không cần useCallback phức tạp nếu chỉ dùng nội bộ trong useEffect
+  useEffect(() => {
+    async function loadPhaseMessage() {
+      try {
+        const result = await getPhaseMessage();
+        if (result.success) {
+          setPhaseMessage(result.data);
+        }
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    }
+
+    loadPhaseMessage();
+  }, []); // Mảng rỗng [] nghĩa là chỉ gọi 1 lần duy nhất khi component mount
   return (
     <div className="app-shell">
       <header className="app-header">
         <p className="eyebrow">{todayEyebrow()}</p>
         <h1>Today's Tasks</h1>
       </header>
-
+      <PhaseMessage phaseMessage={phaseMessage}/>
       <section>
         <div className="section-header-row">
           <h2>Task List</h2>

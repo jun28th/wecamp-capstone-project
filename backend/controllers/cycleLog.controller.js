@@ -73,6 +73,23 @@ class CycleLogController {
       return res.status(500).json({ success: false, message: error.message });
     }
   }
+  // GET /api/cycle-logs/current-status
+  async getCurrentPhase(req, res) {
+    try {
+      // Giả sử userId được lấy từ middleware xác thực (Auth Middleware)
+      const userId = req.user.id;
+
+      if (!userId) {
+        return res.status(400).json({ success: false, message: 'Thiếu thông tin định danh người dùng (userId)' });
+      }
+
+      const result = await cycleLogService.getCurrentPhaseStatus(userId);
+      console.log("hello");
+      return res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      return res.status(500).json({ success: false, message: error.message });
+    }
+  }
 }
 
 export default new CycleLogController();
