@@ -10,11 +10,10 @@ import { getPhaseMessage } from "../api/cycleApi";
 import PhaseMessage from "../components/PhaseMessage";
 import GoalCard from "../components/GoalCard";
 import ProgressCard from "../components/ProgressCard";
-import { useGoal } from "../hooks/useGoal";
-import { useTasks } from "../hooks/useTasks";
 import { CycleStats } from "../components/cycle-calendar/CycleStats";
 import { computeCycleStats } from "../utils/cycle.utils";
 import { getCycles } from "../api/cycleApi";
+import DashboardTask from "../components/DashboardTask";
 
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
@@ -214,12 +213,6 @@ function Home() {
     [cycleLogsForStats],
   );
 
-  // To do
-  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
-    useTasks();
-  const { goal, saveGoal, removeGoal } = useGoal();
-  const unlocked = progress.pct === 100;
-
   ////////////////// RENDER ///////////////////
   return (
     <div className="flex-col space-y-10">
@@ -233,25 +226,14 @@ function Home() {
       <CycleStats stats={cycleStats} fullWidth />
 
       <div class="card-grid cols-2">
-        <div className="col-grid-1" data-od-id="home-cycle-card">
+        <div className="col-grid-1 h-full" data-od-id="home-cycle-card">
           <DashboardCalendar
             refreshSignal={refreshSignal}
             onRefreshData={bumpRefresh}
           />
         </div>
-        <div
-          className="col-grid-1 flex-col space-y-2"
-          data-od-id="home-progress-and-tasks-column"
-        >
-          <GoalCard
-            goal={goal}
-            unlocked={unlocked}
-            onSave={saveGoal}
-            onRemove={removeGoal}
-          />
-          <ProgressCard progress={progress} />
-
-          {/*Tasks Component*/}
+        <div className="col-grid-1" data-od-id="home-progress-and-tasks-column">
+          <DashboardTask />
         </div>
       </div>
 
