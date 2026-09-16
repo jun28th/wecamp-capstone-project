@@ -1,14 +1,4 @@
-function formatDueDate(dateStr) {
-  const d = new Date(`${dateStr}T00:00:00`);
-  return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
-}
-
-function isDueSoon(task) {
-  if (task.priority !== "urgent" || !task.dueDate || task.isCompleted) return false;
-  const due = new Date(`${task.dueDate}T23:59:59`);
-  const diffMs = due - new Date();
-  return diffMs <= 24 * 60 * 60 * 1000;
-}
+import { formatDueDate, isDueSoon, isOverdue } from "../utils/task.utils";
 
 // compact=true renders the trimmed-down row used by preview surfaces (e.g. a
 // dashboard card): checkbox + title + urgent tag only, no due-date meta or
@@ -41,6 +31,7 @@ export default function TaskItem({ task, onToggleComplete, onEdit, onDelete, com
   }
 
   const dueSoon = isDueSoon(task);
+  const overdue = isOverdue(task);
 
   return (
     <div className="todo-item">
@@ -58,6 +49,11 @@ export default function TaskItem({ task, onToggleComplete, onEdit, onDelete, com
             {task.dueDate ? (
               <span className="tag" style={{ background: "var(--color-border)" }}>
                 {formatDueDate(task.dueDate)}
+              </span>
+            ) : null}
+            {overdue ? (
+              <span className="tag" style={{ background: "var(--color-error-text)", color: "white" }}>
+                Overdue
               </span>
             ) : null}
             {dueSoon ? <span className="due-warning">⚠ Due soon</span> : null}

@@ -939,6 +939,58 @@
   padding: 16px;
   max-width: 280px;
 }
+.popover.top-confirmation-popover {
+  position: fixed;
+  top: 16px; /* Cách mép trên trình duyệt một khoảng nhỏ để không đè lên header chính */
+  left: 50%;
+  transform: translateX(-50%);
+  width: 90%;
+  max-width: 560px; /* Đồng bộ độ rộng với card dashboard */
+  z-index: 9999;
+  background: var(--color-surface-alt);
+  border: 1.5px solid var(--border);
+  /* Bo tròn toàn bộ góc để trông giống một floating alert card hiện đại */
+  border-radius: var(--radius-card);
+  box-shadow: var(--shadow-3);
+  padding: 14px 20px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  animation: slideDownTop 0.25s ease-out;
+}
+
+.popover.top-confirmation-popover .popover-content {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  width: 100%;
+  gap: 16px;
+  margin: 0;
+}
+
+.popover.top-confirmation-popover .popover-content p {
+  margin: 0;
+  font-size: 14px;
+  font-weight: 500;
+  color: var(--color-ink);
+  white-space: nowrap; /* Giữ câu chữ hiển thị trọn vẹn trên 1 dòng */
+}
+
+.popover.top-confirmation-popover .popover-actions {
+  display: flex;
+  gap: 8px;
+  flex-shrink: 0;
+  margin: 0;
+}
+
+/* Kích thước nút bấm vừa vặn hơn khi nằm trên thanh thông báo */
+.popover.top-confirmation-popover .popover-actions .btn-secondary,
+.popover.top-confirmation-popover .popover-actions .btn-primary {
+  padding: 6px 14px;
+  font-size: 13px;
+}
+
 .popover-content p {
   margin: 0 0 12px 0;
   font-size: 14px;
