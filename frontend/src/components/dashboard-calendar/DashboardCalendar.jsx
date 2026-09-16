@@ -1,6 +1,8 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { CalendarGrid } from "./CalendarGrid";
 import { CycleButton } from "./CycleButton";
+import Confirmation from "./Confirmation"; // CẬP NHẬT: Import component Confirmation
+import { useToast } from "../Toast";
 import {
   formatMonthYear,
   generateCalendarDays,
@@ -21,6 +23,9 @@ export const DashboardCalendar = React.memo(
   ({ onRefreshData, refreshSignal }) => {
     const [cycleLogs, setCycleLogs] = useState([]);
     const [prediction, setPrediction] = useState(null);
+    // CẬPR NHẬT: State quản lý việc ẩn/hiện popup xác nhận
+    const [isConfirmOpen, setIsConfirmOpen] = useState(false);
+    const showToast = useToast(); // CẬP NHẬT: Khởi tạo toast thông báo
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1;
@@ -59,13 +64,11 @@ export const DashboardCalendar = React.memo(
     const handleConfirmAction = useCallback(
       async (date, actionType) => {
         try {
-          console.log(date);
-          console.log(actionType);
+          setIsConfirmOpen(false); // Đóng popup ngay lập tức khi bấm Confirm
           let result;
 
           if (actionType === "START") {
             result = await startCycle(date);
-            console.log(result);
           } else if (actionType === "END") {
             result = await endCycle(date);
           }
@@ -74,6 +77,13 @@ export const DashboardCalendar = React.memo(
             await fetchCycles();
             await fetchPrediction();
             if (onRefreshData) onRefreshData();
+
+            // CẬP NHẬT: Bắn Toast thông báo thành công sau khi hoàn tất API
+            const msg =
+              actionType === "START"
+                ? "Cycle logged successfully"
+                : "Cycle ended successfully";
+            showToast(msg);
           }
         } catch (error) {
           console.error(error);
@@ -81,7 +91,7 @@ export const DashboardCalendar = React.memo(
           alert(errorMessage);
         }
       },
-      [fetchCycles, fetchPrediction, onRefreshData],
+      [fetchCycles, fetchPrediction, onRefreshData, showToast],
     );
 
     const today = new Date();
@@ -126,7 +136,14 @@ export const DashboardCalendar = React.memo(
     const monthYearLabel = formatMonthYear(year, month);
 
     return (
-      <div className="card card-today h-full" data-od-id="home-cycle-card">
+      <div className="card card-today" data-od-id="home-cycle-card">
+        <Confirmation
+          isClicked={isConfirmOpen}
+          date={todayString}
+          actionType={actionType}
+          onCancel={() => setIsConfirmOpen(false)}
+          onConfirmCycleAction={handleConfirmAction}
+        />
         <p className="text-caption" style={{ margin: "0 0 12px 0" }}>
           Cycle Tracking
         </p>
@@ -151,7 +168,7 @@ export const DashboardCalendar = React.memo(
         <CycleButton
           actionType={actionType}
           statusText={statusText}
-          onConfirmCycleAction={handleConfirmAction}
+          onOpenConfirm={() => setIsConfirmOpen(true)}
           date={todayString}
         />
       </div>
