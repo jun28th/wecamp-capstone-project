@@ -1,14 +1,11 @@
 import TaskService from "../services/task.service.js";
 import { defaultUser } from "../config/defaultUser.js";
 
-function resolveUserId(req) {
-  return req.user?.id ?? defaultUser.id;
-}
-
 class TaskController {
   async createTask(req, res) {
     try {
-      const newTask = await TaskService.createTask(resolveUserId(req), req.body);
+      const userId = req.user.id; // Lấy từ middleware authen
+      const newTask = await TaskService.createTask(userId, req.body);
       res.status(201).json(newTask);
     } catch (error) {
       res.status(400).json({ error: error.message });
@@ -17,10 +14,20 @@ class TaskController {
 
   async getTasks(req, res) {
     try {
-      const tasks = await TaskService.getTasksByUser(resolveUserId(req));
-      res.status(200).json(tasks);
+      const userId = req.user.id; // Giả định middleware xác thực đã gắn req.user
+      const { year, month } = req.query;
+
+      let tasks;
+      if (year && month) {
+        console.log("hello");
+        tasks = await TaskService.getTasksByMonth(userId, year, month);
+      } else {
+        tasks = await TaskService.getTasksByUser(userId);
+      }
+
+      return res.status(200).json(tasks);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      return res.status(500).json({ success: false, message: error.message });
     }
   }
 

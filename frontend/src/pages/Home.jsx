@@ -225,7 +225,7 @@ function Home() {
 
       <CycleStats stats={cycleStats} fullWidth />
 
-      <div class="card-grid cols-2">
+      <div className="card-grid cols-2">
         <div className="col-grid-1 h-full" data-od-id="home-cycle-card">
           <DashboardCalendar
             refreshSignal={refreshSignal}
