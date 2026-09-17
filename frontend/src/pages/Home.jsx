@@ -8,8 +8,6 @@ import Loading from "../components/Loading";
 import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
 import { getPhaseMessage } from "../api/cycleApi";
 import PhaseMessage from "../components/PhaseMessage";
-import GoalCard from "../components/GoalCard";
-import ProgressCard from "../components/ProgressCard";
 import { CycleStats } from "../components/cycle-calendar/CycleStats";
 import { computeCycleStats } from "../utils/cycle.utils";
 import { getCycles } from "../api/cycleApi";
