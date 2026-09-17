@@ -61,8 +61,6 @@ export const logPastCycle = async (startDate, endDate) => {
     const response = await axiosClient.post("/cycle-logs/past", {
       startDate,
       endDate,
-    }, {
-      headers: authHeader(),
     });
     return response.data;
   } catch (error) {

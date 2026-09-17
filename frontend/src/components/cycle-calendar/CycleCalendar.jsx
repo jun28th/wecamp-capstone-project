@@ -17,7 +17,7 @@ import {
   getPrediction,
   startCycle,
   endCycle,
-  logPastCycle
+  logPastCycle,
 } from "../../api/cycleApi";
 import { useToast } from "../Toast.jsx";
 
@@ -104,20 +104,26 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   }, []);
 
   // [NEW] Xử lý khi user click chọn một ngày kết thúc mới (thay vì dùng hover)
-  const handleSelectEndDate = useCallback((dateStr) => {
-    if (!tempPastStart) return;
-    const current = new Date(dateStr);
-    const start = new Date(tempPastStart);
-    const activeStart = new Date(activeStartDate);
+  const handleSelectEndDate = useCallback(
+    (dateStr) => {
+      if (!tempPastStart) return;
+      const current = new Date(dateStr);
+      const start = new Date(tempPastStart);
+      const activeStart = new Date(activeStartDate);
 
-    // Ràng buộc: EndDate phải >= StartDate và < activeStartDate (chu kỳ hiện tại)
-    if (current >= start && current < activeStart) {
-      setPreviewEndDate(dateStr);
-      setShowEndPopupForDate(dateStr); // Dời popup ra đúng ngày vừa click
-    } else {
-      showToast("End date must be on or after start date and before the next cycle.", "error");
-    }
-  }, [tempPastStart, activeStartDate, showToast]);
+      // Ràng buộc: EndDate phải >= StartDate và < activeStartDate (chu kỳ hiện tại)
+      if (current >= start && current < activeStart) {
+        setPreviewEndDate(dateStr);
+        setShowEndPopupForDate(dateStr); // Dời popup ra đúng ngày vừa click
+      } else {
+        showToast(
+          "End date must be on or after start date and before the next cycle.",
+          "error",
+        );
+      }
+    },
+    [tempPastStart, activeStartDate, showToast],
+  );
 
   // 2. Hàm xử lý Action (Đã hợp nhất START, END, INIT_PAST_START, FINISH_PAST_CYCLE)
   const handleConfirmAction = useCallback(
@@ -126,11 +132,12 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
         handleInitPastStart(date);
         return;
       }
+      console.log(date);
 
       if (actionType === "FINISH_PAST_CYCLE") {
         try {
           const result = await logPastCycle(tempPastStart, date);
-          
+
           if (result.success) {
             showToast("Past cycle logged successfully");
             setTempPastStart(null);
@@ -179,7 +186,15 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
         alert(errorMessage);
       }
     },
-    [fetchCycles, fetchPrediction, onRefreshData, activeStartDate, showToast, tempPastStart, handleInitPastStart],
+    [
+      fetchCycles,
+      fetchPrediction,
+      onRefreshData,
+      activeStartDate,
+      showToast,
+      tempPastStart,
+      handleInitPastStart,
+    ],
   );
 
   const today = new Date();
