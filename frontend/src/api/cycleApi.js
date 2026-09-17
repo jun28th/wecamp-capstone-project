@@ -66,3 +66,18 @@ export const getPhaseMessage = async () => {
     throw error; // Ném lỗi ra để component gọi API (như fetchCycles) bắt được trong catch
   }
 };
+
+export const logPastCycle = async (startDate, endDate) => {
+  try {
+    const response = await axiosClient.post("/cycle-logs/past", {
+      startDate,
+      endDate,
+    }, {
+      headers: authHeader(),
+    });
+    return response.data;
+  } catch (error) {
+    console.error("Error logging past cycle:", error);
+    throw error;
+  }
+};

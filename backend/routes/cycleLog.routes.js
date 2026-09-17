@@ -7,4 +7,5 @@ router.get("/prediction", verifyToken, cycleLogController.getPrediction); //next
 router.post("/", verifyToken, cycleLogController.startCycle); //start cycle
 router.put("/", verifyToken, cycleLogController.endCycle); //end cycle
 router.get('/phase-message', verifyToken, cycleLogController.getCurrentPhase); // get current phase
+router.post("/past", verifyToken, cycleLogController.createPastCycle); // [NEW] API log chu kỳ quá khứ (có cả startDate và endDate)
 export default router;

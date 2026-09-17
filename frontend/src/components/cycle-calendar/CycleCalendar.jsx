@@ -17,6 +17,7 @@ import {
   getPrediction,
   startCycle,
   endCycle,
+  logPastCycle
 } from "../../api/cycleApi";
 import { useToast } from "../Toast.jsx";
 
@@ -42,6 +43,11 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   const [prediction, setPrediction] = useState(null);
   const [currentDate, setCurrentDate] = useState(() => new Date());
 
+  // State cho log chu kỳ quá khứ
+  const [tempPastStart, setTempPastStart] = useState(null);
+  const [previewEndDate, setPreviewEndDate] = useState(null);
+  const [showEndPopupForDate, setShowEndPopupForDate] = useState(null);
+
   const year = currentDate.getFullYear();
   const month = currentDate.getMonth() + 1;
   const showToast = useToast();
@@ -58,8 +64,6 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
     }
   }, []);
 
-  // AC2-AC3, AC7: prediction is computed server-side; refetch whenever cycle
-  // data changes so the calendar overlay stays in sync (AC5) without a reload.
   const fetchPrediction = useCallback(async () => {
     try {
       const result = await getPrediction();
@@ -82,9 +86,67 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
     return activeCycle ? activeCycle.startDate : null;
   }, [cycleLogs]);
 
-  // 2. Hàm xử lý Action (Phân luồng gọi startCycle / endCycle)
+  // Các hàm hỗ trợ chu kỳ quá khứ
+  const handleInitPastStart = useCallback((startDateStr) => {
+    setTempPastStart(startDateStr);
+
+    const start = new Date(startDateStr);
+    const suggestedEnd = new Date(start);
+    suggestedEnd.setDate(start.getDate() + 4);
+
+    const y = suggestedEnd.getFullYear();
+    const m = String(suggestedEnd.getMonth() + 1).padStart(2, "0");
+    const d = String(suggestedEnd.getDate()).padStart(2, "0");
+    const suggestedStr = `${y}-${m}-${d}`;
+
+    setPreviewEndDate(suggestedStr);
+    setShowEndPopupForDate(suggestedStr);
+  }, []);
+
+  // [NEW] Xử lý khi user click chọn một ngày kết thúc mới (thay vì dùng hover)
+  const handleSelectEndDate = useCallback((dateStr) => {
+    if (!tempPastStart) return;
+    const current = new Date(dateStr);
+    const start = new Date(tempPastStart);
+    const activeStart = new Date(activeStartDate);
+
+    // Ràng buộc: EndDate phải >= StartDate và < activeStartDate (chu kỳ hiện tại)
+    if (current >= start && current < activeStart) {
+      setPreviewEndDate(dateStr);
+      setShowEndPopupForDate(dateStr); // Dời popup ra đúng ngày vừa click
+    } else {
+      showToast("End date must be on or after start date and before the next cycle.", "error");
+    }
+  }, [tempPastStart, activeStartDate, showToast]);
+
+  // 2. Hàm xử lý Action (Đã hợp nhất START, END, INIT_PAST_START, FINISH_PAST_CYCLE)
   const handleConfirmAction = useCallback(
     async (date, actionType) => {
+      if (actionType === "INIT_PAST_START") {
+        handleInitPastStart(date);
+        return;
+      }
+
+      if (actionType === "FINISH_PAST_CYCLE") {
+        try {
+          const result = await logPastCycle(tempPastStart, date);
+          
+          if (result.success) {
+            showToast("Past cycle logged successfully");
+            setTempPastStart(null);
+            setPreviewEndDate(null);
+            setShowEndPopupForDate(null);
+            await fetchCycles();
+            await fetchPrediction();
+            if (onRefreshData) onRefreshData();
+          }
+        } catch (error) {
+          alert(error.response?.data?.message || error.message);
+        }
+        return;
+      }
+
+      // Validate cho START / END thông thường
       const { isValid, message } = validateCycleAction(
         date,
         actionType,
@@ -92,16 +154,15 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
       );
 
       if (!isValid) {
-        showToast(message, "error"); // Hoặc dùng alert(message) nếu chưa cài Toast
-        return; // Dừng hàm, không gọi API nữa
+        showToast(message, "error");
+        return;
       }
+
       try {
         let result;
-
         if (actionType === "START") {
           result = await startCycle(date);
           showToast("Cycle logged successfully");
-          console.log(result);
         } else if (actionType === "END") {
           result = await endCycle(date);
           showToast("Cycle ended successfully");
@@ -118,7 +179,7 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
         alert(errorMessage);
       }
     },
-    [fetchCycles, fetchPrediction, onRefreshData, activeStartDate, showToast],
+    [fetchCycles, fetchPrediction, onRefreshData, activeStartDate, showToast, tempPastStart, handleInitPastStart],
   );
 
   const today = new Date();
@@ -181,6 +242,12 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
           todayString={todayString}
           activeStartDate={activeStartDate}
           onConfirmCycleAction={handleConfirmAction}
+          tempPastStart={tempPastStart}
+          setTempPastStart={setTempPastStart}
+          previewEndDate={previewEndDate}
+          onSelectEndDate={handleSelectEndDate}
+          showEndPopupForDate={showEndPopupForDate}
+          setShowEndPopupForDate={setShowEndPopupForDate}
         />
         <CalendarLegend />
         {prediction && !prediction.hasEnoughData && (

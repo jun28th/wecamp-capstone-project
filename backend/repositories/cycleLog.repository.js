@@ -1,4 +1,5 @@
 import { CycleLog } from "../models/index.js";
+import { Op } from "sequelize";
 
 class CycleLogRepository {
   async createCycleLog(data) {
@@ -51,6 +52,16 @@ class CycleLogRepository {
       where: { userId },
       order: [['startDate', 'DESC']],
       limit,
+    });
+  }
+
+  async findNextCycle(userId, date) {
+    return await CycleLog.findOne({
+      where: {
+        user_id: userId,
+        start_date: { [Op.gt]: date },
+      },
+      order: [["start_date", "ASC"]],
     });
   }
 }

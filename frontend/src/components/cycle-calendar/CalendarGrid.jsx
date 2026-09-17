@@ -9,6 +9,12 @@ export const CalendarGrid = React.memo(
     todayString,
     activeStartDate,
     onConfirmCycleAction,
+    previewEndDate,
+    onSelectEndDate,
+    showEndPopupForDate,
+    setShowEndPopupForDate,
+    tempPastStart,
+    setTempPastStart,
   }) => {
     return (
       <>
@@ -45,6 +51,12 @@ export const CalendarGrid = React.memo(
                 isPeriod={isPeriod}
                 isPredicted={isPredicted}
                 onConfirmCycleAction={onConfirmCycleAction}
+                previewEndDate={previewEndDate}
+                onSelectEndDate={onSelectEndDate}
+                showEndPopupForDate={showEndPopupForDate}
+                setShowEndPopupForDate={setShowEndPopupForDate}
+                tempPastStart={tempPastStart}
+                setTempPastStart={setTempPastStart}
               />
             );
           })}

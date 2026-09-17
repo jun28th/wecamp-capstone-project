@@ -90,6 +90,30 @@ class CycleLogController {
       return res.status(500).json({ success: false, message: error.message });
     }
   }
+
+  async createPastCycle(req, res) {
+    try {
+      const userId = req.user.id;
+      const { startDate, endDate } = req.body;
+
+      if (!startDate || !endDate) {
+        return res.status(400).json({
+          success: false,
+          message: "Thiếu thông tin startDate hoặc endDate.",
+        });
+      }
+
+      const result = await cycleLogService.createPastCycle(userId, startDate, endDate);
+
+      return res.status(200).json({
+        success: true,
+        message: "Log chu kỳ quá khứ thành công.",
+        data: result,
+      });
+    } catch (error) {
+      return res.status(400).json({ success: false, message: error.message });
+    }
+  }
 }
 
 export default new CycleLogController();
