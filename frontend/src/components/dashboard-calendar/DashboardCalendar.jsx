@@ -18,7 +18,7 @@ import {
   startCycle,
   endCycle,
 } from "../../api/cycleApi";
-
+import taskApi from "../../api/taskApi";
 export const DashboardCalendar = React.memo(
   ({ onRefreshData, refreshSignal }) => {
     const [cycleLogs, setCycleLogs] = useState([]);
@@ -53,12 +53,6 @@ export const DashboardCalendar = React.memo(
         console.error(error.response?.data?.message || error.message);
       }
     }, []);
-
-    // Gọi API lấy dữ liệu lần đầu khi Mount
-    useEffect(() => {
-      fetchCycles();
-      fetchPrediction();
-    }, [fetchCycles, fetchPrediction, refreshSignal]);
 
     // 2. Hàm xử lý Action (Phân luồng gọi startCycle / endCycle)
     const handleConfirmAction = useCallback(
@@ -96,9 +90,9 @@ export const DashboardCalendar = React.memo(
 
     const today = new Date();
     const y = today.getFullYear();
-    const m = String(today.getMonth() + 1).padStart(2, "0");
-    const d = String(today.getDate()).padStart(2, "0");
-    const todayString = `${y}-${m}-${d}`;
+    const m = today.getMonth() + 1;
+    const d = today.getDate();
+    const todayString = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
 
     const periodDaysSet = useMemo(() => {
       const daysArray = extractPeriodDays(cycleLogs);
@@ -135,6 +129,60 @@ export const DashboardCalendar = React.memo(
 
     const monthYearLabel = formatMonthYear(year, month);
 
+    // task
+    const [tasks, setTasks] = useState([]); // State lưu danh sách task trong tháng
+    const [selectedDate, setSelectedDate] = useState(null); // Ngày được click chọn xem chi tiết
+    const fetchTasks = useCallback(async () => {
+      try {
+        const result = await taskApi.getTasksByMonth(year, month);
+        setTasks(result);
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    }, [year, month]);
+
+    // Gom nhóm task theo từng ngày (dueDate) để đánh dấu chấm trên lịch
+    const { taskDaysSet, urgentDaysSet, tasksMap } = useMemo(() => {
+      const taskSet = new Set();
+      const urgentSet = new Set();
+      const map = {};
+
+      tasks.forEach((task) => {
+        const dateStr = task.dueDate; // Định dạng YYYY-MM-DD từ cột due_date
+        if (!map[dateStr]) map[dateStr] = [];
+        map[dateStr].push(task);
+
+        taskSet.add(dateStr);
+        if (task.isUrgent) {
+          urgentSet.add(dateStr);
+        }
+      });
+      return { taskDaysSet: taskSet, urgentDaysSet: urgentSet, tasksMap: map };
+    }, [tasks]);
+
+    // Xử lý khi click vào một ngày trên lịch
+    const handleDayClick = useCallback((dateString) => {
+      setSelectedDate(dateString);
+    }, []);
+
+    // Kiểm tra xem ngày đang chọn có thuộc chu kỳ kinh nguyệt hay không
+    const isSelectedPeriodDay = useMemo(() => {
+      return selectedDate ? periodDaysSet.has(selectedDate) : false;
+    }, [selectedDate, periodDaysSet]);
+
+    // Lấy danh sách task của đúng ngày đang chọn
+    const tasksForSelectedDate = useMemo(() => {
+      return selectedDate && tasksMap[selectedDate]
+        ? tasksMap[selectedDate]
+        : [];
+    }, [selectedDate, tasksMap]);
+
+    // Gọi API lấy dữ liệu lần đầu khi Mount
+    useEffect(() => {
+      fetchCycles();
+      fetchPrediction();
+      fetchTasks();
+    }, [fetchCycles, fetchPrediction, fetchTasks, refreshSignal]);
     return (
       <div className="card card-today" data-od-id="home-cycle-card">
         <Confirmation
@@ -157,13 +205,23 @@ export const DashboardCalendar = React.memo(
           }}
         >
           <CalendarHeader monthYearLabel={monthYearLabel} />
+          {/* Truyền dữ liệu task và sự kiện click vào CalendarGrid */}
           <CalendarGrid
             days={days}
             periodDaysSet={periodDaysSet}
             todayString={todayString}
+            taskDaysSet={taskDaysSet}
+            urgentDaysSet={urgentDaysSet}
+            onDayClick={handleDayClick}
           />
           <CalendarLegend />
-          <DayDetail />
+          {console.log(Boolean(selectedDate))}
+          <DayDetail
+            isShow={Boolean(selectedDate)}
+            selectedDate={selectedDate}
+            isPeriodDay={isSelectedPeriodDay}
+            tasksForDate={tasksForSelectedDate}
+          />
         </div>
         <CycleButton
           actionType={actionType}

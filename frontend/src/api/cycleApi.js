@@ -1,13 +1,8 @@
 import axiosClient from "./axiosClient"; // Giữ nguyên path import của bạn
-function authHeader() {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+
 export const getCycles = async () => {
   try {
-    const response = await axiosClient.get("/cycle-logs", {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.get("/cycle-logs");
     return response.data;
   } catch (error) {
     console.error("Error fetching cycles:", error);
@@ -20,7 +15,6 @@ export const startCycle = async (date) => {
     const response = await axiosClient.post(
       "/cycle-logs",
       { date },
-      { headers: authHeader() }, // Bổ sung authHeader
     );
     return response.data;
   } catch (error) {
@@ -31,9 +25,7 @@ export const startCycle = async (date) => {
 
 export const getPrediction = async () => {
   try {
-    const response = await axiosClient.get("/cycle-logs/prediction", {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.get("/cycle-logs/prediction");
     return response.data;
   } catch (error) {
     console.error("Error fetching cycle prediction:", error);
@@ -46,7 +38,6 @@ export const endCycle = async (date) => {
     const response = await axiosClient.put(
       "/cycle-logs",
       { date },
-      { headers: authHeader() }, // Bổ sung authHeader
     );
     return response.data;
   } catch (error) {
@@ -57,9 +48,7 @@ export const endCycle = async (date) => {
 
 export const getPhaseMessage = async () => {
   try {
-    const response = await axiosClient.get("/cycle-logs/phase-message", {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.get("/cycle-logs/phase-message");
     return response.data;
   } catch (error) {
     console.error("Error fetching cycles:", error);

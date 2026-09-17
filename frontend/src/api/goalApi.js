@@ -7,7 +7,10 @@ const goalApi = {
   },
 
   async setTodayGoal(rewardText) {
-    const response = await axiosClient.put("/goals/today", { rewardText });
+    const response = await axiosClient.put(
+      "/goals/today",
+      { rewardText },
+    );
     return response.data;
   },
 

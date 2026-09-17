@@ -20,7 +20,7 @@ export default function Confirmation({
         <div className="popover-actions">
           <button
             className="btn-secondary"
-            id="popover-cancel"u
+            id="popover-cancel"
             onClick={onCancel}
           >
             Cancel

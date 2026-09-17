@@ -1,5 +1,6 @@
 import jwt from "jsonwebtoken";
 import User from "../models/User.js";
+import AppError from "../utils/AppError.js";
 
 const JWT_SECRET = process.env.JWT_SECRET || "your_jwt_secret";
 
@@ -14,30 +15,12 @@ export const verifyToken = async (req, res, next) => {
     const authHeader = req.headers["authorization"];
 
     if (!authHeader || !authHeader.startsWith("Bearer ")) {
-      return res.status(401).json({
-        success: false,
-        message: "Không tìm thấy token xác thực",
-      });
+      throw new AppError("Không tìm thấy token xác thực", 401);
     }
 
     const token = authHeader.split(" ")[1];
 
-    let decoded;
-
-    try {
-      decoded = jwt.verify(token, JWT_SECRET);
-    } catch (err) {
-      if (err.name === "TokenExpiredError") {
-        return res.status(401).json({
-          success: false,
-          message: "Token đã hết hạn",
-        });
-      }
-      return res.status(401).json({
-        success: false,
-        message: "Token không hợp lệ",
-      });
-    }
+    const decoded = jwt.verify(token, JWT_SECRET);
 
     // decoded thường có dạng { id: user.id, ... } tùy vào lúc bạn sign token
     const user = await User.findByPk(decoded.id, {
@@ -45,20 +28,13 @@ export const verifyToken = async (req, res, next) => {
     });
 
     if (!user) {
-      return res.status(401).json({
-        success: false,
-        message: "Người dùng không tồn tại",
-      });
+      throw new AppError("Người dùng không tồn tại", 401);
     }
 
     req.user = user; // gắn user (instance Sequelize) vào request
     next();
   } catch (error) {
-    console.error("Lỗi xác thực:", error);
-    return res.status(500).json({
-      success: false,
-      message: "Lỗi server khi xác thực",
-    });
+    next(error);
   }
 };
 
@@ -69,21 +45,19 @@ export const verifyToken = async (req, res, next) => {
  */
 export const authorize = (...allowedRoles) => {
   return (req, res, next) => {
-    if (!req.user) {
-      return res.status(401).json({
-        success: false,
-        message: "Chưa xác thực người dùng",
-      });
-    }
+    try {
+      if (!req.user) {
+        throw new AppError("Chưa xác thực người dùng", 401);
+      }
 
-    if (!allowedRoles.includes(req.user.role)) {
-      return res.status(403).json({
-        success: false,
-        message: "Bạn không có quyền truy cập tài nguyên này",
-      });
-    }
+      if (!allowedRoles.includes(req.user.role)) {
+        throw new AppError("Bạn không có quyền truy cập tài nguyên này", 403);
+      }
 
-    next();
+      next();
+    } catch (error) {
+      next(error);
+    }
   };
 };
 

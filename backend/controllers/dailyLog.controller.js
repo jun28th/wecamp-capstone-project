@@ -1,47 +1,41 @@
+// controllers/dailyLog.controller.js
 import DailyLogService from "../services/dailyLog.service.js";
 
 class DailyLogController {
-  async getTodayLog(req, res) {
-    const userId = req.user.id;
+  async getTodayLog(req, res, next) {
     try {
+      const userId = req.user.id;
       const todayLog = await DailyLogService.getTodayLog(userId);
       res.status(200).json(todayLog);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
-  async createLog(req, res) {
-    const userId = req.user.id;
+
+  async createLog(req, res, next) {
     try {
+      const userId = req.user.id;
       const newLog = await DailyLogService.createLog(userId, req.body);
       res.status(201).json(newLog);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
-  async updateLog(req, res) {
-    const userId = req.user.id;
+
+  async updateLog(req, res, next) {
     try {
+      const userId = req.user.id;
       const updatedLog = await DailyLogService.updateLog(userId, req.body);
       res.status(200).json(updatedLog);
     } catch (error) {
-      if (
-        error.message === "This log has been finalized and cannot be edited"
-      ) {
-        return res.status(403).json({ error: error.message });
-      }
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
-  async getMoodTrend(req, res) {
-    const userId = req.user.id;
-    const { startDate, endDate } = req.query;
+
+  async getMoodTrend(req, res, next) {
     try {
-      if (!startDate || !endDate) {
-        return res
-          .status(400)
-          .json({ message: "startDate or endDate is missing!" });
-      }
+      const userId = req.user.id;
+      const { startDate, endDate } = req.query;
       const moodTrend = await DailyLogService.getMoodTrend(
         userId,
         startDate,
@@ -49,7 +43,7 @@ class DailyLogController {
       );
       res.status(200).json(moodTrend);
     } catch (error) {
-      res.status(500).json({ error: error.message });
+      next(error);
     }
   }
 }

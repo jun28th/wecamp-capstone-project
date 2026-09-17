@@ -6,6 +6,13 @@ const taskApi = {
     return response.data;
   },
 
+  async getTasksByMonth(year, month) {
+    const response = await axiosClient.get("/tasks", {
+      params: { year, month },
+    });
+    return response.data;
+  },
+
   async createTask(data) {
     const response = await axiosClient.post("/tasks", data);
     return response.data;
@@ -21,7 +28,10 @@ const taskApi = {
   },
 
   async toggleComplete(id, isCompleted) {
-    const response = await axiosClient.patch(`/tasks/${id}/complete`, { isCompleted });
+    const response = await axiosClient.patch(
+      `/tasks/${id}/complete`,
+      { isCompleted }
+    );
     return response.data;
   },
 };

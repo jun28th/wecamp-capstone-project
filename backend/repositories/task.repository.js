@@ -1,4 +1,5 @@
 import { Task } from "../models/index.js";
+import { Op } from "sequelize";
 
 class TaskRepository {
   async createTask(data) {
@@ -32,6 +33,18 @@ class TaskRepository {
   // Hard delete - tasks no longer has deleted_at
   async deleteTask(id) {
     return await Task.destroy({ where: { id } });
+  }
+
+  async findAllByUserAndMonth(userId, startDate, endDate) {
+    return await Task.findAll({
+      where: {
+        user_id: userId,
+        due_date: {
+          [Op.between]: [startDate, endDate],
+        },
+      },
+      order: [["due_date", "ASC"]],
+    });
   }
 }
 

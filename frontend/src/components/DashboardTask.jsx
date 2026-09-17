@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useEffect, useState, useRef } from "react";
 import { useTasks } from "../hooks/useTasks";
 import { useGoal } from "../hooks/useGoal";
 import ProgressCard from "./ProgressCard";
@@ -8,13 +8,16 @@ import TaskForm from "./TaskForm";
 import Button from "./Button";
 import ToDoCheckbox from "./ToDoCheckbox";
 import Card from "./Card";
+import CelebrationModal from "./CelebrationModal";
 
 function DashboardTask() {
   const { tasks, progress, addTask, toggleComplete } = useTasks();
   const [editingTask, setEditingTask] = useState(null);
+  const [celebrationOpen, setCelebrationOpen] = useState(false);
   const { goal, saveGoal, removeGoal } = useGoal();
   const [formOpen, setFormOpen] = useState(false);
   const unlocked = progress.pct === 100;
+  const previousPctRef = useRef(null);
 
   function openCreateForm() {
     setEditingTask(null);
@@ -32,6 +35,17 @@ function DashboardTask() {
     window.location.href = "/to-do";
   };
   const visibleTasks = tasks.slice(0, 5);
+  useEffect(() => {
+    if (
+      goal &&
+      unlocked &&
+      previousPctRef.current !== null &&
+      previousPctRef.current < 100
+    ) {
+      setCelebrationOpen(true);
+    }
+    previousPctRef.current = progress.pct;
+  }, [progress.pct, unlocked, goal]);
   return (
     <div className="flex-col space-y-2">
       <GoalCard
@@ -104,6 +118,11 @@ function DashboardTask() {
           onCancel={() => setFormOpen(false)}
         />
       </Modal>
+      <CelebrationModal
+        open={celebrationOpen}
+        rewardText={goal?.rewardText}
+        onClose={() => setCelebrationOpen(false)}
+      />
     </div>
   );
 }

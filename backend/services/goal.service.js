@@ -1,4 +1,5 @@
 import DailyRewardRepository from "../repositories/dailyReward.repository.js";
+import AppError from "../utils/AppError.js";
 
 function todayDateOnly() {
   return new Date().toISOString().slice(0, 10);
@@ -11,7 +12,7 @@ class GoalService {
 
   async setTodayGoal(userId, rewardText) {
     if (!rewardText || !rewardText.trim()) {
-      throw new Error("rewardText is required");
+      throw new AppError("rewardText is required", 400);
     }
 
     const today = todayDateOnly();
@@ -29,7 +30,7 @@ class GoalService {
   async deleteTodayGoal(userId) {
     const existing = await DailyRewardRepository.findByUserAndDate(userId, todayDateOnly());
     if (!existing) {
-      throw new Error("Goal not found");
+      throw new AppError("Goal not found", 404);
     }
     return await DailyRewardRepository.deleteDailyReward(existing.id);
   }
