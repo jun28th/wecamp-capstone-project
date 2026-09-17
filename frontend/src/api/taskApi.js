@@ -1,51 +1,36 @@
 import axiosClient from "./axiosClient.js";
-function authHeader() {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+
 const taskApi = {
   async getTasks() {
-    const response = await axiosClient.get("/tasks", {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.get("/tasks");
     return response.data;
   },
 
   async getTasksByMonth(year, month) {
     const response = await axiosClient.get("/tasks", {
       params: { year, month },
-      headers: authHeader(), // Gom headers vào chung một object config
     });
     return response.data;
   },
 
   async createTask(data) {
-    const response = await axiosClient.post("/tasks", data, {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.post("/tasks", data);
     return response.data;
   },
 
   async updateTask(id, data) {
-    const response = await axiosClient.put(`/tasks/${id}`, data, {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.put(`/tasks/${id}`, data);
     return response.data;
   },
 
   async deleteTask(id) {
-    await axiosClient.delete(`/tasks/${id}`, {
-      headers: authHeader(),
-    });
+    await axiosClient.delete(`/tasks/${id}`);
   },
 
   async toggleComplete(id, isCompleted) {
     const response = await axiosClient.patch(
       `/tasks/${id}/complete`,
-      { isCompleted },
-      {
-        headers: authHeader(),
-      },
+      { isCompleted }
     );
     return response.data;
   },

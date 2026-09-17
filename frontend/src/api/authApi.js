@@ -1,10 +1,5 @@
 import axiosClient from "./axiosClient";
 
-function authHeader() {
-    const token = localStorage.getItem("token");
-    return token ? { Authorization: `Bearer ${token}` } : {};
-  }
-
 const authApi = {
     async SignUp(data) {
         const response = await axiosClient.post("/auth/sign-up", data);
@@ -17,9 +12,7 @@ const authApi = {
     },
 
     async Profile() {
-        const response = await axiosClient.get("/auth/profile", {
-            headers: authHeader(),
-        });
+        const response = await axiosClient.get("/auth/profile");
         return response.data;
     }
 }

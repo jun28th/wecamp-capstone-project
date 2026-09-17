@@ -1,6 +1,7 @@
 import bcrypt from "bcrypt";
 import jwt from "jsonwebtoken";
 import UserRepository from "../repositories/user.repository.js";
+import AppError from "../utils/AppError.js";
 
 const SALT_ROUNDS = 10;
 
@@ -10,7 +11,7 @@ class AuthService {
 
         const existingUser = await UserRepository.findByEmail(email);
         if (existingUser) {
-            throw new Error("Email already registered");
+            throw new AppError("Email already registered", 409);
         }
 
         const passwordHash = await bcrypt.hash(password, SALT_ROUNDS);
@@ -42,12 +43,12 @@ class AuthService {
 
         const user = await UserRepository.findByEmail(email);
         if (!user) {
-            throw new Error("Invalid credentials");
+            throw new AppError("Invalid credentials", 401);
         }
 
         const isMatch = await bcrypt.compare(password, user.passwordHash);
         if (!isMatch) {
-            throw new Error("Invalid credentials");
+            throw new AppError("Invalid credentials", 401);
         }
 
         const token = jwt.sign(

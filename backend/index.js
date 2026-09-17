@@ -8,6 +8,7 @@ import taskRoutes from "./routes/task.routes.js";
 import goalRoutes from "./routes/goal.routes.js";
 import cycleLogRoute from "./routes/cycleLog.routes.js"
 import authRoutes from "./routes/auth.routes.js";
+import { notFound, errorHandler } from "./middlewares/error.middleware.js";
 
 const app = express();
 app.use(cors());
@@ -36,6 +37,9 @@ app.get("/api", (req, res) => {
 // app.use('/api/items', itemRoutes);
 
 // app.use(errorHandler);
+app.use(notFound);
+app.use(errorHandler);
+
 const PORT = process.env.PORT || 3000;
 
 async function startServer() {
