@@ -12,10 +12,7 @@ export const getCycles = async () => {
 
 export const startCycle = async (date) => {
   try {
-    const response = await axiosClient.post(
-      "/cycle-logs",
-      { date },
-    );
+    const response = await axiosClient.post("/cycle-logs", { date });
     return response.data;
   } catch (error) {
     console.error("Error starting cycle:", error);
@@ -35,10 +32,7 @@ export const getPrediction = async () => {
 
 export const endCycle = async (date) => {
   try {
-    const response = await axiosClient.put(
-      "/cycle-logs",
-      { date },
-    );
+    const response = await axiosClient.put("/cycle-logs", { date });
     return response.data;
   } catch (error) {
     console.error("Error ending cycle:", error);

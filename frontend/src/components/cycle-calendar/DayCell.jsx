@@ -14,7 +14,7 @@ export const DayCell = React.memo(
     showEndPopupForDate,
     setShowEndPopupForDate,
     tempPastStart,
-    setTempPastStart
+    setTempPastStart,
   }) => {
     const [showConfirm, setShowConfirm] = useState(false);
     if (dayData.isEmpty || !dayData.dateString) {
@@ -29,7 +29,7 @@ export const DayCell = React.memo(
     if (isToday) className.push("today");
     if (isPeriod) className.push("period");
     if (isPredicted) className.push("predicted");
-    // if (showConfirm) className.push("active-hover");
+    if (showConfirm) className.push("active-hover");
 
     // const actionType = activeStartDate ? "END" : "START";
 
@@ -59,11 +59,18 @@ export const DayCell = React.memo(
     if (isInPreviewRange && !isPeriod) className.push("period-preview");
     if (isInvalidHover && tempPastStart) className.push("invalid-hover");
 
-    // Xác định actionType: 
+    // Xác định actionType:
     // Nếu chưa có activeStartDate -> START bình thường.
     // Nếu đã có activeStartDate (ví dụ ngày 13) -> Các ngày đứng trước ngày 13 mà chưa có chu kỳ sẽ là hành động START cho chu kỳ quá khứ.
-    const isBeforeActiveStart = activeStartDate ? dateStr < activeStartDate : true;
-    const actionType = !isPeriod && isBeforeActiveStart && !activeStartDate ? "START" : (activeStartDate && !isPeriod && dateStr < activeStartDate ? "START_PAST" : "END");
+    const isBeforeActiveStart = activeStartDate
+      ? dateStr < activeStartDate
+      : true;
+    const actionType =
+      !isPeriod && isBeforeActiveStart && !activeStartDate
+        ? "START"
+        : activeStartDate && !isPeriod && dateStr < activeStartDate
+          ? "START_PAST"
+          : "END";
 
     // [NEW] Kiểm tra xem có đang mở popup confirm end date tự động tại ngày start + 4 không
     const showThisEndPopup = showEndPopupForDate === dateStr;
@@ -97,7 +104,10 @@ export const DayCell = React.memo(
             isHover={showConfirm}
             onCancel={() => setShowConfirm(false)}
             onConfirmCycleAction={(date, type) => {
-              if (type === "START_PAST" || (activeStartDate && date < activeStartDate)) {
+              if (
+                type === "START_PAST" ||
+                (activeStartDate && date < activeStartDate)
+              ) {
                 // Trigger quá trình chọn chu kỳ quá khứ
                 onConfirmCycleAction(date, "INIT_PAST_START");
               } else {
@@ -118,7 +128,10 @@ export const DayCell = React.memo(
               setTempPastStart(null);
             }}
             onConfirmCycleAction={() => {
-              onConfirmCycleAction(previewEndDate || dateStr, "FINISH_PAST_CYCLE");
+              onConfirmCycleAction(
+                previewEndDate || dateStr,
+                "FINISH_PAST_CYCLE",
+              );
               setShowEndPopupForDate(null);
             }}
             date={dateStr}
