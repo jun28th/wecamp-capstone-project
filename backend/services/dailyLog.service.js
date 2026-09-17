@@ -1,4 +1,5 @@
 import DailyLogRepository from "../repositories/dailyLog.repository.js";
+import AppError from "../utils/AppError.js";
 
 function getVietnamDateString(date = new Date()) {
   // en-CA format cho ra chuỗi "YYYY-MM-DD" sẵn
@@ -19,7 +20,7 @@ class DailyLogService {
     const { mood, note } = data;
 
     if (mood == null && note == null) {
-      throw new Error("mood or note is required");
+      throw new AppError("mood or note is required", 400);
     }
 
     const payload = { userId, logDate: today };
@@ -37,10 +38,13 @@ class DailyLogService {
       today,
     );
     if (!existingLog) {
-      throw new Error("Today's log does not exist");
+      throw new AppError("Today's log does not exist", 404);
     }
     if (existingLog.isFinalized) {
-      throw new Error("This log has been finalized and cannot be edited");
+      throw new AppError(
+        "This log has been finalized and cannot be edited",
+        403,
+      );
     }
 
     const updates = {};
@@ -52,6 +56,9 @@ class DailyLogService {
   }
 
   async getMoodTrend(userId, startDate, endDate) {
+    if (!startDate || !endDate) {
+      throw new AppError("startDate or endDate is missing!", 400);
+    }
     const logs = await DailyLogRepository.findByUserRange(
       userId,
       startDate,

@@ -1,13 +1,8 @@
 import axiosClient from "./axiosClient.js";
-function authHeader() {
-  const token = localStorage.getItem("token");
-  return token ? { Authorization: `Bearer ${token}` } : {};
-}
+
 const goalApi = {
   async getTodayGoal() {
-    const response = await axiosClient.get("/goals/today", {
-      headers: authHeader(),
-    });
+    const response = await axiosClient.get("/goals/today");
     return response.data;
   },
 
@@ -15,17 +10,12 @@ const goalApi = {
     const response = await axiosClient.put(
       "/goals/today",
       { rewardText },
-      {
-        headers: authHeader(),
-      },
     );
     return response.data;
   },
 
   async deleteTodayGoal() {
-    await axiosClient.delete("/goals/today", {
-      headers: authHeader(),
-    });
+    await axiosClient.delete("/goals/today");
   },
 };
 
