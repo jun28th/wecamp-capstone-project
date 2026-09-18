@@ -1,51 +1,34 @@
-import { useEffect, useState, useRef } from "react";
 import { useTasks } from "../hooks/useTasks";
 import { useGoal } from "../hooks/useGoal";
-import ProgressCard from "./ProgressCard";
-import GoalCard from "./GoalCard";
+import ProgressCard from "./feature/ToDo/ProgressCard";
+import GoalCard from "./feature/ToDo/GoalCard";
 import Modal from "./Modal";
-import TaskForm from "./TaskForm";
-import Button from "./Button";
-import ToDoCheckbox from "./ToDoCheckbox";
-import Card from "./Card";
-import CelebrationModal from "./CelebrationModal";
+import TaskForm from "./feature/ToDo/TaskForm";
+import Button from "./common/Button";
+import ToDoCheckbox from "./common/ToDoCheckbox";
+import Card from "./common/Card";
+import CelebrationModal from "./feature/ToDo/CelebrationModal";
+import { useCelebration } from "../hooks/useCelebration";
+import { useTaskModals } from "../hooks/useTaskModals";
+import { useNavigate } from "react-router-dom";
 
 function DashboardTask() {
-  const { tasks, progress, addTask, toggleComplete } = useTasks();
-  const [editingTask, setEditingTask] = useState(null);
-  const [celebrationOpen, setCelebrationOpen] = useState(false);
+  const navigate = useNavigate();
+  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
+    useTasks();
+
   const { goal, saveGoal, removeGoal } = useGoal();
-  const [formOpen, setFormOpen] = useState(false);
+  const [celebrationOpen, setCelebrationOpen] = useCelebration(
+    progress.pct,
+    Boolean(goal),
+  );
+
   const unlocked = progress.pct === 100;
-  const previousPctRef = useRef(null);
 
-  function openCreateForm() {
-    setEditingTask(null);
-    setFormOpen(true);
-  }
+  const { formOpen, editingTask, openCreateForm, closeForm, handleSave } =
+    useTaskModals({ addTask, editTask, removeTask });
 
-  async function handleSave(data) {
-    const success = await addTask(data);
-    if (success) {
-      setFormOpen(false);
-      setEditingTask(null);
-    }
-  }
-  const viewAll = () => {
-    window.location.href = "/to-do";
-  };
   const visibleTasks = tasks.slice(0, 5);
-  useEffect(() => {
-    if (
-      goal &&
-      unlocked &&
-      previousPctRef.current !== null &&
-      previousPctRef.current < 100
-    ) {
-      setCelebrationOpen(true);
-    }
-    previousPctRef.current = progress.pct;
-  }, [progress.pct, unlocked, goal]);
   return (
     <div className="flex-col space-y-2">
       <GoalCard
@@ -102,20 +85,16 @@ function DashboardTask() {
               );
             })}
           </div>
-          <Button variant="text" onClick={viewAll}>
+          <Button variant="text" onClick={() => navigate("/to-do")}>
             View all →
           </Button>
         </Card>
       </section>
-      <Modal
-        open={formOpen}
-        title="Add New Task"
-        onCancel={() => setFormOpen(false)}
-      >
+      <Modal open={formOpen} title="Add New Task" onCancel={closeForm}>
         <TaskForm
           initialTask={editingTask}
           onSave={handleSave}
-          onCancel={() => setFormOpen(false)}
+          onCancel={closeForm}
         />
       </Modal>
       <CelebrationModal

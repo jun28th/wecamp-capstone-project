@@ -63,3 +63,11 @@ export const getDayCount = (startStr, endStr) => {
   const diffDays = Math.round(diffMs / (1000 * 60 * 60 * 24)) + 1; // +1 để tính cả ngày bắt đầu
   return diffDays;
 };
+
+export const todayEyebrow = () => {
+  return new Date().toLocaleDateString("en-US", {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+  });
+}
