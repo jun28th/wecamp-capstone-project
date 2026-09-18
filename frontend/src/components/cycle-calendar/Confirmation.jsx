@@ -9,12 +9,16 @@ export default function Confirmation({
 }) {
   if (!isHover) return null;
   const msg =
-    actionType == "START"
+    actionType == "START" || actionType == "START_PAST"
       ? `Mark ${formatStringDateToMonthDay(date)} as cycle start?`
       : `Mark ${formatStringDateToMonthDay(date)} as cycle end?`;
   console.log(actionType);
   return (
-    <div id="confirm-popover" className="popover">
+    <div
+      id="confirm-popover"
+      className="popover"
+      onClick={(e) => e.stopPropagation()}
+    >
       <div className="popover-content">
         <p id="popover-message">{msg}</p>
         <div className="popover-actions">

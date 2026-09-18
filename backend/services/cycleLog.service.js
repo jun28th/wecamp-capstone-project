@@ -218,6 +218,31 @@ class CycleLogService {
       periodLength,
     );
   }
+  async createPastCycle(userId, startDate, endDate) {
+    // 1. Kiểm tra ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu của chính chu kỳ đó
+    if (new Date(endDate) < new Date(startDate)) {
+      throw new Error("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu.");
+    }
+
+    // 2. Tìm chu kỳ tiếp theo (ví dụ chu kỳ đang mở có startDate = 13)
+    const nextCycle = await cycleLogRepository.findNextCycle(userId, startDate);
+
+    // 3. Ràng buộc: endDate của chu kỳ quá khứ (n-1) phải nhỏ hơn startDate của chu kỳ kế tiếp (n)
+    if (nextCycle && new Date(endDate) >= new Date(nextCycle.startDate)) {
+      throw new Error("Ngày kết thúc của chu kỳ quá khứ phải nhỏ hơn ngày bắt đầu của chu kỳ tiếp theo.");
+    }
+
+    // 4. Tạo mới chu kỳ quá khứ với đầy đủ start và end date
+    const result = await cycleLogRepository.createCycleLog({
+      userId,
+      startDate,
+      endDate,
+    });
+
+    // 5. Tính toán lại dự đoán thống kê
+    await this.recalculatePrediction(userId);
+    return result;
+  }
 }
 
 export default new CycleLogService();
