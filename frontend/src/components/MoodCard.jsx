@@ -1,8 +1,7 @@
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Button from "./common/Button";
 import Loading from "./common/Loading";
-import dailyLogApi from "../api/dailyLogApi";
-import { useToast } from "../contexts/toastContext";
+import { useTodayMood } from "../hooks/useTodayMood";
 
 const MOOD_TYPES = [
   { moodNumber: 1, moodLabel: "very-bad", title: "Very Bad", icon: "😢" },
@@ -14,82 +13,31 @@ const MOOD_TYPES = [
 
 const NOTE_MAX_LENGTH = 60;
 
-export default function MoodCard({ dashBoard }) {
-  const showToast = useToast();
-  const [selectedMood, setSelectedMood] = useState(null);
-  const [note, setNote] = useState("");
-  const [finalize, setFinalize] = useState(false);
+export default function MoodCard({ dashboard = false }) {
+  const {
+    selectedMood,
+    note,
+    setNote,
+    finalize,
+    initialLoading,
+    saving,
+    selectMood,
+    saveMood,
+  } = useTodayMood();
   const [hoveredMood, setHoveredMood] = useState(null);
-  const [loading, setLoading] = useState(false);
-
-  useEffect(() => {
-    let cancelled = false;
-
-    const fetchTodayMood = async () => {
-      try {
-        setLoading(true);
-        const log = await dailyLogApi.getTodayLog();
-        if (cancelled) return;
-        if (log === null) {
-          console.log("There are no logs today.");
-          setLoading(false);
-          return;
-        }
-        const { mood, note: savedNote } = log;
-        if (mood) {
-          setSelectedMood(mood);
-        }
-        if (savedNote) {
-          setNote(savedNote);
-        }
-        setFinalize(true);
-      } catch (err) {
-        console.error("Failed to load today's mood:", err);
-      } finally {
-        setLoading(false);
-      }
-    };
-    fetchTodayMood();
-
-    return () => {
-      cancelled = true;
-    };
-  }, []);
-
-  const handleMoodSelect = (moodNumber) => {
-    if (finalize) return;
-    setSelectedMood(moodNumber);
-  };
-
-  const handleSave = async () => {
-    if (selectedMood===null){
-      showToast("Mood isn't chosen yet.", "error")
-      return
-    }
-    try {
-      setLoading(true);
-      await dailyLogApi.createLog({ mood: selectedMood, note });
-      setFinalize(true);
-    } catch (error) {
-      console.error("Failed to save mood:", error);
-      showToast("Unable to save mood; please try again.", "error")
-    } finally {
-      setLoading(false);
-    }
-  };
 
   const hasSavedNote = finalize && note.trim() !== "";
 
-  if (loading) {
+  if (initialLoading) {
     return <Loading />;
   }
 
   return (
     <div
-      className={`card mx-auto mb-5 ${!dashBoard && "max-w-[640px]"}`}
+      className={`card mx-auto mb-5 ${dashboard ? "" : "max-w-[640px]"}`}
       data-od-id="mood-tracker-card"
     >
-      <div className={`${dashBoard && "max-w-[480px] mx-auto"}`}>
+      <div className={dashboard ? "max-w-[480px] mx-auto" : ""}>
         <h3 className="m-0 mb-4 text-base font-semibold">
           How are you feeling today?
         </h3>
@@ -100,12 +48,8 @@ export default function MoodCard({ dashBoard }) {
         >
           {MOOD_TYPES.map((mood) => {
             const isSelected = selectedMood === mood.moodNumber;
-
-            const canShowTooltipOnThis = selectedMood ? isSelected : true;
             const isTooltipVisible =
-              hasSavedNote &&
-              canShowTooltipOnThis &&
-              hoveredMood === mood.moodNumber;
+              hasSavedNote && isSelected && hoveredMood === mood.moodNumber;
 
             return (
               <div
@@ -136,40 +80,38 @@ export default function MoodCard({ dashBoard }) {
                   </div>
                 )}
 
-                <div
-                  onClick={() => handleMoodSelect(mood.moodNumber)}
+                <button
+                  type="button"
+                  onClick={() => selectMood(mood.moodNumber)}
                   data-mood={mood.moodLabel}
                   title={mood.title}
+                  aria-pressed={isSelected}
+                  aria-label={mood.title}
+                  disabled={finalize}
                   className={`
-          flex h-12 w-12 shrink-0 items-center justify-center
-          rounded-full border-2
-          transition-all duration-150 ease-out
-
-          ${
-            isSelected
-              ? `
-                border-[var(--color-primary-deep)]
-                bg-[var(--color-primary-tint)]
-                shadow-[0_0_0_2px_var(--color-primary-tint)]
-              `
-              : "border-transparent"
-          }
-
-          ${
-            finalize
-              ? "cursor-not-allowed opacity-40"
-              : "cursor-pointer hover:bg-[var(--color-primary-tint)] hover:scale-110"
-          }
-
-          ${isSelected && finalize ? "opacity-100" : ""}
-        `}
+                    flex h-12 w-12 shrink-0 items-center justify-center
+                    rounded-full border-2
+                    transition-all duration-150 ease-out
+                    ${
+                      isSelected
+                        ? "border-[var(--color-primary-deep)] bg-[var(--color-primary-tint)] shadow-[0_0_0_2px_var(--color-primary-tint)]"
+                        : "border-transparent"
+                    }
+                    ${
+                      finalize
+                        ? "cursor-not-allowed opacity-40"
+                        : "cursor-pointer hover:bg-[var(--color-primary-tint)] hover:scale-110"
+                    }
+                    ${isSelected && finalize ? "opacity-100" : ""}
+                  `}
                 >
                   <span className="text-[32px]">{mood.icon}</span>
-                </div>
+                </button>
               </div>
             );
           })}
         </div>
+
         <div className="mt-4">
           <label
             htmlFor="mood-note"
@@ -182,21 +124,19 @@ export default function MoodCard({ dashBoard }) {
             id="mood-note"
             placeholder="How are you feeling? Any symptoms or notes..."
             className={`
-      w-full min-h-20
-      rounded-[var(--radius-input)]
-      border-[1.5px] border-[var(--border)]
-      p-3
-      font-[var(--font-body)]
-      text-sm
-      resize-y
-      outline-none
-      focus:border-[var(--color-primary-deep)]
-    ${finalize ? "cursor-not-allowed opacity-60 bg-[var(--bg-muted,#f5f5f5)]" : ""}`}
+              w-full min-h-20
+              rounded-[var(--radius-input)]
+              border-[1.5px] border-[var(--border)]
+              p-3 font-[var(--font-body)] text-sm resize-y outline-none
+              focus:border-[var(--color-primary-deep)]
+              ${finalize ? "cursor-not-allowed opacity-60 bg-[var(--bg-muted,#f5f5f5)]" : ""}
+            `}
             readOnly={finalize}
             maxLength={NOTE_MAX_LENGTH}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
+
           <div className="flex mb-2 items-center justify-end">
             <span
               className={`text-xs ${
@@ -208,9 +148,15 @@ export default function MoodCard({ dashBoard }) {
               {note.length}/{NOTE_MAX_LENGTH}
             </span>
           </div>
+
           {!finalize ? (
-            <Button id="save-mood-btn" className="w-full" onClick={handleSave}>
-              Save
+            <Button
+              id="save-mood-btn"
+              className="w-full"
+              onClick={saveMood}
+              disabled={saving}
+            >
+              {saving ? "Saving..." : "Save"}
             </Button>
           ) : (
             <p
