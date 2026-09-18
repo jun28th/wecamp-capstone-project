@@ -1,10 +1,10 @@
 import { useRef, useEffect, useState, useMemo, useCallback } from "react";
 import { toPng } from "html-to-image";
-import Button from "../components/Button";
+import Button from "../components/common/Button";
 import MoodCard from "../components/MoodCard";
-import Card from "../components/Card";
+import Card from "../components/common/Card";
 import dailyLogApi from "../api/dailyLogApi";
-import Loading from "../components/Loading";
+import Loading from "../components/common/Loading";
 import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
 import { getPhaseMessage } from "../api/cycleApi";
 import PhaseMessage from "../components/PhaseMessage";

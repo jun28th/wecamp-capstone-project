@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from "react";
-import Button from "./Button";
-import Loading from "./Loading";
+import { useEffect, useState } from "react";
+import Button from "./common/Button";
+import Loading from "./common/Loading";
 import dailyLogApi from "../api/dailyLogApi";
+import { useToast } from "../contexts/toastContext";
 
 const MOOD_TYPES = [
   { moodNumber: 1, moodLabel: "very-bad", title: "Very Bad", icon: "😢" },
@@ -14,10 +15,10 @@ const MOOD_TYPES = [
 const NOTE_MAX_LENGTH = 60;
 
 export default function MoodCard({ dashBoard }) {
+  const showToast = useToast();
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState("");
   const [finalize, setFinalize] = useState(false);
-  const [error, setError] = useState(null);
   const [hoveredMood, setHoveredMood] = useState(null);
   const [loading, setLoading] = useState(false);
 
@@ -62,19 +63,16 @@ export default function MoodCard({ dashBoard }) {
 
   const handleSave = async () => {
     if (selectedMood===null){
-      setError("Mood isn't chosen yet.")
-      setTimeout(()=>setError(null),2000)
+      showToast("Mood isn't chosen yet.", "error")
       return
     }
     try {
-      setError(null)
       setLoading(true);
       await dailyLogApi.createLog({ mood: selectedMood, note });
       setFinalize(true);
     } catch (error) {
       console.error("Failed to save mood:", error);
-      setError("Unable to save mood; please try again.");
-      setTimeout(() => setError(null), 2000);
+      showToast("Unable to save mood; please try again.", "error")
     } finally {
       setLoading(false);
     }
@@ -193,15 +191,13 @@ export default function MoodCard({ dashBoard }) {
       resize-y
       outline-none
       focus:border-[var(--color-primary-deep)]
-    ${error ? "border-[var(--color-error-text)]" : ""}
     ${finalize ? "cursor-not-allowed opacity-60 bg-[var(--bg-muted,#f5f5f5)]" : ""}`}
             readOnly={finalize}
             maxLength={NOTE_MAX_LENGTH}
             value={note}
             onChange={(e) => setNote(e.target.value)}
           />
-          <div className="flex mb-2 items-center justify-between">
-            <span className="err-msg">{error}</span>
+          <div className="flex mb-2 items-center justify-end">
             <span
               className={`text-xs ${
                 note.length >= NOTE_MAX_LENGTH

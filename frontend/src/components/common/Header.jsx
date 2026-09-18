@@ -1,6 +1,6 @@
 import { NavLink, useNavigate } from "react-router-dom";
 import Button from "./Button";
-import { useAuth } from "../contexts/authContext";
+import { useAuth } from "../../contexts/authContext";
 
 const NAV_LINKS = [
   { id: "nav-home", label: "Home", path: "/" },
