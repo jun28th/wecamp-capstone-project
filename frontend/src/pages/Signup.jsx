@@ -2,7 +2,7 @@ import { useState } from "react";
 import Button from "../components/Button";
 import { Link, useNavigate } from "react-router-dom";
 import authApi from "../api/authApi";
-import { useAuth } from "../../contexts/authContext";
+import { useAuth } from "../contexts/authContext";
 
 function validateSignUp({ fullName, email, password }) {
     const errors = {};

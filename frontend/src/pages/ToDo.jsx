@@ -9,14 +9,7 @@ import { getPhaseMessage } from "../api/cycleApi";
 import GoalCard from "../components/GoalCard";
 import ProgressCard from "../components/ProgressCard";
 import CelebrationModal from "../components/CelebrationModal";
-
-function todayEyebrow() {
-  return new Date().toLocaleDateString("en-US", {
-    weekday: "long",
-    month: "long",
-    day: "numeric",
-  });
-}
+import PageHeader from "../components/feature/ToDo/PageHeader"
 
 function ToDo() {
   const { tasks, progress, addTask, editTask, removeTask, toggleComplete } = useTasks();
@@ -77,10 +70,7 @@ function ToDo() {
   }, []); // Mảng rỗng [] nghĩa là chỉ gọi 1 lần duy nhất khi component mount
   return (
     <div className="app-shell">
-      <header className="app-header">
-        <p className="eyebrow">{todayEyebrow()}</p>
-        <h1>Today's Tasks</h1>
-      </header>
+      <PageHeader />
       <PhaseMessage phaseMessage={phaseMessage}/>
 
       <GoalCard goal={goal} unlocked={unlocked} onSave={saveGoal} onRemove={removeGoal} />
