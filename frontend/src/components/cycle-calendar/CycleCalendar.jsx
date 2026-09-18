@@ -19,7 +19,7 @@ import {
   endCycle,
   logPastCycle,
 } from "../../api/cycleApi";
-import { useToast } from "../Toast.jsx";
+import { useToast } from "../../contexts/toastContext.jsx";
 
 const validateCycleAction = (date, actionType, activeStartDate) => {
   // Chỉ validate khi người dùng thực hiện kết thúc chu kỳ (END) và đã có activeStartDate
