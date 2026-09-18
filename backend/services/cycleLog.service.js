@@ -1,5 +1,6 @@
 import cycleLogRepository from "../repositories/cycleLog.repository.js";
 import userCycleStatRepository from "../repositories/userCycleStat.repository.js";
+import AppError from "../utils/AppError.js";
 import { computeCyclePrediction } from "./cyclePrediction.util.js";
 
 class CycleLogService {
@@ -11,7 +12,7 @@ class CycleLogService {
   async startCycle(userId, date) {
     const activeCycle = await cycleLogRepository.findOpenCycleByUser(userId);
     if (activeCycle) {
-      throw new Error("Bạn đang có một chu kỳ chưa kết thúc.");
+      throw new AppError("Bạn đang có một chu kỳ chưa kết thúc.", 400);
     }
     const result = await cycleLogRepository.createCycleLog({
       userId,
@@ -25,11 +26,12 @@ class CycleLogService {
   async endCycle(userId, date) {
     const activeCycle = await cycleLogRepository.findOpenCycleByUser(userId);
     if (!activeCycle) {
-      throw new Error("Không tìm thấy chu kỳ đang mở để kết thúc.");
+      throw new AppError("Không tìm thấy chu kỳ đang mở để kết thúc.", 400);
     }
     // Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu
     if (new Date(date) < new Date(activeCycle.startDate)) {
-      throw new Error("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu.");
+      
+      throw new AppError("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu.", 400);
     }
     const result = await cycleLogRepository.updateEndDate(activeCycle.id, date);
     await this.recalculatePrediction(userId);
@@ -221,7 +223,7 @@ class CycleLogService {
   async createPastCycle(userId, startDate, endDate) {
     // 1. Kiểm tra ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu của chính chu kỳ đó
     if (new Date(endDate) < new Date(startDate)) {
-      throw new Error("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu.");
+      throw new AppError("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu.", 400);
     }
 
     // 2. Tìm chu kỳ tiếp theo (ví dụ chu kỳ đang mở có startDate = 13)
@@ -229,7 +231,7 @@ class CycleLogService {
 
     // 3. Ràng buộc: endDate của chu kỳ quá khứ (n-1) phải nhỏ hơn startDate của chu kỳ kế tiếp (n)
     if (nextCycle && new Date(endDate) >= new Date(nextCycle.startDate)) {
-      throw new Error("Ngày kết thúc của chu kỳ quá khứ phải nhỏ hơn ngày bắt đầu của chu kỳ tiếp theo.");
+      throw new AppError("Ngày kết thúc của chu kỳ quá khứ phải nhỏ hơn ngày bắt đầu của chu kỳ tiếp theo.", 400);
     }
 
     // 4. Tạo mới chu kỳ quá khứ với đầy đủ start và end date
