@@ -1,79 +1,50 @@
-import { useEffect, useRef, useState } from "react";
 import { useTasks } from "../hooks/useTasks";
 import { useGoal } from "../hooks/useGoal";
 import Modal from "../components/Modal";
-import TaskForm from "../components/TaskForm";
-import TaskList from "../components/TaskList";
+import TaskForm from "../components/feature/ToDo/TaskForm";
+import TaskList from "../components/feature/ToDo/TaskList";
 import PhaseMessage from "../components/PhaseMessage";
-import { getPhaseMessage } from "../api/cycleApi";
-import GoalCard from "../components/GoalCard";
-import ProgressCard from "../components/ProgressCard";
-import CelebrationModal from "../components/CelebrationModal";
-import PageHeader from "../components/feature/ToDo/PageHeader"
+import GoalCard from "../components/feature/ToDo/GoalCard";
+import ProgressCard from "../components/feature/ToDo/ProgressCard";
+import CelebrationModal from "../components/feature/ToDo/CelebrationModal";
+import PageHeader from "../components/feature/ToDo/PageHeader";
+import { useCelebration } from "../hooks/useCelebration";
+import { usePhaseMessage } from "../hooks/usePhaseMessage";
+import { useTaskModals } from "../hooks/useTaskModals";
 
 function ToDo() {
-  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } = useTasks();
+  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
+    useTasks();
   const { goal, saveGoal, removeGoal } = useGoal();
-  const [formOpen, setFormOpen] = useState(false);
-  const [editingTask, setEditingTask] = useState(null);
-  const [taskPendingDelete, setTaskPendingDelete] = useState(null);
-  const [phaseMessage, setPhaseMessage] = useState(null);
-  const [celebrationOpen, setCelebrationOpen] = useState(false);
-  const previousPctRef = useRef(null);
+  const phaseMessage = usePhaseMessage();
+  const [celebrationOpen, setCelebrationOpen] = useCelebration(
+    progress.pct,
+    Boolean(goal),
+  );
   const unlocked = progress.pct === 100;
 
-  useEffect(() => {
-    if (goal && unlocked && previousPctRef.current !== null && previousPctRef.current < 100) {
-      setCelebrationOpen(true);
-    }
-    previousPctRef.current = progress.pct;
-  }, [progress.pct, unlocked, goal]);
+  const {
+    formOpen,
+    editingTask,
+    taskPendingDelete,
+    openCreateForm,
+    openEditForm,
+    closeForm,
+    handleSave,
+    handleConfirmDelete,
+    setTaskPendingDelete,
+  } = useTaskModals({ addTask, editTask, removeTask });
 
-  function openCreateForm() {
-    setEditingTask(null);
-    setFormOpen(true);
-  }
-
-  function openEditForm(task) {
-    setEditingTask(task);
-    setFormOpen(true);
-  }
-
-  async function handleSave(data) {
-    const success = editingTask ? await editTask(editingTask.id, data) : await addTask(data);
-    if (success) {
-      setFormOpen(false);
-      setEditingTask(null);
-    }
-  }
-
-  async function handleConfirmDelete() {
-    const success = await removeTask(taskPendingDelete.id);
-    if (success) {
-      setTaskPendingDelete(null);
-    }
-  }
-
-  useEffect(() => {
-    async function loadPhaseMessage() {
-      try {
-        const result = await getPhaseMessage();
-        if (result.success) {
-          setPhaseMessage(result.data);
-        }
-      } catch (error) {
-        console.error(error.response?.data?.message || error.message);
-      }
-    }
-
-    loadPhaseMessage();
-  }, []); // Mảng rỗng [] nghĩa là chỉ gọi 1 lần duy nhất khi component mount
   return (
     <div className="app-shell">
       <PageHeader />
-      <PhaseMessage phaseMessage={phaseMessage}/>
-
-      <GoalCard goal={goal} unlocked={unlocked} onSave={saveGoal} onRemove={removeGoal} />
+      <PhaseMessage phaseMessage={phaseMessage} />
+      <GoalCard
+        goal={goal}
+        unlocked={unlocked}
+        onSave={saveGoal}
+        onRemove={removeGoal}
+      />
       <ProgressCard progress={progress} />
 
       <section>
@@ -94,8 +65,16 @@ function ToDo() {
         </div>
       </section>
 
-      <Modal open={formOpen} title={editingTask ? "Edit Task" : "Add New Task"} onCancel={() => setFormOpen(false)}>
-        <TaskForm initialTask={editingTask} onSave={handleSave} onCancel={() => setFormOpen(false)} />
+      <Modal
+        open={formOpen}
+        title={editingTask ? "Edit Task" : "Add New Task"}
+        onCancel={closeForm}
+      >
+        <TaskForm
+          initialTask={editingTask}
+          onSave={handleSave}
+          onCancel={closeForm}
+        />
       </Modal>
 
       <Modal
