@@ -10,6 +10,7 @@ export const DayCell = React.memo(
     activeStartDate,
     onConfirmCycleAction,
     previewEndDate,
+    maxPossibleEndDate,
     onSelectEndDate,
     showEndPopupForDate,
     setShowEndPopupForDate,
@@ -46,11 +47,11 @@ export const DayCell = React.memo(
 
     // [NEW] Kiểm tra ràng buộc hover: Nếu đang chọn end cho chu kỳ quá khứ mà hover trước ngày start hoặc >= chu kỳ hiện tại (13)
     let isInvalidHover = false;
-    if (tempPastStart && activeStartDate) {
+    if (tempPastStart && maxPossibleEndDate) {
       const current = new Date(dateStr);
       const start = new Date(tempPastStart);
-      const activeStart = new Date(activeStartDate);
-      if (current < start || current >= activeStart) {
+      const possibleEnd = new Date(maxPossibleEndDate);
+      if (current < start || current > possibleEnd) {
         isInvalidHover = true;
       }
     }
