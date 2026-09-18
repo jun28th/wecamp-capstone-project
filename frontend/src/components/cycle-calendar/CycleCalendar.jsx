@@ -82,7 +82,8 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   }, [fetchCycles, fetchPrediction, refreshSignal]);
 
   const activeStartDate = useMemo(() => {
-    const activeCycle = cycleLogs.find((log) => !log.endDate);
+    // const activeCycle = cycleLogs.find((log) => !log.endDate);
+    const activeCycle = cycleLogs[0];
     return activeCycle ? activeCycle.startDate : null;
   }, [cycleLogs]);
 
