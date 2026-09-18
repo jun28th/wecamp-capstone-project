@@ -10,6 +10,7 @@ export const CalendarGrid = React.memo(
     activeStartDate,
     onConfirmCycleAction,
     previewEndDate,
+    maxPossibleEndDate,
     onSelectEndDate,
     showEndPopupForDate,
     setShowEndPopupForDate,
@@ -51,6 +52,7 @@ export const CalendarGrid = React.memo(
                 isPeriod={isPeriod}
                 isPredicted={isPredicted}
                 onConfirmCycleAction={onConfirmCycleAction}
+                maxPossibleEndDate={maxPossibleEndDate}
                 previewEndDate={previewEndDate}
                 onSelectEndDate={onSelectEndDate}
                 showEndPopupForDate={showEndPopupForDate}

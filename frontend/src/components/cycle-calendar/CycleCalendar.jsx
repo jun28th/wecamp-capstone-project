@@ -46,6 +46,7 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   // State cho log chu kỳ quá khứ
   const [tempPastStart, setTempPastStart] = useState(null);
   const [previewEndDate, setPreviewEndDate] = useState(null);
+  const [maxPossibleEndDate, setmaxPossibleEndDate] = useState(null);
   const [showEndPopupForDate, setShowEndPopupForDate] = useState(null);
 
   const year = currentDate.getFullYear();
@@ -90,19 +91,37 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   // Các hàm hỗ trợ chu kỳ quá khứ
   const handleInitPastStart = useCallback((startDateStr) => {
     setTempPastStart(startDateStr);
-
+    console.log(startDateStr);
     const start = new Date(startDateStr);
-    const suggestedEnd = new Date(start);
+    let suggestedEnd = new Date(start);
     suggestedEnd.setDate(start.getDate() + 4);
+    let maxPossibleEnd = new Date();
+    const nextCycle = cycleLogs
+      .slice()
+      .reverse() // Đảo lại theo thứ tự thời gian tăng dần (cũ -> mới) nếu cần, hoặc lọc trực tiếp:
+      .find(log => log.startDate > startDateStr);
+    if(nextCycle){
+      const nextCycleStart = new Date(nextCycle.startDate);
+      // Giả sử kỳ kinh nguyệt tối đa kéo dài khoảng 7-10 ngày, hoặc bắt buộc phải kết thúc trước chu kỳ sau
+      // Ta tính suggestedEnd là start + 4 ngày (như cũ) nhưng không được vượt quá ngày bắt đầu của chu kỳ sau - 1 ngày
+      maxPossibleEnd = new Date(nextCycleStart);
+      maxPossibleEnd.setDate(maxPossibleEnd.getDate() - 1);
+      suggestedEnd = suggestedEnd > maxPossibleEnd ? maxPossibleEnd : suggestedEnd;
+    }
 
     const y = suggestedEnd.getFullYear();
     const m = String(suggestedEnd.getMonth() + 1).padStart(2, "0");
     const d = String(suggestedEnd.getDate()).padStart(2, "0");
     const suggestedStr = `${y}-${m}-${d}`;
 
-    setPreviewEndDate(suggestedStr);
+    const y1 = maxPossibleEnd.getFullYear();
+    const m1 = String(maxPossibleEnd.getMonth() + 1).padStart(2, "0");
+    const d1 = String(maxPossibleEnd.getDate()).padStart(2, "0");
+    const maxPossibleEndStr = `${y1}-${m1}-${d1}`;
+    setmaxPossibleEndDate(maxPossibleEndStr);
+    setPreviewEndDate(suggestedStr) ;
     setShowEndPopupForDate(suggestedStr);
-  }, []);
+  }, [cycleLogs]);
 
   // [NEW] Xử lý khi user click chọn một ngày kết thúc mới (thay vì dùng hover)
   const handleSelectEndDate = useCallback(
@@ -110,10 +129,10 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
       if (!tempPastStart) return;
       const current = new Date(dateStr);
       const start = new Date(tempPastStart);
-      const activeStart = new Date(activeStartDate);
+      const maxPossibleEnd = new Date(maxPossibleEndDate);
 
       // Ràng buộc: EndDate phải >= StartDate và < activeStartDate (chu kỳ hiện tại)
-      if (current >= start && current < activeStart) {
+      if (current >= start && current <= maxPossibleEnd) {
         setPreviewEndDate(dateStr);
         setShowEndPopupForDate(dateStr); // Dời popup ra đúng ngày vừa click
       } else {
@@ -142,6 +161,7 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
           if (result.success) {
             showToast("Past cycle logged successfully");
             setTempPastStart(null);
+            setmaxPossibleEndDate(null);
             setPreviewEndDate(null);
             setShowEndPopupForDate(null);
             await fetchCycles();
@@ -260,6 +280,7 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
           onConfirmCycleAction={handleConfirmAction}
           tempPastStart={tempPastStart}
           setTempPastStart={setTempPastStart}
+          maxPossibleEndDate={maxPossibleEndDate}
           previewEndDate={previewEndDate}
           onSelectEndDate={handleSelectEndDate}
           showEndPopupForDate={showEndPopupForDate}
