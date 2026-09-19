@@ -1,4 +1,6 @@
-export const DayDetail = ({ isShow, selectedDate, isPeriodDay, tasksForDate }) => {
+import React from "react";
+
+export const DayDetail = React.memo(({ isShow, selectedDate, isPeriodDay, tasksForDate }) => {
   if (!isShow) return null;
 
   // Format ngày hiển thị (VD: Wednesday, September 16)
@@ -51,4 +53,4 @@ export const DayDetail = ({ isShow, selectedDate, isPeriodDay, tasksForDate }) =
       </div>
     </div>
   );
-};
+});
