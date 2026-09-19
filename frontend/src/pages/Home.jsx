@@ -14,7 +14,7 @@ function Home() {
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
   // Phase Message
-  const phaseMessage = usePhaseMessage();
+  const phaseMessage = usePhaseMessage(refreshSignal);
   const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
 
   useEffect(() => {

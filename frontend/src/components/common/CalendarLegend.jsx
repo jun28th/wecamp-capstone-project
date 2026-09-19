@@ -16,15 +16,25 @@ const DASHBOARD_LEGEND = [
 export const CalendarLegend = React.memo(({ variant = "cycle" }) => {
   const isDashboard = variant === "dashboard";
   const items = isDashboard ? DASHBOARD_LEGEND : CYCLE_LEGEND;
-  const containerClass = isDashboard ? "mini-legend" : "legend";
-  const itemClass = isDashboard ? "mini-legend-item" : "legend-item";
-  const dotClass = isDashboard ? "mini-legend-dot" : "legend-dot";
+
+  // Sử dụng Tailwind utility classes tương ứng thay thế cho các class CSS thuần
+  const containerClasses = isDashboard 
+    ? "flex flex-wrap gap-3 mt-3" 
+    : "flex flex-wrap gap-3 mt-5";
+    
+  const itemClasses = isDashboard 
+    ? "flex items-center gap-1.5 text-[12px] text-[var(--muted)]" 
+    : "flex items-center gap-1.5 text-[13px] text-[var(--muted)]";
+    
+  const dotClasses = isDashboard 
+    ? "rounded-full shrink-0 w-[10px] h-[10px]" 
+    : "rounded-full shrink-0 w-[12px] h-[12px]";
 
   return (
-    <div className={containerClass} style={!isDashboard ? { marginTop: "20px" } : undefined}>
+    <div className={containerClasses}>
       {items.map((item, index) => (
-        <div className={itemClass} key={index}>
-          <span className={dotClass} style={item.style}></span>
+        <div className={itemClasses} key={index}>
+          <span className={dotClasses} style={item.style}></span>
           {item.label}
         </div>
       ))}

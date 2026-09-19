@@ -10,38 +10,24 @@ export default function PhaseMessage({ phaseMessage }) {
       data-od-id="phase-message-card"
       style={{ borderLeft: `4px solid ${accent}` }}
     >
-      <div style={{ display: "flex", alignItems: "flex-start", gap: "14px" }}>
+      <div className="flex items-start gap-[14px]">
         <div
           id="phase-icon"
-          style={{
-            width: "44px",
-            height: "44px",
-            borderRadius: "50%",
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
-            fontSize: "20px",
-            flexShrink: "0",
-            background: tint,
-          }}
+          className="w-[44px] h-[44px] rounded-full flex items-center justify-center text-[20px] shrink-0"
+          style={{ background: tint }}
         >
           {icon}
         </div>
         <div>
           <h3
             id="phase-title"
-            style={{
-              margin: "0 0 4px 0",
-              fontSize: "16px",
-              color: "var(--color-ink)",
-            }}
+            className="m-0 mb-1 text-[16px] font-semibold text-[var(--color-ink)]"
           >
             {title}
           </h3>
           <p
             id="phase-description"
-            className="text-caption"
-            style={{ margin: "0", fontSize: "14px" }}
+            className="text-caption m-0 !text-[14px]"
           >
             {description}
           </p>
