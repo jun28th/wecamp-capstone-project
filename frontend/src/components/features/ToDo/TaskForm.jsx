@@ -1,5 +1,8 @@
 import { useState } from "react";
 import Button from "@common/Button";
+import PillButton from "@common/PillButton";
+import FormField from "./FormField";
+import Switch from "./Switch";
 
 export default function TaskForm({ initialTask, onSave, onCancel }) {
   const isEditing = Boolean(initialTask);
@@ -26,45 +29,34 @@ export default function TaskForm({ initialTask, onSave, onCancel }) {
 
   return (
     <form onSubmit={handleSubmit}>
-      <div className="form-field">
-        <label htmlFor="task-name-input">Task name</label>
-        <input
-          id="task-name-input"
-          type="text"
-          className={nameError ? "invalid" : undefined}
-          placeholder="Enter task name..."
-          value={title}
-          onChange={(event) => setTitle(event.target.value)}
-        />
-        <p className={nameError ? "field-error show" : "field-error"}>Task name cannot be empty</p>
-      </div>
+      <FormField
+        id="task-name-input"
+        label="Task name"
+        type="text"
+        placeholder="Enter task name..."
+        value={title}
+        onChange={(event) => setTitle(event.target.value)}
+        error={nameError ? "Task name cannot be empty" : null}
+      />
 
-      <div className="form-field">
-        <label htmlFor="task-due-input">Due date (optional)</label>
-        <input
-          id="task-due-input"
-          type="date"
-          value={dueDate}
-          onChange={(event) => setDueDate(event.target.value)}
-        />
-      </div>
+      <FormField
+        id="task-due-input"
+        label="Due date (optional)"
+        type="date"
+        value={dueDate}
+        onChange={(event) => setDueDate(event.target.value)}
+      />
 
-      <div className="modal-actions" style={{ justifyContent: "space-between", alignItems: "center" }}>
-        <label className="switch-field">
-          <span className="switch">
-            <input
-              type="checkbox"
-              checked={urgent}
-              onChange={(event) => setUrgent(event.target.checked)}
-            />
-            <span className="switch-track"></span>
-          </span>
-          <span className="switch-label-text">Urgent</span>
-        </label>
-        <div style={{ display: "flex", gap: "10px" }}>
-          <button type="button" className="btn-cancel" onClick={onCancel}>
+      <div className="mt-5 flex items-center justify-between gap-2.5">
+        <Switch
+          label="Urgent"
+          checked={urgent}
+          onChange={(event) => setUrgent(event.target.checked)}
+        />
+        <div className="flex gap-2.5">
+          <PillButton type="button" onClick={onCancel}>
             Cancel
-          </button>
+          </PillButton>
           <Button type="submit" variant="default">
             {isEditing ? "Update" : "Save"}
           </Button>

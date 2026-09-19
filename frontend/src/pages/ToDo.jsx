@@ -84,7 +84,7 @@ function ToDo() {
         onConfirm={handleConfirmDelete}
         onCancel={() => setTaskPendingDelete(null)}
       >
-        <p style={{ margin: 0, color: "var(--color-ink)", fontSize: "15px" }}>
+        <p className="text-[15px] text-ink">
           Are you sure you want to delete "{taskPendingDelete?.title}"?
         </p>
       </Modal>

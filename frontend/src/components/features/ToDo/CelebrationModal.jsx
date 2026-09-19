@@ -1,18 +1,20 @@
 import { useState } from "react";
+import Button from "@common/Button";
+import Modal from "@components/Modal";
 
 const CONFETTI_COLORS = [
-  "var(--color-primary)",
-  "var(--color-primary-deep)",
-  "var(--color-gold)",
-  "var(--color-secondary)",
-  "var(--color-cool)",
+  "bg-primary",
+  "bg-primary-deep",
+  "bg-gold",
+  "bg-secondary",
+  "bg-cool",
 ];
 
 function makeConfettiPieces() {
   return Array.from({ length: 24 }, (_, i) => ({
     left: `${Math.random() * 100}%`,
     delay: `${Math.random() * 300}ms`,
-    background: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
+    color: CONFETTI_COLORS[i % CONFETTI_COLORS.length],
   }));
 }
 
@@ -20,12 +22,15 @@ function Confetti() {
   const [pieces] = useState(makeConfettiPieces);
 
   return (
-    <div className="confetti" aria-hidden="true">
+    <div
+      className="pointer-events-none absolute inset-0 overflow-hidden"
+      aria-hidden="true"
+    >
       {pieces.map((piece, i) => (
         <span
           key={i}
-          className="confetti-piece"
-          style={{ left: piece.left, animationDelay: piece.delay, background: piece.background }}
+          className={`absolute -top-2.5 size-2 animate-[confetti-fall_1400ms_ease-in_forwards] rounded-[2px] motion-reduce:hidden ${piece.color}`}
+          style={{ left: piece.left, animationDelay: piece.delay }}
         />
       ))}
     </div>
@@ -33,21 +38,21 @@ function Confetti() {
 }
 
 export default function CelebrationModal({ open, rewardText, onClose }) {
-  if (!open) return null;
-
   return (
-    <div className="modal-overlay open" onClick={onClose}>
-      <div className="modal-card celebration-card" onClick={(event) => event.stopPropagation()}>
-        <Confetti />
-        <div className="celebration-icon">🎉</div>
-        <h3>Goal complete!</h3>
-        <p style={{ margin: "0 0 20px 0", color: "var(--color-ink)", fontSize: "15px" }}>
-          You've completed today's goal. Enjoy: {rewardText}
-        </p>
-        <button className="btn btn-primary" style={{ width: "100%" }} onClick={onClose}>
-          Nice!
-        </button>
-      </div>
-    </div>
+    <Modal
+      open={open}
+      onCancel={onClose}
+      cardClassName="relative overflow-hidden text-center"
+    >
+      <Confetti />
+      <div className="mb-2 text-[40px]">🎉</div>
+      <h3 className="mb-4 text-[18px] text-ink">Goal complete!</h3>
+      <p className="mb-5 text-[15px] text-ink">
+        You've completed today's goal. Enjoy: {rewardText}
+      </p>
+      <Button className="w-full" onClick={onClose}>
+        Nice!
+      </Button>
+    </Modal>
   );
 }

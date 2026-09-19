@@ -1,5 +1,10 @@
 import { formatDueDate, isDueSoon, isOverdue } from "@utils/task.utils";
 import ToDoCheckbox from "@common/ToDoCheckbox";
+import RowActionButton from "./RowActionButton";
+
+const ROW_CLASS =
+  "flex items-start gap-3 border-b border-border py-3 last:border-b-0";
+const URGENT_TAG = "tag bg-primary-deep text-white";
 
 // compact=true renders the trimmed-down row used by preview surfaces (e.g. a
 // dashboard card): checkbox + title + urgent tag only, no due-date meta or
@@ -13,7 +18,7 @@ export default function TaskItem({
 }) {
   if (compact) {
     return (
-      <div className="todo-item">
+      <div className={ROW_CLASS}>
         <ToDoCheckbox
           checked={task.isCompleted}
           onClick={() => onToggleComplete(task)}
@@ -22,15 +27,7 @@ export default function TaskItem({
           {task.title}
         </span>
         {task.priority === "urgent" ? (
-          <span
-            className="tag"
-            style={{
-              background: "var(--color-primary-deep)",
-              color: "white",
-              fontSize: "11px",
-              padding: "2px 8px",
-            }}
-          >
+          <span className={`${URGENT_TAG} px-2 py-0.5 text-[11px]`}>
             Urgent
           </span>
         ) : null}
@@ -42,7 +39,7 @@ export default function TaskItem({
   const overdue = isOverdue(task);
 
   return (
-    <div className="todo-item">
+    <div className={ROW_CLASS}>
       <ToDoCheckbox
         checked={task.isCompleted}
         onClick={() => onToggleComplete(task)}
@@ -53,52 +50,34 @@ export default function TaskItem({
           {task.title}
         </span>
         {task.priority === "urgent" || task.dueDate ? (
-          <div className="todo-meta">
+          <div className="flex flex-wrap items-center gap-1.5">
             {task.priority === "urgent" ? (
-              <span
-                className="tag"
-                style={{
-                  background: "var(--color-primary-deep)",
-                  color: "white",
-                }}
-              >
-                Urgent
-              </span>
+              <span className={URGENT_TAG}>Urgent</span>
             ) : null}
             {task.dueDate ? (
-              <span
-                className="tag"
-                style={{ background: "var(--color-border)" }}
-              >
+              <span className="tag bg-border">
                 {formatDueDate(task.dueDate)}
               </span>
             ) : null}
             {overdue ? (
-              <span
-                className="tag"
-                style={{
-                  background: "var(--color-error-text)",
-                  color: "white",
-                }}
-              >
-                Overdue
+              <span className="tag bg-error-text text-white">Overdue</span>
+            ) : null}
+            {dueSoon ? (
+              <span className="inline-flex items-center gap-1 text-[13px] font-semibold text-error-text">
+                ⚠ Due soon
               </span>
             ) : null}
-            {dueSoon ? <span className="due-warning">⚠ Due soon</span> : null}
           </div>
         ) : null}
       </div>
 
-      <div className="todo-actions">
-        <button className="todo-action-btn edit" onClick={() => onEdit(task)}>
+      <div className="flex shrink-0 gap-0.5">
+        <RowActionButton tone="edit" onClick={() => onEdit(task)}>
           Edit
-        </button>
-        <button
-          className="todo-action-btn delete"
-          onClick={() => onDelete(task)}
-        >
+        </RowActionButton>
+        <RowActionButton tone="delete" onClick={() => onDelete(task)}>
           Delete
-        </button>
+        </RowActionButton>
       </div>
     </div>
   );
