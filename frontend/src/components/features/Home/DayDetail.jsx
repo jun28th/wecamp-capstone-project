@@ -3,7 +3,6 @@ import React from "react";
 export const DayDetail = React.memo(({ isShow, selectedDate, isPeriodDay, tasksForDate }) => {
   if (!isShow) return null;
 
-  // Format ngày hiển thị (VD: Wednesday, September 16)
   const formattedDate = selectedDate 
     ? new Date(selectedDate + "T00:00:00").toLocaleDateString("en-US", { 
         weekday: "long", 

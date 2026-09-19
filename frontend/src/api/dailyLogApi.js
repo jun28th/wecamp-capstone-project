@@ -4,7 +4,7 @@ const dailyLogApi = {
   async getTodayLog() {
     try {
       const response = await axiosClient.get("/dailyLog/");
-      return response.data; // API trả null nếu chưa có log
+      return response.data;
     } catch (error) {
       console.error(
         "getTodayLog failed:",

@@ -10,7 +10,6 @@ class CycleLogRepository {
     return await CycleLog.findByPk(id);
   }
 
-  // "Chu kỳ đang mở" - the one with no end_date yet (max 1 per user, enforced by uq_cycle_logs_open)
   async findOpenCycleByUser(userId) {
     return await CycleLog.findOne({
       where: { user_id: userId, end_date: null },

@@ -23,7 +23,6 @@ DailyLog.init(
       type: DataTypes.SMALLINT,
       allowNull: true,
       validate: {
-        // 1 - very bad, 2 - bad, 3 - so so, 4 - good, 5 - very good
         min: 1,
         max: 5,
       },
@@ -55,9 +54,6 @@ DailyLog.init(
     },
     indexes: [
       {
-        // Also serves as the lookup index for (user_id, log_date) queries,
-        // so the separate idx_daily_logs_user_date from the schema doc is
-        // dropped here as redundant.
         name: "uq_daily_logs_user_date",
         unique: true,
         fields: ["user_id", "log_date"],

@@ -20,8 +20,6 @@ export function isDueTodayDate(task) {
   return !!task.dueDate && task.dueDate === todayDateOnly();
 }
 
-// Due today or within the next 24 hours (and not yet completed) - applies to any
-// task, urgent or not. An overdue task is never "due soon" - mutually exclusive states.
 export function isDueSoon(task) {
   if (!task.dueDate || task.isCompleted || isOverdue(task)) return false;
   const due = new Date(`${task.dueDate}T23:59:59`);
@@ -29,8 +27,6 @@ export function isDueSoon(task) {
   return diffMs >= 0 && diffMs <= 24 * 60 * 60 * 1000;
 }
 
-// Sort priority per KAN-64: urgent first (in full), then normal (in full);
-// within each, overdue > due today > has a future due date > no due date.
 export function getTaskSortRank(task) {
   const overdue = isOverdue(task);
   const dueToday = isDueTodayDate(task);

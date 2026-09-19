@@ -19,7 +19,6 @@ export const errorHandler = (err, req, res, next) => {
     message = "Invalid data";
     extra = { errors: err.errors?.map((e) => e.message) };
   } else if (!err.isOperational) {
-    // Lỗi không xác định (bug, lỗi hệ thống...) -> không lộ chi tiết cho client
     statusCode = 500;
     message = "A system error has occurred.";
   }

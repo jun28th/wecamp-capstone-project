@@ -9,7 +9,6 @@ class DailyRewardRepository {
     return await DailyReward.findByPk(id);
   }
 
-  // (user_id, reward_date) is unique - at most one reward row per user per day
   async findByUserAndDate(userId, rewardDate) {
     return await DailyReward.findOne({
       where: { user_id: userId, reward_date: rewardDate },

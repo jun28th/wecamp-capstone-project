@@ -1,4 +1,4 @@
-import axiosClient from "./axiosClient"; // Giữ nguyên path import của bạn
+import axiosClient from "./axiosClient";
 
 export const getCycles = async () => {
   try {
@@ -6,7 +6,7 @@ export const getCycles = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching cycles:", error);
-    throw error; // Ném lỗi ra để component gọi API (như fetchCycles) bắt được trong catch
+    throw error; 
   }
 };
 
@@ -46,7 +46,7 @@ export const getPhaseMessage = async () => {
     return response.data;
   } catch (error) {
     console.error("Error fetching cycles:", error);
-    throw error; // Ném lỗi ra để component gọi API (như fetchCycles) bắt được trong catch
+    throw error; 
   }
 };
 

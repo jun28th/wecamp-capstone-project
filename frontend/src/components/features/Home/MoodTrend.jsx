@@ -64,7 +64,6 @@ export default function MoodTrend() {
     }
   }, [points, moodChartView]);
 
-  // ---- Chart geometry & derived data (chỉ tính khi có data để vẽ) ----
   const width = Math.max(720, points.length * 22);
   const height = 240;
   const padLeft = 44,
