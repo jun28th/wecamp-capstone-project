@@ -1,8 +1,10 @@
-import { useCallback, useMemo, useRef, useState } from "react";
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toPng } from "html-to-image";
 import Button from "./common/Button";
 import Card from "./common/Card";
 import Loading from "./common/Loading";
+import { useMoodTrend } from "../hooks/useMoodTrend";
+
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
   1: "Very Bad",
@@ -13,21 +15,27 @@ const MOOD_LABELS = {
 };
 const MOOD_LEVELS_ORDER = [1, 2, 3, 4, 5];
 
-export default function MoodTrend({
-  moodRange,
-  points,
-  hasData,
-  isLoading,
-  error,
-  moodChartView,
-  handleNextMoodTrend,
-  handlePrevMoodTrend,
-  onRetry,
-}) {
+export default function MoodTrend() {
+  const {
+    points,
+    hasData,
+    isLoading,
+    error,
+    moodRange,
+    view: moodChartView,
+    handleNext: handleNextMoodTrend,
+    handlePrev: handlePrevMoodTrend,
+    retry: onRetry,
+  } = useMoodTrend();
+  
   const atPresent = moodChartView.type === "last30";
   const wrapRef = useRef(null);
   const svgRef = useRef(null);
   const [hover, setHover] = useState(null);
+
+  useEffect(() => {
+    setHover(null);
+  }, [points]);
 
   const handleDownload = useCallback(async () => {
     if (!wrapRef.current || points.every((p) => p.value === null)) {
@@ -153,9 +161,9 @@ export default function MoodTrend({
           <Loading />
         ) : error ? (
           <div className="text-center px-8 py-5">
-            <p className="text-caption">Không tải được dữ liệu mood.</p>
+            <p className="text-caption">Couldn't load mood data.</p>
             <Button className="mt-3" onClick={onRetry}>
-              Thử lại
+              Retry
             </Button>
           </div>
         ) : !hasData ? (
@@ -172,6 +180,8 @@ export default function MoodTrend({
               ref={svgRef}
               viewBox={`0 0 ${width} ${height}`}
               className="w-full h-auto block overflow-visible"
+              role="img"
+              aria-label={`Mood trend chart for ${moodRange}`}
             >
               {MOOD_LEVELS_ORDER.map((level) => {
                 const y = yFor(level);
