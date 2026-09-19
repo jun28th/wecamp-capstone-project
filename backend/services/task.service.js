@@ -16,8 +16,9 @@ class TaskService {
     return await TaskRepository.createTask({ userId, title, dueDate, priority });
   }
 
-  async getTasksByUser(userId) {
-    return await TaskRepository.findAllByUser(userId);
+  async getTasksByUser(userId, filters = {}) {
+    const search = filters.search?.trim();
+    return await TaskRepository.findAllByUser(userId, { search });
   }
 
   async updateTask(id, data) {

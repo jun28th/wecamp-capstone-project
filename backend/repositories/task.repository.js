@@ -1,5 +1,5 @@
-import { Task } from "../models/index.js";
 import { Op } from "sequelize";
+import { Task } from "../models/index.js";
 
 class TaskRepository {
   async createTask(data) {
@@ -10,9 +10,13 @@ class TaskRepository {
     return await Task.findByPk(id);
   }
 
-  async findAllByUser(userId) {
+  async findAllByUser(userId, { search } = {}) {
+    const where = { user_id: userId };
+    if (search) {
+      where.title = { [Op.like]: `%${search}%` };
+    }
     return await Task.findAll({
-      where: { user_id: userId },
+      where,
       order: [["due_date", "ASC"]],
     });
   }

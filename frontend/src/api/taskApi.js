@@ -1,8 +1,8 @@
 import axiosClient from "./axiosClient.js";
 
 const taskApi = {
-  async getTasks() {
-    const response = await axiosClient.get("/tasks");
+  async getTasks(params = {}) {
+    const response = await axiosClient.get("/tasks", { params });
     return response.data;
   },
 

@@ -15,14 +15,14 @@ class TaskController {
   async getTasks(req, res) {
     try {
       const userId = req.user.id; // Giả định middleware xác thực đã gắn req.user
-      const { year, month } = req.query;
+      const { year, month, search } = req.query;
 
       let tasks;
       if (year && month) {
         console.log("hello");
         tasks = await TaskService.getTasksByMonth(userId, year, month);
       } else {
-        tasks = await TaskService.getTasksByUser(userId);
+        tasks = await TaskService.getTasksByUser(userId, { search });
       }
 
       return res.status(200).json(tasks);
