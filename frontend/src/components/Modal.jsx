@@ -1,7 +1,5 @@
 import PillButton from "@common/PillButton";
 
-// cardClassName adds classes to the modal card (e.g. CelebrationModal needs it
-// to be a positioning context for the confetti).
 export default function Modal({
   open,
   title,

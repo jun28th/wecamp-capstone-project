@@ -6,9 +6,6 @@ const ROW_CLASS =
   "flex items-start gap-3 border-b border-border py-3 last:border-b-0";
 const URGENT_TAG = "tag bg-primary-deep text-white";
 
-// compact=true renders the trimmed-down row used by preview surfaces (e.g. a
-// dashboard card): checkbox + title + urgent tag only, no due-date meta or
-// edit/delete actions. The full /to-do page uses the default (compact=false).
 export default function TaskItem({
   task,
   onToggleComplete,

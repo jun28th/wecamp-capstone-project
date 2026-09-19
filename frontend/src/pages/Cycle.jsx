@@ -2,7 +2,7 @@ import { useMemo, useState, useCallback } from "react";
 import { CycleCalendar } from "@features/Cycle/CycleCalendar";
 import MoodCard from "@components/MoodCard";
 import { CycleHistory } from "@features/Cycle/CycleHistory";
-import { useCycleData } from "@hooks/useCycleData"; // Thay thế useCycleLogs bằng useCycleData chuẩn đồng bộ
+import { useCycleData } from "@hooks/useCycleData"; 
 import { getDayCount } from "@utils/calendar.utils";
 
 export default function Cycle() {

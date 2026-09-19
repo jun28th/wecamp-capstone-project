@@ -14,11 +14,10 @@ import { CalendarHeader } from "@common/CalendarHeader";
 import { extractPeriodDays } from "@utils/cycle.utils";
 import { startCycle, endCycle } from "@api/cycleApi";
 import taskApi from "@api/taskApi";
-import { useCycleData } from "@hooks/useCycleData"; // Tận dụng common hook
+import { useCycleData } from "@hooks/useCycleData";
 
 export const DashboardCalendar = React.memo(
   ({ onRefreshData, refreshSignal }) => {
-    // Tận dụng common hook để fetch cycleLogs và prediction, tự động đồng bộ theo refreshSignal
     const { cycleLogs, prediction } = useCycleData(refreshSignal);
 
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -30,7 +29,6 @@ export const DashboardCalendar = React.memo(
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1;
 
-    // 1. Xử lý Action (START / END)
     const handleConfirmAction = useCallback(
       async (date, actionType) => {
         try {
@@ -97,7 +95,6 @@ export const DashboardCalendar = React.memo(
     );
     const monthYearLabel = formatMonthYear(year, month);
 
-    // 2. Fetch Tasks theo tháng (Chuyên biệt của Dashboard Calendar)
     const fetchTasks = useCallback(async () => {
       try {
         const result = await taskApi.getTasksByMonth(year, month);
@@ -111,7 +108,6 @@ export const DashboardCalendar = React.memo(
       fetchTasks();
     }, [fetchTasks, refreshSignal]);
 
-    // Gom nhóm task theo ngày
     const { taskDaysSet, urgentDaysSet, tasksMap } = useMemo(() => {
       const taskSet = new Set();
       const urgentSet = new Set();
@@ -150,7 +146,7 @@ export const DashboardCalendar = React.memo(
           actionType={actionType}
           onCancel={() => setIsConfirmOpen(false)}
           onConfirmCycleAction={handleConfirmAction}
-          className="top-confirmation-popover" // <- Giúp popup bay lên trên giống Hình 1
+          className="top-confirmation-popover"
         />
         <p className="text-caption" style={{ margin: "0 0 12px 0" }}>
           Cycle Tracking

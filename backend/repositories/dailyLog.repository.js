@@ -10,7 +10,6 @@ class DailyLogRepository {
     return await DailyLog.findByPk(id);
   }
 
-  // (user_id, log_date) is unique - at most one row per user per day
   async findByUserAndDate(userId, logDate) {
     return await DailyLog.findOne({
       where: { user_id: userId, log_date: logDate },

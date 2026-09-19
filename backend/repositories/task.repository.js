@@ -30,7 +30,6 @@ class TaskRepository {
     });
   }
 
-  // Hard delete - tasks no longer has deleted_at
   async deleteTask(id) {
     return await Task.destroy({ where: { id } });
   }

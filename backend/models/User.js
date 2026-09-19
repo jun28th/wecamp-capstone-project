@@ -29,7 +29,6 @@ User.init(
     sequelize,
     modelName: "User",
     tableName: "users",
-    // created_at / updated_at columns are handled by Sequelize timestamps below
     createdAt: "created_at",
     updatedAt: "updated_at",
   },

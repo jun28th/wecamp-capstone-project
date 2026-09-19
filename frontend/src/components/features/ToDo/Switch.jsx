@@ -1,6 +1,3 @@
-// Toggle switch built on a visually hidden checkbox (the "peer"), so the track
-// and knob are styled from the checkbox's :checked / :focus-visible state.
-// Every prop except label goes straight to the <input type="checkbox">.
 export default function Switch({ label, ...inputProps }) {
   return (
     <label className="flex cursor-pointer items-center gap-3">

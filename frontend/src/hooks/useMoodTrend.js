@@ -132,7 +132,7 @@ export function useMoodTrend() {
 
   const handleNext = useCallback(() => {
     setView((prev) => {
-      if (prev.type !== "month") return prev; // đã ở "last30" = hiện tại, không có "sau" nữa
+      if (prev.type !== "month") return prev;
       const next = normalizeView({
         type: "month",
         year: prev.year,

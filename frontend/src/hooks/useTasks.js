@@ -3,21 +3,14 @@ import taskApi from "@api/taskApi";
 import { useToast } from "@contexts/toastContext";
 import { getTaskSortRank, todayDateOnly } from "@utils/task.utils";
 
-// Urgent overdue > Normal overdue > Urgent due today > Normal due today >
-// Urgent future due date > Normal future due date > Urgent no due date > Normal no due date
 function sortTasks(tasks) {
   return tasks.slice().sort((a, b) => getTaskSortRank(a) - getTaskSortRank(b));
 }
 
-// Today's progress/reward should only depend on tasks due today or with no
-// due date - a task due later shouldn't block unlocking today's reward.
 function isDueTodayOrUndated(task) {
   return !task.dueDate || task.dueDate <= todayDateOnly();
 }
 
-// Shared task data + actions, reusable by both the full /to-do page and a
-// dashboard preview card (both need the same fetch/add/edit/delete/toggle
-// behavior and toast feedback, just rendered differently).
 export function useTasks() {
   const [tasks, setTasks] = useState([]);
   const showToast = useToast();

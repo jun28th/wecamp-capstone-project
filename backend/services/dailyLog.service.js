@@ -2,7 +2,6 @@ import DailyLogRepository from "../repositories/dailyLog.repository.js";
 import AppError from "../utils/AppError.js";
 
 function getVietnamDateString(date = new Date()) {
-  // en-CA format cho ra chuỗi "YYYY-MM-DD" sẵn
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Ho_Chi_Minh",
   }).format(date);

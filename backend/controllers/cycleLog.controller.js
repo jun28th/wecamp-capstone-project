@@ -2,11 +2,9 @@ import cycleLogService from "../services/cycleLog.service.js";
 import AppError from "../utils/AppError.js";
 
 class CycleLogController {
-  // GET /api/cycles
   async getCycles(req, res, next) {
     try {
-      const userId = req.user.id; // Lấy từ middleware authen
-      // const userId = "12783041-a412-4e53-8c4d-bc873c129aeb";
+      const userId = req.user.id; 
       const cycles = await cycleLogService.getUserCycles(userId);
       return res.status(200).json({ success: true, data: cycles });
     } catch (error) {
@@ -16,9 +14,8 @@ class CycleLogController {
 
   async startCycle(req, res, next) {
     try {
-      const userId = req.user.id; // Lấy từ middleware authen
-      // const userId = "12783041-a412-4e53-8c4d-bc873c129aeb";
-      const { date } = req.body; // actionType: 'START' | 'END'
+      const userId = req.user.id; 
+      const { date } = req.body; 
       if (!date) {
         throw new AppError("Thiếu thông tin date.", 400);
       }
@@ -38,7 +35,6 @@ class CycleLogController {
   async endCycle(req, res, next) {
     try {
       const userId = req.user.id; // Lấy từ middleware authen
-      // const userId = "12783041-a412-4e53-8c4d-bc873c129aeb";
       const { date } = req.body;
 
       if (!date) {
@@ -57,7 +53,6 @@ class CycleLogController {
     }
   }
 
-  // GET /api/cycle-logs/prediction — AC1-AC4, AC7
   async getPrediction(req, res, next) {
     try {
       const userId = req.user.id; // Lấy từ middleware authen
@@ -67,10 +62,9 @@ class CycleLogController {
       next(error);
     }
   }
-  // GET /api/cycle-logs/current-status
+
   async getCurrentPhase(req, res, next) {
     try {
-      // Giả sử userId được lấy từ middleware xác thực (Auth Middleware)
       const userId = req.user.id;
 
       if (!userId) {
