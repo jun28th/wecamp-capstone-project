@@ -1,6 +1,6 @@
 import { useMemo, useState, useCallback } from "react";
 import { CycleCalendar } from "@features/Cycle/CycleCalendar";
-import MoodCard from "@components/MoodCard";
+import MoodCard from "@common/MoodCard";
 import { CycleHistory } from "@features/Cycle/CycleHistory";
 import { useCycleData } from "@hooks/useCycleData"; // Thay thế useCycleLogs bằng useCycleData chuẩn đồng bộ
 import { getDayCount } from "@utils/calendar.utils";

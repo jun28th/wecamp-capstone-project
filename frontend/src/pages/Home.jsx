@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import MoodCard from "@components/MoodCard";
+import MoodCard from "@common/MoodCard";
 import { DashboardCalendar } from "@features/Home/DashboardCalendar";
 import PhaseMessage from "@common/PhaseMessage";
 import { CycleStats } from "@common/CycleStats";

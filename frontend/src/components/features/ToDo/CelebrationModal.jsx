@@ -1,6 +1,6 @@
 import { useState } from "react";
 import Button from "@common/Button";
-import Modal from "@components/Modal";
+import Modal from "@common/Modal";
 
 const CONFETTI_COLORS = [
   "bg-primary",
