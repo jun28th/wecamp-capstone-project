@@ -64,14 +64,20 @@ export const DayCell = React.memo(
     // Nếu chưa có activeStartDate -> START bình thường.
     // Nếu đã có activeStartDate (ví dụ ngày 13) -> Các ngày đứng trước ngày 13 mà chưa có chu kỳ sẽ là hành động START cho chu kỳ quá khứ.
     const isBeforeActiveStart = activeStartDate
-      ? dateStr < activeStartDate
+      ? dateStr > activeStartDate
       : true;
     const actionType =
-      !isPeriod && isBeforeActiveStart && !activeStartDate
+      !isPeriod && isBeforeActiveStart
         ? "START"
         : activeStartDate && !isPeriod && dateStr < activeStartDate
           ? "START_PAST"
           : "END";
+
+    console.log(`datestr: ${dateStr}
+                activeStartDate: ${activeStartDate}
+              isBeforeActiveStart: ${isBeforeActiveStart}
+            actionType: ${actionType}
+            isPeriod: ${isPeriod}`);
 
     // [NEW] Kiểm tra xem có đang mở popup confirm end date tự động tại ngày start + 4 không
     const showThisEndPopup = showEndPopupForDate === dateStr;
