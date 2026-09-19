@@ -1,8 +1,8 @@
 import { useState } from "react";
-import Button from "../components/common/Button";
+import Button from "@common/Button";
 import { Link, useNavigate } from "react-router-dom";
-import authApi from "../api/authApi";
-import { useAuth } from "../contexts/authContext";
+import authApi from "@api/authApi";
+import { useAuth } from "@contexts/authContext";
 
 function validateSignUp({ fullName, email, password }) {
     const errors = {};

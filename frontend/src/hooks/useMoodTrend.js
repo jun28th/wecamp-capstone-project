@@ -1,5 +1,5 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
-import dailyLogApi from "../api/dailyLogApi";
+import dailyLogApi from "@api/dailyLogApi";
 
 function normalizeView(view) {
   if (view.type !== "month") return view;

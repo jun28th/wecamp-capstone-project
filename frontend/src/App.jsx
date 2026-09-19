@@ -1,5 +1,5 @@
 import AppRouter from './routes/AppRouter'
-import { ToastProvider } from './contexts/toastContext'
+import { ToastProvider } from '@contexts/toastContext'
 
 function App() {
   return (

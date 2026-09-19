@@ -1,5 +1,5 @@
 import React from "react";
-import { WEEKDAYS } from "../../utils/calendar.utils"; // Điều chỉnh lại đường dẫn import cho đúng thư mục chung của bạn
+import { WEEKDAYS } from "@utils/calendar.utils"; // Điều chỉnh lại đường dẫn import cho đúng thư mục chung của bạn
 
 export const BaseCalendarGrid = React.memo(
   ({ 

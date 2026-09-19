@@ -1,5 +1,5 @@
 import { useState, useCallback } from "react";
-import { startCycle, endCycle, logPastCycle } from "../api/cycleApi";
+import { startCycle, endCycle, logPastCycle } from "@api/cycleApi";
 import { useCycleData } from "./useCycleData"; // Tận dụng hook dùng chung
 
 const validateCycleAction = (date, actionType, activeStartDate) => {

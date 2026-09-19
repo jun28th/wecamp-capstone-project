@@ -1,5 +1,5 @@
-import { formatDueDate, isDueSoon, isOverdue } from "../../../utils/task.utils";
-import ToDoCheckbox from "../../common/ToDoCheckbox";
+import { formatDueDate, isDueSoon, isOverdue } from "@utils/task.utils";
+import ToDoCheckbox from "@common/ToDoCheckbox";
 
 // compact=true renders the trimmed-down row used by preview surfaces (e.g. a
 // dashboard card): checkbox + title + urgent tag only, no due-date meta or

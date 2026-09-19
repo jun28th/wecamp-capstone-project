@@ -1,4 +1,4 @@
-import { todayEyebrow } from "../../../utils/calendar.utils";
+import { todayEyebrow } from "@utils/calendar.utils";
 
 function PageHeader() {
   return (

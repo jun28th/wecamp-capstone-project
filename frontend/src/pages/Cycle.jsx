@@ -1,9 +1,9 @@
 import { useMemo, useState, useCallback } from "react";
-import { CycleCalendar } from "../components/features/Cycle/CycleCalendar";
-import MoodCard from "../components/MoodCard";
-import { CycleHistory } from "../components/features/Cycle/CycleHistory";
-import { useCycleData } from "../hooks/useCycleData"; // Thay thế useCycleLogs bằng useCycleData chuẩn đồng bộ
-import { getDayCount } from "../utils/calendar.utils";
+import { CycleCalendar } from "@features/Cycle/CycleCalendar";
+import MoodCard from "@components/MoodCard";
+import { CycleHistory } from "@features/Cycle/CycleHistory";
+import { useCycleData } from "@hooks/useCycleData"; // Thay thế useCycleLogs bằng useCycleData chuẩn đồng bộ
+import { getDayCount } from "@utils/calendar.utils";
 
 export default function Cycle() {
   // Quản lý refreshSignal tại cấp cha để đồng bộ hóa cho tất cả các component con

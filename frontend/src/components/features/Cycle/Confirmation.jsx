@@ -1,4 +1,4 @@
-import { formatStringDateToMonthDay } from "../../../utils/calendar.utils";
+import { formatStringDateToMonthDay } from "@utils/calendar.utils";
 
 export default function Confirmation({
   isHover,

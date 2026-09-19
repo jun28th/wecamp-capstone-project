@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { CycleConfirmation } from "../../common/CycleConfimation";
+import { CycleConfirmation } from "@common/CycleConfimation";
 
 export const DayCell = React.memo(
   ({

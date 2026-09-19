@@ -1,5 +1,5 @@
 import React from "react";
-import { formatStringDateToMonthDay } from "../../utils/calendar.utils";
+import { formatStringDateToMonthDay } from "@utils/calendar.utils";
 
 export const CycleConfirmation = React.memo(({
   isOpen,
