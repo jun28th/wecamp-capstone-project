@@ -16,6 +16,7 @@ import { useTaskModals } from "@hooks/useTaskModals";
 function ToDo() {
   const {
     tasks,
+    totalTasks,
     progress,
     addTask,
     editTask,
@@ -80,7 +81,9 @@ function ToDo() {
             onEdit={openEditForm}
             onDelete={setTaskPendingDelete}
             emptyMessage={
-              searchTerm ? "No tasks match your search or filter." : undefined
+              searchTerm && totalTasks > 0
+                ? "No tasks match your search or filter."
+                : undefined
             }
           />
         </div>

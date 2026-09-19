@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import taskApi from "@api/taskApi";
 import { useToast } from "@contexts/toastContext";
 import { getTaskSortRank, todayDateOnly } from "@utils/task.utils";
@@ -19,16 +19,32 @@ function isDueTodayOrUndated(task) {
 // dashboard preview card (both need the same fetch/add/edit/delete/toggle
 // behavior and toast feedback, just rendered differently).
 export function useTasks() {
+  // tasks is what the list shows (search applied); allTasks is every task and
+  // is what progress / the celebration are computed from, so searching can
+  // never change today's progress or unlock the reward.
   const [tasks, setTasks] = useState([]);
+  const [allTasks, setAllTasks] = useState([]);
   const [searchTerm, setSearchTerm] = useState("");
+  const latestRequestRef = useRef(0);
   const showToast = useToast();
 
   const loadTasks = useCallback(async () => {
+    const requestId = ++latestRequestRef.current;
     try {
-      const data = await taskApi.getTasks({ search: searchTerm });
-      setTasks(data);
+      // The full list is always fetched; the filtered one is only a second
+      // (parallel) request while a search is active, so no search = 1 request.
+      const [all, visible] = await Promise.all([
+        taskApi.getTasks(),
+        searchTerm ? taskApi.getTasks({ search: searchTerm }) : null,
+      ]);
+      // A newer load started meanwhile - don't let this older response win.
+      if (requestId !== latestRequestRef.current) return;
+      setAllTasks(all);
+      setTasks(visible ?? all);
     } catch (error) {
-      showToast("Failed to load tasks", "error");
+      if (requestId === latestRequestRef.current) {
+        showToast("Failed to load tasks", "error");
+      }
     }
   }, [searchTerm, showToast]);
 
@@ -104,12 +120,13 @@ export function useTasks() {
     [loadTasks, showToast],
   );
 
-  const tasksForProgress = tasks.filter(isDueTodayOrUndated);
+  const tasksForProgress = allTasks.filter(isDueTodayOrUndated);
   const total = tasksForProgress.length;
   const done = tasksForProgress.filter((task) => task.isCompleted).length;
 
   return {
     tasks: sortTasks(tasks),
+    totalTasks: allTasks.length,
     progress: { total, done, pct: total === 0 ? 0 : Math.round((done / total) * 100) },
     loadTasks,
     addTask,
