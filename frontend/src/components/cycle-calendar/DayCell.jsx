@@ -67,7 +67,7 @@ export const DayCell = React.memo(
       ? dateStr > activeStartDate
       : true;
     const actionType =
-      !isPeriod && isBeforeActiveStart && activeStartDate
+      !isPeriod && isBeforeActiveStart
         ? "START"
         : activeStartDate && !isPeriod && dateStr < activeStartDate
           ? "START_PAST"
