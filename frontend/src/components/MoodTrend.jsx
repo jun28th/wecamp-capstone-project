@@ -3,6 +3,7 @@ import { toPng } from "html-to-image";
 import Button from "./common/Button";
 import Card from "./common/Card";
 import Loading from "./common/Loading";
+import { useMoodTrend } from "../hooks/useMoodTrend";
 
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {
@@ -14,17 +15,19 @@ const MOOD_LABELS = {
 };
 const MOOD_LEVELS_ORDER = [1, 2, 3, 4, 5];
 
-export default function MoodTrend({
-  moodRange,
-  points,
-  hasData,
-  isLoading,
-  error,
-  moodChartView,
-  handleNextMoodTrend,
-  handlePrevMoodTrend,
-  onRetry,
-}) {
+export default function MoodTrend() {
+  const {
+    points,
+    hasData,
+    isLoading,
+    error,
+    moodRange,
+    view: moodChartView,
+    handleNext: handleNextMoodTrend,
+    handlePrev: handlePrevMoodTrend,
+    retry: onRetry,
+  } = useMoodTrend();
+  
   const atPresent = moodChartView.type === "last30";
   const wrapRef = useRef(null);
   const svgRef = useRef(null);

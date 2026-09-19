@@ -7,23 +7,9 @@ import { computeCycleStats } from "../utils/cycle.utils";
 import { getCycles } from "../api/cycleApi";
 import DashboardTask from "../components/DashboardTask";
 import MoodTrend from "../components/MoodTrend";
-import { useMoodTrend } from "../hooks/useMoodTrend";
 import { usePhaseMessage } from "../hooks/usePhaseMessage";
 
 function Home() {
-  // Mood
-  const {
-    points,
-    hasData: hasMoodData,
-    isLoading: isLoadingMood,
-    error: moodError,
-    moodRange,
-    view: moodChartView,
-    handleNext: handleNextMoodTrend,
-    handlePrev: handlePrevMoodTrend,
-    retry: retryMoodTrend,
-  } = useMoodTrend();
-
   // Dashboard Calendar
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
@@ -76,17 +62,7 @@ function Home() {
         </div>
       </div>
 
-      <MoodTrend
-        moodRange={moodRange}
-        points={points}
-        hasData={hasMoodData}
-        isLoading={isLoadingMood}
-        error={moodError}
-        moodChartView={moodChartView}
-        handleNextMoodTrend={handleNextMoodTrend}
-        handlePrevMoodTrend={handlePrevMoodTrend}
-        onRetry={retryMoodTrend}
-      />
+      <MoodTrend/>
     </div>
   );
 }
