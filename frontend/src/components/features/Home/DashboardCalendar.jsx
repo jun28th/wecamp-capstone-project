@@ -1,64 +1,40 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { CalendarGrid } from "./CalendarGrid";
 import { CycleButton } from "./CycleButton";
-import Confirmation from "./Confirmation"; // CẬP NHẬT: Import component Confirmation
-import { useToast } from "../../contexts/toastContext";
+import { useToast } from "../../../contexts/toastContext";
+import { CycleConfirmation } from "../../common/CycleConfimation";
 import {
   formatMonthYear,
   generateCalendarDays,
-} from "../../utils/calendar.utils";
+  formatStringDateToMonthDay,
+} from "../../../utils/calendar.utils";
 import { DayDetail } from "./DayDetail";
-import { CalendarLegend } from "./CalendarLegend";
-import { CalendarHeader } from "./CalendarHeader";
-import { extractPeriodDays } from "../../utils/cycle.utils";
-import { formatStringDateToMonthDay } from "../../utils/calendar.utils";
-import {
-  getCycles,
-  getPrediction,
-  startCycle,
-  endCycle,
-} from "../../api/cycleApi";
-import taskApi from "../../api/taskApi";
+import { CalendarLegend } from "../../common/CalendarLegend";
+import { CalendarHeader } from "../../common/CalendarHeader";
+import { extractPeriodDays } from "../../../utils/cycle.utils";
+import { startCycle, endCycle } from "../../../api/cycleApi";
+import taskApi from "../../../api/taskApi";
+import { useCycleData } from "../../../hooks/useCycleData"; // Tận dụng common hook
+
 export const DashboardCalendar = React.memo(
   ({ onRefreshData, refreshSignal }) => {
-    const [cycleLogs, setCycleLogs] = useState([]);
-    const [prediction, setPrediction] = useState(null);
-    // CẬPR NHẬT: State quản lý việc ẩn/hiện popup xác nhận
+    // Tận dụng common hook để fetch cycleLogs và prediction, tự động đồng bộ theo refreshSignal
+    const { cycleLogs, prediction } = useCycleData(refreshSignal);
+
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
-    const showToast = useToast(); // CẬP NHẬT: Khởi tạo toast thông báo
+    const [tasks, setTasks] = useState([]);
+    const [selectedDate, setSelectedDate] = useState(null);
+
+    const showToast = useToast();
     const currentDate = new Date();
     const year = currentDate.getFullYear();
     const month = currentDate.getMonth() + 1;
 
-    // 1. Hàm lấy dữ liệu chu kỳ từ Backend
-    const fetchCycles = useCallback(async () => {
-      try {
-        const result = await getCycles();
-        if (result.success) {
-          setCycleLogs(result.data);
-        }
-      } catch (error) {
-        console.error(error.response?.data?.message || error.message);
-      }
-    }, []);
-
-    // AC4: dashboard countdown/date text; AC5: refetched on every cycle change.
-    const fetchPrediction = useCallback(async () => {
-      try {
-        const result = await getPrediction();
-        if (result.success) {
-          setPrediction(result.data);
-        }
-      } catch (error) {
-        console.error(error.response?.data?.message || error.message);
-      }
-    }, []);
-
-    // 2. Hàm xử lý Action (Phân luồng gọi startCycle / endCycle)
+    // 1. Xử lý Action (START / END)
     const handleConfirmAction = useCallback(
       async (date, actionType) => {
         try {
-          setIsConfirmOpen(false); // Đóng popup ngay lập tức khi bấm Confirm
+          setIsConfirmOpen(false);
           let result;
 
           if (actionType === "START") {
@@ -68,11 +44,8 @@ export const DashboardCalendar = React.memo(
           }
 
           if (result && result.success) {
-            await fetchCycles();
-            await fetchPrediction();
             if (onRefreshData) onRefreshData();
 
-            // CẬP NHẬT: Bắn Toast thông báo thành công sau khi hoàn tất API
             const msg =
               actionType === "START"
                 ? "Cycle logged successfully"
@@ -85,28 +58,23 @@ export const DashboardCalendar = React.memo(
           alert(errorMessage);
         }
       },
-      [fetchCycles, fetchPrediction, onRefreshData, showToast],
+      [onRefreshData, showToast],
     );
 
     const today = new Date();
-    const y = today.getFullYear();
-    const m = today.getMonth() + 1;
-    const d = today.getDate();
-    const todayString = `${y}-${String(m).padStart(2, "0")}-${String(d).padStart(2, "0")}`;
+    const todayString = `${today.getFullYear()}-${String(today.getMonth() + 1).padStart(2, "0")}-${String(today.getDate()).padStart(2, "0")}`;
 
     const periodDaysSet = useMemo(() => {
-      const daysArray = extractPeriodDays(cycleLogs);
-      return new Set(daysArray);
+      return new Set(extractPeriodDays(cycleLogs));
     }, [cycleLogs]);
 
     const activeStartDate = useMemo(() => {
       const activeCycle = cycleLogs.find((log) => !log.endDate);
       return activeCycle ? activeCycle.startDate : null;
     }, [cycleLogs]);
+
     const actionType = activeStartDate ? "END" : "START";
 
-    // AC4: only surface next-cycle copy when the current cycle hasn't started
-    // yet; while on-period, the "End cycle" flow already covers status.
     const statusText = useMemo(() => {
       if (activeStartDate || !prediction) return null;
       if (!prediction.hasEnoughData) return prediction.message;
@@ -123,15 +91,13 @@ export const DashboardCalendar = React.memo(
       return `Your predicted next cycle is ${dateLabel}`;
     }, [activeStartDate, prediction]);
 
-    const days = useMemo(() => {
-      return generateCalendarDays(year, month);
-    }, [year, month]);
-
+    const days = useMemo(
+      () => generateCalendarDays(year, month),
+      [year, month],
+    );
     const monthYearLabel = formatMonthYear(year, month);
 
-    // task
-    const [tasks, setTasks] = useState([]); // State lưu danh sách task trong tháng
-    const [selectedDate, setSelectedDate] = useState(null); // Ngày được click chọn xem chi tiết
+    // 2. Fetch Tasks theo tháng (Chuyên biệt của Dashboard Calendar)
     const fetchTasks = useCallback(async () => {
       try {
         const result = await taskApi.getTasksByMonth(year, month);
@@ -141,56 +107,50 @@ export const DashboardCalendar = React.memo(
       }
     }, [year, month]);
 
-    // Gom nhóm task theo từng ngày (dueDate) để đánh dấu chấm trên lịch
+    useEffect(() => {
+      fetchTasks();
+    }, [fetchTasks, refreshSignal]);
+
+    // Gom nhóm task theo ngày
     const { taskDaysSet, urgentDaysSet, tasksMap } = useMemo(() => {
       const taskSet = new Set();
       const urgentSet = new Set();
       const map = {};
 
       tasks.forEach((task) => {
-        const dateStr = task.dueDate; // Định dạng YYYY-MM-DD từ cột due_date
+        const dateStr = task.dueDate;
         if (!map[dateStr]) map[dateStr] = [];
         map[dateStr].push(task);
 
         taskSet.add(dateStr);
-        if (task.isUrgent) {
-          urgentSet.add(dateStr);
-        }
+        if (task.isUrgent) urgentSet.add(dateStr);
       });
       return { taskDaysSet: taskSet, urgentDaysSet: urgentSet, tasksMap: map };
     }, [tasks]);
 
-    // Xử lý khi click vào một ngày trên lịch
     const handleDayClick = useCallback((dateString) => {
       setSelectedDate(dateString);
     }, []);
 
-    // Kiểm tra xem ngày đang chọn có thuộc chu kỳ kinh nguyệt hay không
     const isSelectedPeriodDay = useMemo(() => {
       return selectedDate ? periodDaysSet.has(selectedDate) : false;
     }, [selectedDate, periodDaysSet]);
 
-    // Lấy danh sách task của đúng ngày đang chọn
     const tasksForSelectedDate = useMemo(() => {
       return selectedDate && tasksMap[selectedDate]
         ? tasksMap[selectedDate]
         : [];
     }, [selectedDate, tasksMap]);
 
-    // Gọi API lấy dữ liệu lần đầu khi Mount
-    useEffect(() => {
-      fetchCycles();
-      fetchPrediction();
-      fetchTasks();
-    }, [fetchCycles, fetchPrediction, fetchTasks, refreshSignal]);
     return (
       <div className="card card-today" data-od-id="home-cycle-card">
-        <Confirmation
-          isClicked={isConfirmOpen}
+        <CycleConfirmation
+          isOpen={isConfirmOpen}
           date={todayString}
           actionType={actionType}
           onCancel={() => setIsConfirmOpen(false)}
           onConfirmCycleAction={handleConfirmAction}
+          className="top-confirmation-popover" // <- Giúp popup bay lên trên giống Hình 1
         />
         <p className="text-caption" style={{ margin: "0 0 12px 0" }}>
           Cycle Tracking
@@ -205,7 +165,6 @@ export const DashboardCalendar = React.memo(
           }}
         >
           <CalendarHeader monthYearLabel={monthYearLabel} />
-          {/* Truyền dữ liệu task và sự kiện click vào CalendarGrid */}
           <CalendarGrid
             days={days}
             periodDaysSet={periodDaysSet}
@@ -214,8 +173,7 @@ export const DashboardCalendar = React.memo(
             urgentDaysSet={urgentDaysSet}
             onDayClick={handleDayClick}
           />
-          <CalendarLegend />
-          {console.log(Boolean(selectedDate))}
+          <CalendarLegend variant="dashboard" />
           <DayDetail
             isShow={Boolean(selectedDate)}
             selectedDate={selectedDate}

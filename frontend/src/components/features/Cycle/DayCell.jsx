@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import Confirmation from "./Confirmation";
+import { CycleConfirmation } from "../../common/CycleConfimation";
 
 export const DayCell = React.memo(
   ({
@@ -66,7 +66,7 @@ export const DayCell = React.memo(
       : true;
 
     const actionType =
-      !isPeriod && !isBeforeActiveStart
+      !isPeriod && isBeforeActiveStart
         ? "START"
         : activeStartDate && !isPeriod && dateStr < activeStartDate
           ? "START_PAST"
@@ -98,9 +98,9 @@ export const DayCell = React.memo(
 
         {/* Popup confirm cho Start hoặc End thông thường */}
         {showConfirm && !showEndPopupForDate && !tempPastStart && (
-          <Confirmation
+          <CycleConfirmation
             actionType={actionType}
-            isHover={showConfirm}
+            isOpen={showConfirm}
             onCancel={() => setShowConfirm(false)}
             onConfirmCycleAction={(date, type) => {
               if (
@@ -118,9 +118,9 @@ export const DayCell = React.memo(
 
         {/* Popup tự động bật xác nhận End Date cho chu kỳ quá khứ tại ngày start + 4 */}
         {showThisEndPopup && (
-          <Confirmation
+          <CycleConfirmation
             actionType="CONFIRM_PAST_END"
-            isHover={true}
+            isOpen={true}
             onCancel={() => {
               setShowEndPopupForDate(null);
               setTempPastStart(null);

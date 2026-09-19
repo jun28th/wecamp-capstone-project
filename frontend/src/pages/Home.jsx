@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import MoodCard from "../components/MoodCard";
-import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
+import { DashboardCalendar } from "../components/features/Home/DashboardCalendar";
 import PhaseMessage from "../components/common/PhaseMessage";
-import { CycleStats } from "../components/features/Cycle/CycleStats";
+import { CycleStats } from "../components/common/CycleStats";
 import { computeCycleStats } from "../utils/cycle.utils";
 import { getCycles } from "../api/cycleApi";
 import DashboardTask from "../components/DashboardTask";
@@ -14,7 +14,7 @@ function Home() {
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
   // Phase Message
-  const phaseMessage = usePhaseMessage()
+  const phaseMessage = usePhaseMessage();
   const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
 
   useEffect(() => {
@@ -62,7 +62,7 @@ function Home() {
         </div>
       </div>
 
-      <MoodTrend/>
+      <MoodTrend />
     </div>
   );
 }

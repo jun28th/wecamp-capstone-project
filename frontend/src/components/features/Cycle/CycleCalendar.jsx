@@ -3,15 +3,15 @@ import {
   formatMonthYear,
   generateCalendarDays,
 } from "../../../utils/calendar.utils.js";
-import { CalendarHeader } from "./CalendarHeader.jsx";
+import { CalendarHeader } from "../../common/CalendarHeader.jsx";
 import { CalendarGrid } from "./CalendarGrid.jsx";
-import CalendarLegend from "./CalendarLegend.jsx";
+import { CalendarLegend } from "../../common/CalendarLegend.jsx";
 import {
   extractPeriodDays,
   extractPredictedDays,
   computeCycleStats,
 } from "../../../utils/cycle.utils.js";
-import { CycleStats } from "./CycleStats.jsx";
+import { CycleStats } from "../../common/CycleStats.jsx";
 import { useToast } from "../../../contexts/toastContext.jsx";
 import { useCycleManagement } from "../../../hooks/useCycleManagement.js";
 
@@ -108,7 +108,7 @@ export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
           showEndPopupForDate={showEndPopupForDate}
           setShowEndPopupForDate={setShowEndPopupForDate}
         />
-        <CalendarLegend />
+        <CalendarLegend variant="cycle" />
         {prediction && !prediction.hasEnoughData && (
           <p
             id="prediction-status"

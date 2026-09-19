@@ -1,11 +1,6 @@
-import { useState, useCallback, useEffect } from "react";
-import {
-  getCycles,
-  getPrediction,
-  startCycle,
-  endCycle,
-  logPastCycle,
-} from "../api/cycleApi";
+import { useState, useCallback } from "react";
+import { startCycle, endCycle, logPastCycle } from "../api/cycleApi";
+import { useCycleData } from "./useCycleData"; // Tận dụng hook dùng chung
 
 const validateCycleAction = (date, actionType, activeStartDate) => {
   if (actionType === "END" && activeStartDate) {
@@ -19,53 +14,18 @@ const validateCycleAction = (date, actionType, activeStartDate) => {
       };
     }
   }
-
   return { isValid: true, message: "" };
 };
 
 export const useCycleManagement = ({ refreshSignal, onRefreshData, showToast }) => {
-  const [cycleLogs, setCycleLogs] = useState([]);
-  const [prediction, setPrediction] = useState(null);
+  // Sử dụng common hook để lấy và quản lý chu kỳ/dự đoán cơ bản
+  const { cycleLogs, prediction, fetchCycles, fetchPrediction } = useCycleData(refreshSignal);
 
-  // State cho log chu kỳ quá khứ
+  // State chuyên biệt riêng cho log chu kỳ quá khứ (Chỉ CycleCalendar dùng)
   const [tempPastStart, setTempPastStart] = useState(null);
   const [previewEndDate, setPreviewEndDate] = useState(null);
   const [maxPossibleEndDate, setmaxPossibleEndDate] = useState(null);
   const [showEndPopupForDate, setShowEndPopupForDate] = useState(null);
-
-  // 1. Hàm lấy dữ liệu chu kỳ từ Backend
-  const fetchCycles = useCallback(async () => {
-    try {
-      const result = await getCycles();
-      if (result.success) {
-        setCycleLogs(result.data);
-      }
-    } catch (error) {
-      console.error(error.response?.data?.message || error.message);
-    }
-  }, []);
-
-  const fetchPrediction = useCallback(async () => {
-    try {
-      const result = await getPrediction();
-      if (result.success) {
-        setPrediction(result.data);
-      }
-    } catch (error) {
-      console.error(error.response?.data?.message || error.message);
-    }
-  }, []);
-
-  // Gọi API lấy dữ liệu lần đầu khi Mount hoặc refreshSignal thay đổi
-  useEffect(() => {
-    fetchCycles();
-    fetchPrediction();
-  }, [fetchCycles, fetchPrediction, refreshSignal]);
-
-  // const activeStartDate = useMemo ? (() => {
-  //   const activeCycle = cycleLogs[0];
-  //   return activeCycle ? activeCycle.startDate : null;
-  // })() : null; // Giữ nguyên cách tính activeStartDate
 
   const handleInitPastStart = useCallback((startDateStr) => {
     setTempPastStart(startDateStr);
@@ -86,19 +46,16 @@ export const useCycleManagement = ({ refreshSignal, onRefreshData, showToast }) 
       suggestedEnd = suggestedEnd > maxPossibleEnd ? maxPossibleEnd : suggestedEnd;
     }
 
-    const y = suggestedEnd.getFullYear();
-    const m = String(suggestedEnd.getMonth() + 1).padStart(2, "0");
-    const d = String(suggestedEnd.getDate()).padStart(2, "0");
-    const suggestedStr = `${y}-${m}-${d}`;
+    const formatDateStr = (dateObj) => {
+      const y = dateObj.getFullYear();
+      const m = String(dateObj.getMonth() + 1).padStart(2, "0");
+      const d = String(dateObj.getDate()).padStart(2, "0");
+      return `${y}-${m}-${d}`;
+    };
 
-    const y1 = maxPossibleEnd.getFullYear();
-    const m1 = String(maxPossibleEnd.getMonth() + 1).padStart(2, "0");
-    const d1 = String(maxPossibleEnd.getDate()).padStart(2, "0");
-    const maxPossibleEndStr = `${y1}-${m1}-${d1}`;
-    
-    setmaxPossibleEndDate(maxPossibleEndStr);
-    setPreviewEndDate(suggestedStr);
-    setShowEndPopupForDate(suggestedStr);
+    setmaxPossibleEndDate(formatDateStr(maxPossibleEnd));
+    setPreviewEndDate(formatDateStr(suggestedEnd));
+    setShowEndPopupForDate(formatDateStr(suggestedEnd));
   }, [cycleLogs]);
 
   const handleSelectEndDate = useCallback(

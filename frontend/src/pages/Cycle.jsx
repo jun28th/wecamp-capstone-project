@@ -1,12 +1,21 @@
-import { useMemo } from "react";
+import { useMemo, useState, useCallback } from "react";
 import { CycleCalendar } from "../components/features/Cycle/CycleCalendar";
 import MoodCard from "../components/MoodCard";
 import { CycleHistory } from "../components/features/Cycle/CycleHistory";
-import { useCycleLogs } from "../hooks/useCycleLogs";
+import { useCycleData } from "../hooks/useCycleData"; // Thay thế useCycleLogs bằng useCycleData chuẩn đồng bộ
 import { getDayCount } from "../utils/calendar.utils";
 
 export default function Cycle() {
-  const { cycleLogs, refreshSignal, bumpRefresh } = useCycleLogs();
+  // Quản lý refreshSignal tại cấp cha để đồng bộ hóa cho tất cả các component con
+  const [refreshSignal, setRefreshSignal] = useState(0);
+  
+  // Hàm callback để các con gọi báo lên khi dữ liệu thay đổi
+  const handleRefreshData = useCallback(() => {
+    setRefreshSignal((prev) => prev + 1);
+  }, []);
+
+  // Lấy dữ liệu chu kỳ thông qua hook dùng chung có lắng nghe refreshSignal từ cha
+  const { cycleLogs } = useCycleData(refreshSignal);
 
   const currentCycle = useMemo(
     () => cycleLogs.find((cycle) => cycle.startDate && !cycle.endDate),
@@ -24,9 +33,11 @@ export default function Cycle() {
         <h1>Cycle Calendar</h1>
       </div>
       <MoodCard />
+      
+      {/* Truyền refreshSignal và onRefreshData xuống CycleCalendar */}
       <CycleCalendar
         refreshSignal={refreshSignal}
-        onRefreshData={bumpRefresh}
+        onRefreshData={handleRefreshData}
       />
 
       <CycleHistory cycleLogs={cycleLogs} />
