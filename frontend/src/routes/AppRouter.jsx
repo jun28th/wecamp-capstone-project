@@ -1,12 +1,12 @@
 import { Route, Routes } from "react-router-dom";
-import Signup from "../pages/Signup";
-import MainLayout from "../layouts/MainLayout";
-import Home from "../pages/Home";
-import Signin from "../pages/Signin";
+import Signup from "@pages/Signup";
+import MainLayout from "@layouts/MainLayout";
+import Home from "@pages/Home";
+import Signin from "@pages/Signin";
 
-import ToDo from "../pages/ToDo";
-import Cycle from "../pages/Cycle";
-import PrivateRoute from "../components/PrivateRoute";
+import ToDo from "@pages/ToDo";
+import Cycle from "@pages/Cycle";
+import PrivateRoute from "@components/PrivateRoute";
 
 function AppRouter() {
   return (

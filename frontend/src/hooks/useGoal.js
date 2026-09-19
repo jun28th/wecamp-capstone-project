@@ -1,6 +1,6 @@
 import { useCallback, useEffect, useState } from "react";
-import goalApi from "../api/goalApi";
-import { useToast } from "../contexts/toastContext";
+import goalApi from "@api/goalApi";
+import { useToast } from "@contexts/toastContext";
 
 export function useGoal() {
   const [goal, setGoal] = useState(null);

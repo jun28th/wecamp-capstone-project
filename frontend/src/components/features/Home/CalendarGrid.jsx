@@ -1,5 +1,5 @@
 import React from "react";
-import { BaseCalendarGrid } from "../../common/BaseCalendarGrid"; // Đường dẫn đến BaseCalendarGrid chung
+import { BaseCalendarGrid } from "@common/BaseCalendarGrid"; // Đường dẫn đến BaseCalendarGrid chung
 import { DayCell } from "./DayCell";
 
 export const CalendarGrid = React.memo(

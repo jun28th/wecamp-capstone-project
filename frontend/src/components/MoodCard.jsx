@@ -1,7 +1,7 @@
 import { useState } from "react";
-import Button from "./common/Button";
-import Loading from "./common/Loading";
-import { useTodayMood } from "../hooks/useTodayMood";
+import Button from "@common/Button";
+import Loading from "@common/Loading";
+import { useTodayMood } from "@hooks/useTodayMood";
 
 const MOOD_TYPES = [
   { moodNumber: 1, moodLabel: "very-bad", title: "Very Bad", icon: "😢" },

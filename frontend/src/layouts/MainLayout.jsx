@@ -1,6 +1,6 @@
 import { Link, Outlet, useLocation } from "react-router-dom";
-import Header from "../components/common/Header";
-import { ToastProvider } from "../contexts/toastContext";
+import Header from "@common/Header";
+import { ToastProvider } from "@contexts/toastContext";
 
 function MainLayout() {
     const location = useLocation();

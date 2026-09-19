@@ -1,13 +1,13 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import MoodCard from "../components/MoodCard";
-import { DashboardCalendar } from "../components/features/Home/DashboardCalendar";
-import PhaseMessage from "../components/common/PhaseMessage";
-import { CycleStats } from "../components/common/CycleStats";
-import { computeCycleStats } from "../utils/cycle.utils";
-import { getCycles } from "../api/cycleApi";
-import DashboardTask from "../components/DashboardTask";
-import MoodTrend from "../components/MoodTrend";
-import { usePhaseMessage } from "../hooks/usePhaseMessage";
+import MoodCard from "@components/MoodCard";
+import { DashboardCalendar } from "@features/Home/DashboardCalendar";
+import PhaseMessage from "@common/PhaseMessage";
+import { CycleStats } from "@common/CycleStats";
+import { computeCycleStats } from "@utils/cycle.utils";
+import { getCycles } from "@api/cycleApi";
+import DashboardTask from "@features/Home/DashboardTask";
+import MoodTrend from "@features/Home/MoodTrend";
+import { usePhaseMessage } from "@hooks/usePhaseMessage";
 
 function Home() {
   // Dashboard Calendar

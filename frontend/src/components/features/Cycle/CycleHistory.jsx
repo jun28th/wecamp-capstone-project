@@ -1,4 +1,4 @@
-import { formatDateWithYear, getDayCount } from "../../../utils/calendar.utils";
+import { formatDateWithYear, getDayCount } from "@utils/calendar.utils";
 
 export const CycleHistory = ({ cycleLogs }) => {
   const validCycles = cycleLogs.filter((c) => c.startDate && c.endDate);

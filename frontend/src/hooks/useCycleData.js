@@ -1,6 +1,6 @@
 // src/hooks/useCycleData.js
 import { useState, useCallback, useEffect } from "react";
-import { getCycles, getPrediction } from "../api/cycleApi";
+import { getCycles, getPrediction } from "@api/cycleApi";
 
 export const useCycleData = (refreshSignal) => {
   const [cycleLogs, setCycleLogs] = useState([]);

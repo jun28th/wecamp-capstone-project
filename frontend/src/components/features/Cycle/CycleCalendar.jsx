@@ -2,18 +2,18 @@ import React, { useCallback, useMemo, useState } from "react";
 import {
   formatMonthYear,
   generateCalendarDays,
-} from "../../../utils/calendar.utils.js";
-import { CalendarHeader } from "../../common/CalendarHeader.jsx";
+} from "@utils/calendar.utils.js";
+import { CalendarHeader } from "@common/CalendarHeader.jsx";
 import { CalendarGrid } from "./CalendarGrid.jsx";
-import { CalendarLegend } from "../../common/CalendarLegend.jsx";
+import { CalendarLegend } from "@common/CalendarLegend.jsx";
 import {
   extractPeriodDays,
   extractPredictedDays,
   computeCycleStats,
-} from "../../../utils/cycle.utils.js";
-import { CycleStats } from "../../common/CycleStats.jsx";
-import { useToast } from "../../../contexts/toastContext.jsx";
-import { useCycleManagement } from "../../../hooks/useCycleManagement.js";
+} from "@utils/cycle.utils.js";
+import { CycleStats } from "@common/CycleStats.jsx";
+import { useToast } from "@contexts/toastContext.jsx";
+import { useCycleManagement } from "@hooks/useCycleManagement.js";
 
 export const CycleCalendar = React.memo(({ onRefreshData, refreshSignal }) => {
   const [currentDate, setCurrentDate] = useState(() => new Date());

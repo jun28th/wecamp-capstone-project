@@ -1,9 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { toPng } from "html-to-image";
-import Button from "./common/Button";
-import Card from "./common/Card";
-import Loading from "./common/Loading";
-import { useMoodTrend } from "../hooks/useMoodTrend";
+import Button from "@common/Button";
+import Card from "@common/Card";
+import Loading from "@common/Loading";
+import { useMoodTrend } from "@hooks/useMoodTrend";
 
 const MOOD_ICONS = { 1: "😢", 2: "🙁", 3: "😐", 4: "🙂", 5: "😄" };
 const MOOD_LABELS = {

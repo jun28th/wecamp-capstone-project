@@ -1,16 +1,16 @@
-import { useTasks } from "../hooks/useTasks";
-import { useGoal } from "../hooks/useGoal";
-import Modal from "../components/Modal";
-import TaskForm from "../components/features/ToDo/TaskForm";
-import TaskList from "../components/features/ToDo/TaskList";
-import PhaseMessage from "../components/common/PhaseMessage";
-import GoalCard from "../components/features/ToDo/GoalCard";
-import ProgressCard from "../components/features/ToDo/ProgressCard";
-import CelebrationModal from "../components/features/ToDo/CelebrationModal";
-import PageHeader from "../components/features/ToDo/PageHeader";
-import { useCelebration } from "../hooks/useCelebration";
-import { usePhaseMessage } from "../hooks/usePhaseMessage";
-import { useTaskModals } from "../hooks/useTaskModals";
+import { useTasks } from "@hooks/useTasks";
+import { useGoal } from "@hooks/useGoal";
+import Modal from "@components/Modal";
+import TaskForm from "@features/ToDo/TaskForm";
+import TaskList from "@features/ToDo/TaskList";
+import PhaseMessage from "@common/PhaseMessage";
+import GoalCard from "@features/ToDo/GoalCard";
+import ProgressCard from "@features/ToDo/ProgressCard";
+import CelebrationModal from "@features/ToDo/CelebrationModal";
+import PageHeader from "@features/ToDo/PageHeader";
+import { useCelebration } from "@hooks/useCelebration";
+import { usePhaseMessage } from "@hooks/usePhaseMessage";
+import { useTaskModals } from "@hooks/useTaskModals";
 
 function ToDo() {
   const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =

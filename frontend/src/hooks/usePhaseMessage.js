@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { getPhaseMessage } from "../api/cycleApi";
+import { getPhaseMessage } from "@api/cycleApi";
 
 export function usePhaseMessage() {
   const [phaseMessage, setPhaseMessage] = useState(null);

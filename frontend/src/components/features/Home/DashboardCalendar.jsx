@@ -1,20 +1,20 @@
 import React, { useCallback, useMemo, useState, useEffect } from "react";
 import { CalendarGrid } from "./CalendarGrid";
 import { CycleButton } from "./CycleButton";
-import { useToast } from "../../../contexts/toastContext";
-import { CycleConfirmation } from "../../common/CycleConfimation";
+import { useToast } from "@contexts/toastContext";
+import { CycleConfirmation } from "@common/CycleConfimation";
 import {
   formatMonthYear,
   generateCalendarDays,
   formatStringDateToMonthDay,
-} from "../../../utils/calendar.utils";
+} from "@utils/calendar.utils";
 import { DayDetail } from "./DayDetail";
-import { CalendarLegend } from "../../common/CalendarLegend";
-import { CalendarHeader } from "../../common/CalendarHeader";
-import { extractPeriodDays } from "../../../utils/cycle.utils";
-import { startCycle, endCycle } from "../../../api/cycleApi";
-import taskApi from "../../../api/taskApi";
-import { useCycleData } from "../../../hooks/useCycleData"; // Tận dụng common hook
+import { CalendarLegend } from "@common/CalendarLegend";
+import { CalendarHeader } from "@common/CalendarHeader";
+import { extractPeriodDays } from "@utils/cycle.utils";
+import { startCycle, endCycle } from "@api/cycleApi";
+import taskApi from "@api/taskApi";
+import { useCycleData } from "@hooks/useCycleData"; // Tận dụng common hook
 
 export const DashboardCalendar = React.memo(
   ({ onRefreshData, refreshSignal }) => {

@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import dailyLogApi from "../api/dailyLogApi";
-import { useToast } from "../contexts/toastContext";
+import dailyLogApi from "@api/dailyLogApi";
+import { useToast } from "@contexts/toastContext";
 
 export function useTodayMood() {
   const showToast = useToast();
