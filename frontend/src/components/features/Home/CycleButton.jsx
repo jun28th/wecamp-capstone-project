@@ -5,20 +5,18 @@ export const CycleButton = React.memo(
     const msg = actionType === "START" ? "Start cycle" : "End cycle";
 
     return (
-      <div style={{ maxWidth: "560px", margin: "0 auto" }}>
+      <div className="max-w-[560px] mx-auto">
         {statusText && (
           <div
             id="cycle-status-display"
-            className="text-caption"
-            style={{ marginBottom: "12px", textAlign: "center" }}
+            className="text-caption mb-3 text-center"
           >
             {statusText}
           </div>
         )}
         <button
           id="cycle-quick-action"
-          className="btn btn-primary"
-          style={{ width: "100%" }}
+          className="btn btn-primary w-full"
           onClick={onOpenConfirm}
         >
           {msg}

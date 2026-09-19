@@ -1,7 +1,5 @@
 import TaskItem from "./TaskItem";
 
-// limit lets a dashboard preview show just the first N tasks (design shows 5)
-// while the full /to-do page renders everything by leaving it unset.
 export default function TaskList({
   tasks,
   onToggleComplete,

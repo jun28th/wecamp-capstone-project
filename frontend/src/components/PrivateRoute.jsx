@@ -5,7 +5,7 @@ import authApi from "@api/authApi";
 
 function PrivateRoute() {
     const { setUser } = useAuth();
-    const [status, setStatus] = useState("checking"); // "checking" | "authenticated" | "unauthenticated"
+    const [status, setStatus] = useState("checking"); 
 
     useEffect(() => {
         const token = localStorage.getItem("token");

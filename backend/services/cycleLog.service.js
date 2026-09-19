@@ -38,8 +38,6 @@ class CycleLogService {
     return result;
   }
 
-  // AC5: recompute + persist stats/prediction whenever cycle data changes.
-  // Runs off the freshest data in DB, so callers don't need to pass anything in.
   async recalculatePrediction(userId) {
     const cycles = await cycleLogRepository.findAllByUser(userId);
     const prediction = computeCyclePrediction(cycles);
@@ -55,7 +53,6 @@ class CycleLogService {
     return prediction;
   }
 
-  // AC1-AC4, AC7: single endpoint the FE calendar + dashboard both call.
   async getPrediction(userId) {
     const [cycles, openCycle] = await Promise.all([
       cycleLogRepository.findAllByUser(userId),
@@ -65,8 +62,6 @@ class CycleLogService {
 
     return {
       ...prediction,
-      // AC4: dashboard should only surface "next cycle in X days" copy when
-      // the user isn't already mid-period; FE decides display, we just flag it.
       isOnPeriod: Boolean(openCycle),
     };
   }
@@ -174,7 +169,6 @@ class CycleLogService {
     let ovulationDay = null;
     let periodLength = null;
 
-    // AC4: Handle case when user has no cycle log data yet
     if (logs && logs.length > 0) {
       const latestLog = logs[0];
       const lastPeriodStartDate = new Date(latestLog.startDate);
@@ -190,7 +184,6 @@ class CycleLogService {
       // Calculate dynamic cycle length
       cycleLength = this._calculateCycleLength(logs);
 
-      // AC7: Handle unusually short cycle lengths (< 20 days)
       if (cycleLength < 20) {
         cycleLength = 28;
       }
@@ -207,7 +200,6 @@ class CycleLogService {
       }
       console.log(periodLength);
 
-      // AC6: Compute ovulation day
       ovulationDay = cycleLength - 14;
     }
 

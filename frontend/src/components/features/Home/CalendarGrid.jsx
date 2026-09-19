@@ -1,6 +1,5 @@
 import React from "react";
-import { BaseCalendarGrid } from "@common/BaseCalendarGrid"; // Đường dẫn đến BaseCalendarGrid chung
-import { DayCell } from "./DayCell";
+import { BaseCalendarGrid } from "@common/BaseCalendarGrid";
 
 export const CalendarGrid = React.memo(
   ({
@@ -18,7 +17,7 @@ export const CalendarGrid = React.memo(
         periodDaysSet={periodDaysSet}
         taskDaysSet={taskDaysSet}
         urgentDaysSet={urgentDaysSet}
-        isMini={true} // Lịch mini dashboard
+        isMini={true} 
         renderDayCell={({
           day,
           index,

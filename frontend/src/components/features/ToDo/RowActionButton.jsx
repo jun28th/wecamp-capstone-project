@@ -1,5 +1,3 @@
-// Small pill text button used for the Edit / Delete (or Remove) actions on a
-// row. tone picks the color: "edit" is the brand accent, "delete" is the error red.
 const TONE_CLASS = {
   edit: "text-primary-deep hover:bg-primary-tint",
   delete: "text-error-text hover:bg-error/12",

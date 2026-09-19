@@ -1,5 +1,5 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
-import MoodCard from "@components/MoodCard";
+import MoodCard from "@common/MoodCard";
 import { DashboardCalendar } from "@features/Home/DashboardCalendar";
 import PhaseMessage from "@common/PhaseMessage";
 import { CycleStats } from "@common/CycleStats";
@@ -14,7 +14,7 @@ function Home() {
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
   // Phase Message
-  const phaseMessage = usePhaseMessage();
+  const phaseMessage = usePhaseMessage(refreshSignal);
   const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
 
   useEffect(() => {

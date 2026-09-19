@@ -1,5 +1,4 @@
 export const WEEKDAYS = ["Sun", "Mon", "Tue", "Wed", "Thu", "Fri", "Sat"];
-// export const WEEKDAYSDASHBOARD = ["S", "M", "T", "W", "T", "F", "S"];
 
 export const formatMonthYear = (year, month) => {
   const date = new Date(year, month - 1, 1);
@@ -26,7 +25,6 @@ export const generateCalendarDays = (year, month) => {
   const firstDayOfMonth = new Date(year, month - 1, 1).getDay();
   const totalDays = new Date(year, month, 0).getDate();
 
-  // Empty cell days at the begining of a month
   for (let i = 0; i < firstDayOfMonth; i++) {
     days.push({ dateString: null, dayNumber: null, isEmpty: true });
   }

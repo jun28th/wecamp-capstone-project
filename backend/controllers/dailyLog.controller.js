@@ -1,4 +1,3 @@
-// controllers/dailyLog.controller.js
 import DailyLogService from "../services/dailyLog.service.js";
 
 class DailyLogController {

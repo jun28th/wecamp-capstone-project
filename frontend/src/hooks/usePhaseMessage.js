@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 import { getPhaseMessage } from "@api/cycleApi";
 
-export function usePhaseMessage() {
+export function usePhaseMessage(refreshSignal) {
   const [phaseMessage, setPhaseMessage] = useState(null);
 
   useEffect(() => {
@@ -22,7 +22,7 @@ export function usePhaseMessage() {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [refreshSignal]);
 
   return phaseMessage;
 }

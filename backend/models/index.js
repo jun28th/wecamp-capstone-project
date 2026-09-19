@@ -20,9 +20,6 @@ UserCycleStat.belongsTo(User, { foreignKey: "user_id" });
 User.hasMany(DailyLog, { foreignKey: "user_id", onDelete: "CASCADE" });
 DailyLog.belongsTo(User, { foreignKey: "user_id" });
 
-// Note: daily_logs.mood (1-5) is no longer backed by a mood_types table -
-// it's just a plain SMALLINT with app-level range validation on the model.
-
 // users (1) --- (N) tasks
 User.hasMany(Task, { foreignKey: "user_id", onDelete: "CASCADE" });
 Task.belongsTo(User, { foreignKey: "user_id" });

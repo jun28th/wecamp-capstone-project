@@ -14,29 +14,17 @@ const app = express();
 app.use(cors());
 app.use(express.json());
 
-// Register routes
 app.use("/api/auth", authRoutes);
 app.use("/api/users", userRoutes);
 app.use("/api/dailyLog", dailyLogRoutes);
 app.use("/api/tasks", taskRoutes);
 app.use("/api/goals", goalRoutes);
 app.use("/api/cycle-logs", cycleLogRoute)
-// const express = require('express');
-// const cors = require('cors');
-// const itemRoutes = require('./routes/item.routes');
-// const errorHandler = require('./middlewares/errorHandler');
-
-// const app = express();
-// app.use(cors());
-// app.use(express.json());
 
 app.get("/api", (req, res) => {
   res.send("Backend đang chạy!");
 });
 
-// app.use('/api/items', itemRoutes);
-
-// app.use(errorHandler);
 app.use(notFound);
 app.use(errorHandler);
 
@@ -46,8 +34,8 @@ async function startServer() {
   try {
     await sequelize.authenticate();
     console.log("Connection has been established successfully.");
-    await sequelize.sync(); // Creates all 6 tables (users, cycle_logs, user_cycle_stats, daily_logs, tasks, daily_rewards) if they don't exist
-    await ensureDefaultUser(); // Temporary: owns all tasks until real auth/login exists
+    await sequelize.sync(); 
+    await ensureDefaultUser(); 
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT}`);
     });
@@ -56,5 +44,4 @@ async function startServer() {
   }
 }
 
-// Khởi chạy server
 startServer();

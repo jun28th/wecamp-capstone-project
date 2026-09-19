@@ -1,6 +1,6 @@
 import { useTasks } from "@hooks/useTasks";
 import { useGoal } from "@hooks/useGoal";
-import Modal from "@components/Modal";
+import Modal from "@common/Modal";
 import TaskForm from "@features/ToDo/TaskForm";
 import TaskList from "@features/ToDo/TaskList";
 import SearchInput from "@features/ToDo/SearchInput";
