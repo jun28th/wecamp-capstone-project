@@ -1,11 +1,14 @@
 export default function PhaseMessage({ phaseMessage }) {
   if (!phaseMessage) return null;
+
+  const { accent, tint, icon, title, description } = phaseMessage;
+
   return (
     <div
       className="card"
       id="phase-message-card"
       data-od-id="phase-message-card"
-      style={{ borderLeft: `4px solid ${phaseMessage.accent}` }}
+      style={{ borderLeft: `4px solid ${accent}` }}
     >
       <div style={{ display: "flex", alignItems: "flex-start", gap: "14px" }}>
         <div
@@ -19,10 +22,10 @@ export default function PhaseMessage({ phaseMessage }) {
             justifyContent: "center",
             fontSize: "20px",
             flexShrink: "0",
-            background: phaseMessage.tint,
+            background: tint,
           }}
         >
-          {phaseMessage.icon}
+          {icon}
         </div>
         <div>
           <h3
@@ -33,14 +36,14 @@ export default function PhaseMessage({ phaseMessage }) {
               color: "var(--color-ink)",
             }}
           >
-            {phaseMessage.title}
+            {title}
           </h3>
           <p
             id="phase-description"
             className="text-caption"
             style={{ margin: "0", fontSize: "14px" }}
           >
-            {phaseMessage.description}
+            {description}
           </p>
         </div>
       </div>

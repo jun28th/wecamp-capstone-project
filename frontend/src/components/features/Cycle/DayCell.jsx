@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import Confirmation from "./Confirmation";
+
 export const DayCell = React.memo(
   ({
     dayData,
@@ -18,12 +19,14 @@ export const DayCell = React.memo(
     setTempPastStart,
   }) => {
     const [showConfirm, setShowConfirm] = useState(false);
+
     if (dayData.isEmpty || !dayData.dateString) {
       return <div className="calendar-day empty"></div>;
     }
 
     const dateStr = dayData.dateString;
 
+    // 1. Tính toán ClassName cho ngày
     let className = ["calendar-day"];
     if (isFuture) className.push("future");
     else className.push("interactive");
@@ -32,9 +35,7 @@ export const DayCell = React.memo(
     if (isPredicted) className.push("predicted");
     if (showConfirm) className.push("active-hover");
 
-    // const actionType = activeStartDate ? "END" : "START";
-
-    // NEW
+    // 2. Tính toán phạm vi preview chu kỳ quá khứ
     let isInPreviewRange = false;
     if (tempPastStart && (previewEndDate || dateStr)) {
       const current = new Date(dateStr);
@@ -45,7 +46,7 @@ export const DayCell = React.memo(
       }
     }
 
-    // [NEW] Kiểm tra ràng buộc hover: Nếu đang chọn end cho chu kỳ quá khứ mà hover trước ngày start hoặc >= chu kỳ hiện tại (13)
+    // 3. Kiểm tra ràng buộc hover không hợp lệ
     let isInvalidHover = false;
     if (tempPastStart && maxPossibleEndDate) {
       const current = new Date(dateStr);
@@ -56,38 +57,35 @@ export const DayCell = React.memo(
       }
     }
 
-    // [NEW] Thêm class tô màu hồng nhạt và con trỏ not-allowed nếu không hợp lệ
     if (isInPreviewRange && !isPeriod) className.push("period-preview");
     if (isInvalidHover && tempPastStart) className.push("invalid-hover");
 
-    // Xác định actionType:
-    // Nếu chưa có activeStartDate -> START bình thường.
-    // Nếu đã có activeStartDate (ví dụ ngày 13) -> Các ngày đứng trước ngày 13 mà chưa có chu kỳ sẽ là hành động START cho chu kỳ quá khứ.
+    // 4. Xác định ActionType
     const isBeforeActiveStart = activeStartDate
-      ? dateStr < activeStartDate
+      ? dateStr > activeStartDate
       : true;
+
     const actionType =
-      !isPeriod && isBeforeActiveStart && !activeStartDate
+      !isPeriod && !isBeforeActiveStart
         ? "START"
         : activeStartDate && !isPeriod && dateStr < activeStartDate
           ? "START_PAST"
           : "END";
 
-    // [NEW] Kiểm tra xem có đang mở popup confirm end date tự động tại ngày start + 4 không
     const showThisEndPopup = showEndPopupForDate === dateStr;
+
     return (
       <div
         className="day-cell-wrapper"
         onClick={() => {
           if (isFuture) return;
-          // [NEW] Nếu đang trong tiến trình chọn chu kỳ quá khứ, click vào ngày nào sẽ chọn ngày đó làm EndDate mới
           if (tempPastStart) {
             onSelectEndDate(dateStr);
           }
         }}
         onMouseEnter={() => {
           if (isFuture) return;
-          if (!tempPastStart) setShowConfirm(true); // Chỉ hiện popup thường khi chưa chọn past start
+          if (!tempPastStart) setShowConfirm(true);
         }}
         onMouseLeave={() => {
           if (isFuture) return;
@@ -109,7 +107,6 @@ export const DayCell = React.memo(
                 type === "START_PAST" ||
                 (activeStartDate && date < activeStartDate)
               ) {
-                // Trigger quá trình chọn chu kỳ quá khứ
                 onConfirmCycleAction(date, "INIT_PAST_START");
               } else {
                 onConfirmCycleAction(date, type);
@@ -119,7 +116,7 @@ export const DayCell = React.memo(
           />
         )}
 
-        {/* [NEW] Popup tự động bật xác nhận End Date cho chu kỳ quá khứ tại ngày start + 4 */}
+        {/* Popup tự động bật xác nhận End Date cho chu kỳ quá khứ tại ngày start + 4 */}
         {showThisEndPopup && (
           <Confirmation
             actionType="CONFIRM_PAST_END"

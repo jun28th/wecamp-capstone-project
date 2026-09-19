@@ -1,13 +1,13 @@
 import { useTasks } from "../hooks/useTasks";
 import { useGoal } from "../hooks/useGoal";
-import ProgressCard from "./feature/ToDo/ProgressCard";
-import GoalCard from "./feature/ToDo/GoalCard";
+import ProgressCard from "./features/ToDo/ProgressCard";
+import GoalCard from "./features/ToDo/GoalCard";
 import Modal from "./Modal";
-import TaskForm from "./feature/ToDo/TaskForm";
+import TaskForm from "./features/ToDo/TaskForm";
 import Button from "./common/Button";
 import ToDoCheckbox from "./common/ToDoCheckbox";
 import Card from "./common/Card";
-import CelebrationModal from "./feature/ToDo/CelebrationModal";
+import CelebrationModal from "./features/ToDo/CelebrationModal";
 import { useCelebration } from "../hooks/useCelebration";
 import { useTaskModals } from "../hooks/useTaskModals";
 import { useNavigate } from "react-router-dom";

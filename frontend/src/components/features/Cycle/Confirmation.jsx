@@ -1,4 +1,4 @@
-import { formatStringDateToMonthDay } from "../../utils/calendar.utils";
+import { formatStringDateToMonthDay } from "../../../utils/calendar.utils";
 
 export default function Confirmation({
   isHover,
@@ -8,11 +8,14 @@ export default function Confirmation({
   onConfirmCycleAction,
 }) {
   if (!isHover) return null;
-  const msg =
-    actionType == "START" || actionType == "START_PAST"
-      ? `Mark ${formatStringDateToMonthDay(date)} as cycle start?`
-      : `Mark ${formatStringDateToMonthDay(date)} as cycle end?`;
-  console.log(actionType);
+
+  // Sử dụng .includes() hoặc === với strict equality, tránh dùng ==
+  const isStartAction = ["START", "START_PAST"].includes(actionType);
+
+  const msg = isStartAction
+    ? `Mark ${formatStringDateToMonthDay(date)} as cycle start?`
+    : `Mark ${formatStringDateToMonthDay(date)} as cycle end?`;
+
   return (
     <div
       id="confirm-popover"

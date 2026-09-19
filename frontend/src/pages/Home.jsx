@@ -1,8 +1,8 @@
 import { useEffect, useState, useMemo, useCallback } from "react";
 import MoodCard from "../components/MoodCard";
 import { DashboardCalendar } from "../components/dashboard-calendar/DashboardCalendar";
-import PhaseMessage from "../components/PhaseMessage";
-import { CycleStats } from "../components/cycle-calendar/CycleStats";
+import PhaseMessage from "../components/common/PhaseMessage";
+import { CycleStats } from "../components/features/Cycle/CycleStats";
 import { computeCycleStats } from "../utils/cycle.utils";
 import { getCycles } from "../api/cycleApi";
 import DashboardTask from "../components/DashboardTask";
