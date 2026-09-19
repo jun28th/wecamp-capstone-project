@@ -1,4 +1,8 @@
 import { useState } from "react";
+import Button from "@common/Button";
+import PillButton from "@common/PillButton";
+import FormField from "./FormField";
+import RowActionButton from "./RowActionButton";
 
 export default function GoalCard({ goal, unlocked, onSave, onRemove }) {
   const [editing, setEditing] = useState(false);
@@ -20,24 +24,21 @@ export default function GoalCard({ goal, unlocked, onSave, onRemove }) {
     return (
       <div className="card">
         <form onSubmit={handleSubmit}>
-          <div className="form-field" style={{ marginBottom: "12px" }}>
-            <label htmlFor="reward-input">Reward</label>
-            <input
-              id="reward-input"
-              type="text"
-              placeholder="e.g. Watch a movie tonight"
-              value={rewardText}
-              onChange={(event) => setRewardText(event.target.value)}
-              autoFocus
-            />
-          </div>
-          <div style={{ display: "flex", gap: "10px", justifyContent: "flex-end" }}>
-            <button type="button" className="btn-cancel" onClick={() => setEditing(false)}>
+          <FormField
+            id="reward-input"
+            label="Reward"
+            className="mb-3"
+            type="text"
+            placeholder="e.g. Watch a movie tonight"
+            value={rewardText}
+            onChange={(event) => setRewardText(event.target.value)}
+            autoFocus
+          />
+          <div className="flex justify-end gap-2.5">
+            <PillButton type="button" onClick={() => setEditing(false)}>
               Cancel
-            </button>
-            <button type="submit" className="btn btn-primary">
-              Save
-            </button>
+            </PillButton>
+            <Button type="submit">Save</Button>
           </div>
         </form>
       </div>
@@ -46,11 +47,11 @@ export default function GoalCard({ goal, unlocked, onSave, onRemove }) {
 
   if (!goal) {
     return (
-      <div className="card" onClick={openForm} style={{ cursor: "pointer" }}>
-        <p style={{ margin: 0, fontSize: "15px", fontWeight: 600, color: "var(--color-primary-deep)" }}>
+      <div className="card cursor-pointer" onClick={openForm}>
+        <p className="text-[15px] font-semibold text-primary-deep">
           + Set today's goal / reward
         </p>
-        <p className="text-caption" style={{ margin: "4px 0 0 0" }}>
+        <p className="text-caption mt-1">
           Give yourself something to look forward to once every task is done.
         </p>
       </div>
@@ -58,38 +59,27 @@ export default function GoalCard({ goal, unlocked, onSave, onRemove }) {
   }
 
   return (
-    <div className={unlocked ? "card reward-card-unlocked" : "card"}>
-      <div style={{ display: "flex", alignItems: "center", justifyContent: "space-between", gap: "12px" }}>
-        <div style={{ display: "flex", alignItems: "center", gap: "10px", minWidth: 0 }}>
-          <span style={{ fontSize: "22px", flexShrink: 0 }}>{unlocked ? "🎁" : "🔒"}</span>
-          <div style={{ minWidth: 0 }}>
-            <p className="text-caption" style={{ margin: 0 }}>
-              Today's Goal
-            </p>
-            <p
-              style={{
-                margin: "2px 0 0 0",
-                fontSize: "16px",
-                fontWeight: 600,
-                color: "var(--color-ink)",
-                overflowWrap: "anywhere",
-                wordBreak: "break-word",
-              }}
-            >
+    <div className={unlocked ? "card border-[1.5px] border-gold" : "card"}>
+      <div className="flex items-center justify-between gap-3">
+        <div className="flex min-w-0 items-center gap-2.5">
+          <span className="shrink-0 text-[22px]">{unlocked ? "🎁" : "🔒"}</span>
+          <div className="min-w-0">
+            <p className="text-caption">Today's Goal</p>
+            <p className="mt-0.5 text-[16px] font-semibold text-ink wrap-anywhere [word-break:break-word]">
               {goal.rewardText}
             </p>
           </div>
         </div>
-        <div style={{ display: "flex", gap: "2px", flexShrink: 0 }}>
-          <button className="todo-action-btn edit" onClick={openForm}>
+        <div className="flex shrink-0 gap-0.5">
+          <RowActionButton tone="edit" onClick={openForm}>
             Edit
-          </button>
-          <button className="todo-action-btn delete" onClick={onRemove}>
+          </RowActionButton>
+          <RowActionButton tone="delete" onClick={onRemove}>
             Remove
-          </button>
+          </RowActionButton>
         </div>
       </div>
-      <p className="text-caption" style={{ margin: "8px 0 0 0" }}>
+      <p className="text-caption mt-2">
         {unlocked ? "Unlocked — enjoy your reward!" : "Locked — complete all tasks to unlock"}
       </p>
     </div>
