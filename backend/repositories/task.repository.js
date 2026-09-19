@@ -1,6 +1,21 @@
 import { Op } from "sequelize";
 import { Task } from "../models/index.js";
 
+// Mechanical translation of the service's due-date criteria into a where clause.
+function dueCriteriaToWhere(due) {
+  if (!due) return {};
+  if (due.none) return { due_date: { [Op.is]: null } };
+  if (due.on) return { due_date: due.on };
+  if (due.from) return { due_date: { [Op.between]: [due.from, due.to] } };
+  if (due.before) {
+    return {
+      due_date: { [Op.lt]: due.before },
+      ...(due.incompleteOnly && { is_completed: false }),
+    };
+  }
+  return {};
+}
+
 class TaskRepository {
   async createTask(data) {
     return await Task.create(data);
@@ -10,8 +25,8 @@ class TaskRepository {
     return await Task.findByPk(id);
   }
 
-  async findAllByUser(userId, { search } = {}) {
-    const where = { user_id: userId };
+  async findAllByUser(userId, { search, due } = {}) {
+    const where = { user_id: userId, ...dueCriteriaToWhere(due) };
     if (search) {
       where.title = { [Op.like]: `%${search}%` };
     }
