@@ -1,5 +1,5 @@
 import React from "react";
-import { WEEKDAYS } from "@utils/calendar.utils"; // Điều chỉnh lại đường dẫn import cho đúng thư mục chung của bạn
+import { WEEKDAYS } from "@utils/calendar.utils"; // Điều chỉnh lại đường dẫn import cho đúng dự án của bạn
 
 export const BaseCalendarGrid = React.memo(
   ({ 
@@ -10,11 +10,11 @@ export const BaseCalendarGrid = React.memo(
     taskDaysSet, 
     urgentDaysSet,
     onDayClick,
-    // Các props khác tùy bạn cấu hình thêm
-    isMini = false, // Biến cờ để phân biệt style mini (dashboard) hay full (cycle page)
-    renderDayCell   // Hàm truyền vào để render ô ngày linh hoạt tùy trang
+    isMini = false, // Vẫn giữ cờ nếu cần phân biệt id
+    renderDayCell   
   }) => {
-    const gridClassName = isMini ? "mini-calendar-grid" : "calendar-grid";
+    // Tận dụng Tailwind utility classes chung cho lưới lịch
+    const gridClassName = "grid grid-cols-7 gap-3 max-w-[560px] mx-auto";
     const daysId = isMini ? "mini-calendar-days" : "calendar-days";
 
     return (
@@ -22,7 +22,10 @@ export const BaseCalendarGrid = React.memo(
         {/* Header hiển thị các ngày trong tuần */}
         <div className={gridClassName}>
           {WEEKDAYS.map((weekday) => (
-            <div key={weekday} className={isMini ? "mini-weekday" : "calendar-weekday"}>
+            <div 
+              key={weekday} 
+              className="text-center text-[13px] font-semibold text-[var(--muted)] py-[6px] px-[2px]"
+            >
               {weekday}
             </div>
           ))}
@@ -31,8 +34,7 @@ export const BaseCalendarGrid = React.memo(
         {/* Lưới hiển thị các ngày trong tháng */}
         <div
           id={daysId}
-          className={gridClassName}
-          style={{ marginTop: "4px" }}
+          className={`${gridClassName} mt-1`}
         >
           {days.map((day, index) => {
             const { dateString } = day;
@@ -40,12 +42,10 @@ export const BaseCalendarGrid = React.memo(
             const isPeriod = dateString ? periodDaysSet?.has(dateString) : false;
             const isFuture = dateString ? dateString > todayString : false;
             
-            // Các giá trị bổ sung nếu có
             const isPredicted = dateString && !isPeriod ? (predictedDaysSet?.has(dateString) ?? false) : false;
             const hasTask = dateString ? taskDaysSet?.has(dateString) : false;
             const isUrgent = dateString ? urgentDaysSet?.has(dateString) : false;
 
-            // Gọi hàm render truyền từ ngoài vào để linh động hiển thị DayCell tương ứng
             return renderDayCell({
               day,
               index,
