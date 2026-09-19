@@ -2,7 +2,7 @@ import { useTasks } from "@hooks/useTasks";
 import { useGoal } from "@hooks/useGoal";
 import ProgressCard from "@features/ToDo/ProgressCard";
 import GoalCard from "@features/ToDo/GoalCard";
-import Modal from "@components/Modal";
+import Modal from "@common/Modal";
 import TaskForm from "@features/ToDo/TaskForm";
 import Button from "@common/Button";
 import ToDoCheckbox from "@common/ToDoCheckbox";

@@ -1,8 +1,9 @@
 import { useTasks } from "@hooks/useTasks";
 import { useGoal } from "@hooks/useGoal";
-import Modal from "@components/Modal";
+import Modal from "@common/Modal";
 import TaskForm from "@features/ToDo/TaskForm";
 import TaskList from "@features/ToDo/TaskList";
+import SearchInput from "@features/ToDo/SearchInput";
 import PhaseMessage from "@common/PhaseMessage";
 import GoalCard from "@features/ToDo/GoalCard";
 import ProgressCard from "@features/ToDo/ProgressCard";
@@ -13,8 +14,16 @@ import { usePhaseMessage } from "@hooks/usePhaseMessage";
 import { useTaskModals } from "@hooks/useTaskModals";
 
 function ToDo() {
-  const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
-    useTasks();
+  const {
+    tasks,
+    progress,
+    addTask,
+    editTask,
+    removeTask,
+    toggleComplete,
+    searchTerm,
+    setSearchTerm,
+  } = useTasks();
   const { goal, saveGoal, removeGoal } = useGoal();
   const phaseMessage = usePhaseMessage();
   const [celebrationOpen, setCelebrationOpen] = useCelebration(
@@ -55,12 +64,24 @@ function ToDo() {
           </button>
         </div>
 
+        <div className="mb-4 flex flex-wrap gap-3">
+          <SearchInput
+            placeholder="Search tasks by name..."
+            aria-label="Search tasks by name"
+            value={searchTerm}
+            onChange={(e) => setSearchTerm(e.target.value)}
+          />
+        </div>
+
         <div className="card">
           <TaskList
             tasks={tasks}
             onToggleComplete={toggleComplete}
             onEdit={openEditForm}
             onDelete={setTaskPendingDelete}
+            emptyMessage={
+              searchTerm ? "No tasks match your search or filter." : undefined
+            }
           />
         </div>
       </section>

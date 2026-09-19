@@ -13,20 +13,32 @@ function isDueTodayOrUndated(task) {
 
 export function useTasks() {
   const [tasks, setTasks] = useState([]);
+  const [searchTerm, setSearchTerm] = useState("");
   const showToast = useToast();
 
   const loadTasks = useCallback(async () => {
     try {
-      const data = await taskApi.getTasks();
+      const data = await taskApi.getTasks({ search: searchTerm });
       setTasks(data);
     } catch (error) {
       showToast("Failed to load tasks", "error");
     }
-  }, [showToast]);
+  }, [searchTerm, showToast]);
 
+  // Debounce refetching while the user is still typing in the search box. With
+  // an empty box (first load, or the search was just cleared) there is nothing
+  // to wait for, so fetch right away - otherwise every surface using this hook,
+  // e.g. the Home dashboard, would show its tasks 300ms late.
   useEffect(() => {
-    loadTasks();
-  }, [loadTasks]);
+    if (!searchTerm) {
+      loadTasks();
+      return;
+    }
+    const timeoutId = setTimeout(() => {
+      loadTasks();
+    }, 300);
+    return () => clearTimeout(timeoutId);
+  }, [loadTasks, searchTerm]);
 
   const addTask = useCallback(
     async (data) => {
@@ -97,5 +109,7 @@ export function useTasks() {
     editTask,
     removeTask,
     toggleComplete,
+    searchTerm,
+    setSearchTerm,
   };
 }

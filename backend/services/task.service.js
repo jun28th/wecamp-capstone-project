@@ -1,4 +1,5 @@
 import TaskRepository from "../repositories/task.repository.js";
+import AppError from "../utils/AppError.js"
 
 const REQUIRED_FIELDS = ["title"];
 
@@ -16,8 +17,9 @@ class TaskService {
     return await TaskRepository.createTask({ userId, title, dueDate, priority });
   }
 
-  async getTasksByUser(userId) {
-    return await TaskRepository.findAllByUser(userId);
+  async getTasksByUser(userId, filters = {}) {
+    const search = filters.search?.trim();
+    return await TaskRepository.findAllByUser(userId, { search });
   }
 
   async updateTask(id, data) {
@@ -29,7 +31,7 @@ class TaskService {
 
     const updated = await TaskRepository.updateTask(id, updates);
     if (!updated) {
-      throw new Error("Task not found");
+      throw new AppError("Task not found",404);
     }
     return updated;
   }
@@ -37,7 +39,7 @@ class TaskService {
   async deleteTask(id) {
     const deletedCount = await TaskRepository.deleteTask(id);
     if (!deletedCount) {
-      throw new Error("Task not found");
+      throw new AppError("Task not found",404);
     }
     return deletedCount;
   }
@@ -48,7 +50,7 @@ class TaskService {
       completedAt: isCompleted ? new Date() : null,
     });
     if (!updated) {
-      throw new Error("Task not found");
+      throw new AppError("Task not found",404);
     }
     return updated;
   }
