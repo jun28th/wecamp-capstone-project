@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import dailyLogApi from "@api/dailyLogApi";
 import { useToast } from "@contexts/toastContext";
 
-export function useTodayMood() {
+export function useTodayMood({ onSaved } = {}) {
   const showToast = useToast();
   const [selectedMood, setSelectedMood] = useState(null);
   const [note, setNote] = useState("");
@@ -50,6 +50,7 @@ export function useTodayMood() {
       setSaving(true);
       await dailyLogApi.createLog({ mood: selectedMood, note });
       setFinalize(true);
+      onSaved?.();
     } catch (error) {
       console.error("Failed to save mood:", error);
       showToast("Unable to save mood; please try again.", "error");

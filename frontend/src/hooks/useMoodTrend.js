@@ -1,5 +1,6 @@
 import { useCallback, useEffect, useMemo, useState } from "react";
 import dailyLogApi from "@api/dailyLogApi";
+import { toVietnamDateString, vietnamDateDaysAgo } from "@utils/calendar.utils";
 
 function normalizeView(view) {
   if (view.type !== "month") return view;
@@ -15,23 +16,16 @@ function normalizeView(view) {
   return { type: "month", year, month };
 }
 
-function toISODate(d) {
-  return d.toISOString().split("T")[0];
-}
-
 function isSameMonth(view) {
-  const now = new Date();
-  return view.year === now.getFullYear() && view.month === now.getMonth();
+  const [y, m] = toVietnamDateString().split("-").map(Number);
+  return view.year === y && view.month === m - 1;
 }
 
 export function getMoodChartRange(view) {
   if (view.type === "last30") {
     const dates = [];
-    const today = new Date();
     for (let i = 29; i >= 0; i--) {
-      const d = new Date(today);
-      d.setDate(d.getDate() - i);
-      dates.push(toISODate(d));
+      dates.push(vietnamDateDaysAgo(i));
     }
     return {
       dates,
@@ -60,7 +54,7 @@ export function getMoodChartRange(view) {
   };
 }
 
-export function useMoodTrend() {
+export function useMoodTrend(refreshSignal = 0) {
   const [view, setView] = useState({ type: "last30" });
   const [logs, setLogs] = useState([]);
   const [isLoading, setIsLoading] = useState(true);
@@ -95,7 +89,7 @@ export function useMoodTrend() {
     return () => {
       cancelled = true;
     };
-  }, [range.startDate, range.endDate, retryTick]);
+  }, [range.startDate, range.endDate, retryTick, refreshSignal]);
 
   const points = useMemo(() => {
     const logsByDate = new Map(logs.map((log) => [log.date, log]));

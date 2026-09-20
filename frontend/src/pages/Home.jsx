@@ -10,6 +10,9 @@ import MoodTrend from "@features/Home/MoodTrend";
 import { usePhaseMessage } from "@hooks/usePhaseMessage";
 
 function Home() {
+  // Mood
+  const [moodRefreshSignal, setMoodRefreshSignal] = useState(0);
+  const bumpMoodRefresh = useCallback(() => setMoodRefreshSignal((s) => s + 1), []);
   // Dashboard Calendar
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
@@ -46,7 +49,7 @@ function Home() {
         <h1>What's happening today? ✨</h1>
       </div>
       <PhaseMessage phaseMessage={phaseMessage} />
-      <MoodCard dashboard />
+      <MoodCard dashboard onSaved={bumpMoodRefresh}/>
 
       <CycleStats stats={cycleStats} fullWidth />
 
@@ -62,7 +65,7 @@ function Home() {
         </div>
       </div>
 
-      <MoodTrend />
+      <MoodTrend refreshSignal={moodRefreshSignal} />
     </div>
   );
 }
