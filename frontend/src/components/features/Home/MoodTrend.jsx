@@ -15,7 +15,7 @@ const MOOD_LABELS = {
 };
 const MOOD_LEVELS_ORDER = [1, 2, 3, 4, 5];
 
-export default function MoodTrend() {
+export default function MoodTrend({ refreshSignal = 0 }) {
   const {
     points,
     hasData,
@@ -26,7 +26,7 @@ export default function MoodTrend() {
     handleNext: handleNextMoodTrend,
     handlePrev: handlePrevMoodTrend,
     retry: onRetry,
-  } = useMoodTrend();
+  } = useMoodTrend(refreshSignal);
   
   const atPresent = moodChartView.type === "last30";
   const wrapRef = useRef(null);

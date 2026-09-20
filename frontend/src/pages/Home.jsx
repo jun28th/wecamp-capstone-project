@@ -10,9 +10,15 @@ import MoodTrend from "@features/Home/MoodTrend";
 import { usePhaseMessage } from "@hooks/usePhaseMessage";
 
 function Home() {
+  // Mood
+  const [moodRefreshSignal, setMoodRefreshSignal] = useState(0);
+  const bumpMoodRefresh = useCallback(() => setMoodRefreshSignal((s) => s + 1), []);
   // Dashboard Calendar
   const [refreshSignal, setRefreshSignal] = useState(0);
   const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
+  // Task
+  const [taskRefreshSignal, setTaskRefreshSignal] = useState(0);
+  const bumpTaskRefresh = useCallback(() => setTaskRefreshSignal((s) => s + 1), []);
   // Phase Message
   const phaseMessage = usePhaseMessage(refreshSignal);
   const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
@@ -46,7 +52,7 @@ function Home() {
         <h1>What's happening today? ✨</h1>
       </div>
       <PhaseMessage phaseMessage={phaseMessage} />
-      <MoodCard dashboard />
+      <MoodCard dashboard onSaved={bumpMoodRefresh}/>
 
       <CycleStats stats={cycleStats} fullWidth />
 
@@ -55,14 +61,15 @@ function Home() {
           <DashboardCalendar
             refreshSignal={refreshSignal}
             onRefreshData={bumpRefresh}
+            taskRefreshSignal={taskRefreshSignal}
           />
         </div>
         <div className="col-grid-1" data-od-id="home-progress-and-tasks-column">
-          <DashboardTask />
+          <DashboardTask onTasksChanged={bumpTaskRefresh}/>
         </div>
       </div>
 
-      <MoodTrend />
+      <MoodTrend refreshSignal={moodRefreshSignal} />
     </div>
   );
 }

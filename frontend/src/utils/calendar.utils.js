@@ -69,3 +69,17 @@ export const todayEyebrow = () => {
     day: "numeric",
   });
 }
+
+const VN_TZ = "Asia/Ho_Chi_Minh";
+
+const vnFormatter = new Intl.DateTimeFormat("en-CA", { timeZone: VN_TZ });
+
+// "YYYY-MM-DD" theo giờ Việt Nam, bất kể máy người dùng ở múi giờ nào
+export function toVietnamDateString(date = new Date()) {
+  return vnFormatter.format(date);
+}
+
+// Lùi n ngày so với hôm nay (giờ VN)
+export function vietnamDateDaysAgo(n) {
+  return toVietnamDateString(new Date(Date.now() - n * 24 * 60 * 60 * 1000));
+}

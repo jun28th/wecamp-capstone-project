@@ -13,7 +13,7 @@ const MOOD_TYPES = [
 
 const NOTE_MAX_LENGTH = 60;
 
-export default function MoodCard({ dashboard = false }) {
+export default function MoodCard({ dashboard = false, onSaved }) {
   const {
     selectedMood,
     note,
@@ -23,7 +23,7 @@ export default function MoodCard({ dashboard = false }) {
     saving,
     selectMood,
     saveMood,
-  } = useTodayMood();
+  } = useTodayMood({ onSaved });
   const [hoveredMood, setHoveredMood] = useState(null);
 
   const hasSavedNote = finalize && note.trim() !== "";

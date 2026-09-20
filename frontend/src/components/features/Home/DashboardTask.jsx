@@ -12,10 +12,10 @@ import { useCelebration } from "@hooks/useCelebration";
 import { useTaskModals } from "@hooks/useTaskModals";
 import { useNavigate } from "react-router-dom";
 
-function DashboardTask() {
+function DashboardTask({ onTasksChanged }) {
   const navigate = useNavigate();
   const { tasks, progress, addTask, editTask, removeTask, toggleComplete } =
-    useTasks();
+    useTasks({ onChange: onTasksChanged });
 
   const { goal, saveGoal, removeGoal } = useGoal();
   const [celebrationOpen, setCelebrationOpen] = useCelebration(

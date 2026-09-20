@@ -17,7 +17,7 @@ import taskApi from "@api/taskApi";
 import { useCycleData } from "@hooks/useCycleData";
 
 export const DashboardCalendar = React.memo(
-  ({ onRefreshData, refreshSignal }) => {
+  ({ onRefreshData, refreshSignal, taskRefreshSignal }) => {
     const { cycleLogs, prediction } = useCycleData(refreshSignal);
 
     const [isConfirmOpen, setIsConfirmOpen] = useState(false);
@@ -106,7 +106,7 @@ export const DashboardCalendar = React.memo(
 
     useEffect(() => {
       fetchTasks();
-    }, [fetchTasks, refreshSignal]);
+    }, [fetchTasks, refreshSignal, taskRefreshSignal]);
 
     const { taskDaysSet, urgentDaysSet, tasksMap } = useMemo(() => {
       const taskSet = new Set();
