@@ -100,7 +100,7 @@ export const useCycleManagement = ({ refreshSignal, onRefreshData, showToast }) 
             if (onRefreshData) onRefreshData();
           }
         } catch (error) {
-          alert(error.response?.data?.message || error.message);
+          showToast(error.response?.data?.message || error.message,"error");
         }
         return;
       }
@@ -135,9 +135,7 @@ export const useCycleManagement = ({ refreshSignal, onRefreshData, showToast }) 
           if (onRefreshData) onRefreshData();
         }
       } catch (error) {
-        console.error(error);
-        const errorMessage = error.response?.data?.message || error.message;
-        alert(errorMessage);
+        showToast(error.response?.data?.message || error.message,"error");
       }
     },
     [

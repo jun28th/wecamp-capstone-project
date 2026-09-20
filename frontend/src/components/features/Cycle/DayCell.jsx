@@ -79,16 +79,19 @@ export const DayCell = React.memo(
         className="day-cell-wrapper"
         onClick={() => {
           if (isFuture) return;
+          if (isPeriod && dateStr < activeStartDate) return;
           if (tempPastStart) {
             onSelectEndDate(dateStr);
           }
         }}
         onMouseEnter={() => {
           if (isFuture) return;
+          if (isPeriod && dateStr < activeStartDate) return;
           if (!tempPastStart) setShowConfirm(true);
         }}
         onMouseLeave={() => {
           if (isFuture) return;
+          if (isPeriod && dateStr < activeStartDate) return;
           setShowConfirm(false);
         }}
       >
