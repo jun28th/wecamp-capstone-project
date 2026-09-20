@@ -15,7 +15,7 @@ function isDueTodayOrUndated(task) {
   return !task.dueDate || task.dueDate <= todayDateOnly();
 }
 
-export function useTasks() {
+export function useTasks({ onChange } = {}) {
   // tasks is what the list shows (search + due-date filter applied); allTasks
   // is every task and is what progress / the celebration are computed from, so
   // filtering can never change today's progress or unlock the reward.
@@ -78,13 +78,14 @@ export function useTasks() {
         await taskApi.createTask(data);
         showToast("Task added successfully");
         await loadTasks();
+        onChange?.()
         return true;
       } catch (error) {
         showToast("Something went wrong, please try again", "error");
         return false;
       }
     },
-    [loadTasks, showToast],
+    [loadTasks, showToast, onChange],
   );
 
   const editTask = useCallback(
