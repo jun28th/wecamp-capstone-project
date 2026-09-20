@@ -25,7 +25,15 @@ export const CalendarGrid = React.memo(
         periodDaysSet={periodDaysSet}
         predictedDaysSet={predictedDaysSet}
         isMini={false} // Lịch lớn
-        renderDayCell={({ day, index, dateString, isToday, isPeriod, isFuture, isPredicted }) => (
+        renderDayCell={({
+          day,
+          index,
+          dateString,
+          isToday,
+          isPeriod,
+          isFuture,
+          isPredicted,
+        }) => (
           <DayCell
             key={dateString || `empty-${index}`}
             activeStartDate={activeStartDate}
