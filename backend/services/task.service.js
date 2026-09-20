@@ -1,5 +1,6 @@
 import TaskRepository from "../repositories/task.repository.js";
 import AppError from "../utils/AppError.js"
+import { resolveDueCriteria } from "./taskDueFilter.util.js";
 
 const REQUIRED_FIELDS = ["title"];
 
@@ -19,7 +20,8 @@ class TaskService {
 
   async getTasksByUser(userId, filters = {}) {
     const search = filters.search?.trim();
-    return await TaskRepository.findAllByUser(userId, { search });
+    const due = resolveDueCriteria(filters.dueFilter, filters.today);
+    return await TaskRepository.findAllByUser(userId, { search, due });
   }
 
   async updateTask(id, data) {

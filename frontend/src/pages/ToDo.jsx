@@ -4,6 +4,7 @@ import Modal from "@common/Modal";
 import TaskForm from "@features/ToDo/TaskForm";
 import TaskList from "@features/ToDo/TaskList";
 import SearchInput from "@features/ToDo/SearchInput";
+import DueDateFilter from "@features/ToDo/DueDateFilter";
 import PhaseMessage from "@common/PhaseMessage";
 import GoalCard from "@features/ToDo/GoalCard";
 import ProgressCard from "@features/ToDo/ProgressCard";
@@ -12,10 +13,12 @@ import PageHeader from "@features/ToDo/PageHeader";
 import { useCelebration } from "@hooks/useCelebration";
 import { usePhaseMessage } from "@hooks/usePhaseMessage";
 import { useTaskModals } from "@hooks/useTaskModals";
+import { DEFAULT_DUE_FILTER } from "@utils/task.utils";
 
 function ToDo() {
   const {
     tasks,
+    totalTasks,
     progress,
     addTask,
     editTask,
@@ -23,6 +26,8 @@ function ToDo() {
     toggleComplete,
     searchTerm,
     setSearchTerm,
+    dueFilter,
+    setDueFilter,
   } = useTasks();
   const { goal, saveGoal, removeGoal } = useGoal();
   const phaseMessage = usePhaseMessage();
@@ -71,6 +76,7 @@ function ToDo() {
             value={searchTerm}
             onChange={(e) => setSearchTerm(e.target.value)}
           />
+          <DueDateFilter value={dueFilter} onChange={setDueFilter} />
         </div>
 
         <div className="card">
@@ -80,7 +86,9 @@ function ToDo() {
             onEdit={openEditForm}
             onDelete={setTaskPendingDelete}
             emptyMessage={
-              searchTerm ? "No tasks match your search or filter." : undefined
+              (searchTerm || dueFilter !== DEFAULT_DUE_FILTER) && totalTasks > 0
+                ? "No tasks match your search or filter."
+                : undefined
             }
           />
         </div>

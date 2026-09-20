@@ -6,6 +6,17 @@ export function todayDateOnly() {
   return `${year}-${month}-${day}`;
 }
 
+// Due-date filter choices for the to-do list. The values are the dueFilter
+// query param the backend understands (see backend taskDueFilter.util.js).
+export const DEFAULT_DUE_FILTER = "all";
+export const DUE_FILTER_OPTIONS = [
+  { value: "all", label: "All due dates" },
+  { value: "overdue", label: "Overdue" },
+  { value: "today", label: "Due today" },
+  { value: "week", label: "Due in 7 days" },
+  { value: "none", label: "No due date" },
+];
+
 export function formatDueDate(dateStr) {
   const d = new Date(`${dateStr}T00:00:00`);
   return d.toLocaleDateString("en-US", { month: "short", day: "numeric" });
