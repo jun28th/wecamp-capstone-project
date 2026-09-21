@@ -1,0 +1,103 @@
+# services:
+#   mysql:
+#     image: mysql
+#     container_name: mysql_container
+#     restart: always
+#     ports:
+#       - 3306:3306
+#     environment:
+#       MYSQL_ROOT_PASSWORD: 123
+#       MYSQL_DATABASE: my_db
+#     volumes:
+#       - mysql_data:/var/lib/mysql
+
+#   phpmyadmin:
+#     image: phpmyadmin
+#     container_name: phpmyadmin_container
+#     restart: always
+#     ports:
+#       - 8080:80
+#     environment:
+#       PMA_HOST: mysql
+#       PMA_PORT: 3306
+#       PMA_USER: root
+#       PMA_PASSWORD: 123
+# volumes:
+#   mysql_data:
+
+version: '3.8'
+
+services:
+  # --- Service MySQL Database ---
+  mysql:
+    image: mysql
+    container_name: mysql_container
+    restart: always
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: 123
+      MYSQL_DATABASE: my_db
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - app-network
+
+  # --- Service phpMyAdmin ---
+  phpmyadmin:
+    image: phpmyadmin
+    container_name: phpmyadmin_container
+    restart: always
+    ports:
+      - "8080:80"
+    environment:
+      PMA_HOST: mysql
+      PMA_PORT: 3306
+      PMA_USER: root
+      PMA_PASSWORD: 123
+    networks:
+      - app-network
+
+  # --- Service Backend (Node.js) ---
+  backend:
+    build:
+      context: ./backend        # Đường dẫn tới thư mục chứa Dockerfile của backend
+      dockerfile: Dockerfile
+    container_name: node-backend-app
+    restart: always
+    ports:
+      - "3000:3000"
+    environment:
+      - PORT=3000
+      - DB_HOST=mysql        
+      - DB_NAME=my_db
+      - DB_USER=root
+      - DB_PASSWORD=123
+      - DB_PORT=3306
+      - JWT_SECRET=your_jwt_secret
+    depends_on:
+      - mysql
+    networks:
+      - app-network
+
+  # --- Service Frontend (React + Nginx) ---
+  frontend:
+    build:
+      context: ./frontend       # Đường dẫn tới thư mục chứa Dockerfile của frontend
+      dockerfile: Dockerfile
+    container_name: react-frontend-app
+    restart: always
+    ports:
+      - "80:80"                 # Truy cập frontend qua http://localhost (hoặc đổi thành cổng khác nếu muốn)
+    depends_on:
+      - backend
+    networks:
+      - app-network
+
+# --- Khai báo mạng và volumes ---
+volumes:
+  mysql_data:
+
+networks:
+  app-network:
+    driver: bridge
