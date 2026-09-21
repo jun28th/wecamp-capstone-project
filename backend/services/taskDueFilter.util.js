@@ -31,10 +31,13 @@ function serverToday() {
 // user's timezone, which can differ from the server's, so the client sends its
 // own date and the server date is only the fallback when it is omitted.
 //
-//   all     -> null (no condition)
+// Every filter except "all" lists only tasks that are still open
+// (incompleteOnly); "all" applies no condition, so it includes completed tasks.
+//
+//   all     -> null (no condition, completed tasks included)
 //   none    -> no due date
-//   overdue -> due before today and not completed (same as the frontend isOverdue)
-//   today   -> due today (completed tasks included)
+//   overdue -> due before today
+//   today   -> due today
 //   week    -> due from today up to and including today + 7 days
 function resolveDueCriteria(dueFilter, today) {
   const filter = dueFilter || "all";
@@ -42,7 +45,7 @@ function resolveDueCriteria(dueFilter, today) {
     throw new AppError("Invalid due date filter", 400);
   }
   if (filter === "all") return null;
-  if (filter === "none") return { none: true };
+  if (filter === "none") return { none: true, incompleteOnly: true };
 
   if (today !== undefined && !isValidDateOnly(today)) {
     throw new AppError("Invalid today date", 400);
@@ -50,8 +53,8 @@ function resolveDueCriteria(dueFilter, today) {
   const base = today ?? serverToday();
 
   if (filter === "overdue") return { before: base, incompleteOnly: true };
-  if (filter === "today") return { on: base };
-  return { from: base, to: addDays(base, 7) };
+  if (filter === "today") return { on: base, incompleteOnly: true };
+  return { from: base, to: addDays(base, 7), incompleteOnly: true };
 }
 
 export { DUE_FILTERS, isValidDateOnly, resolveDueCriteria };

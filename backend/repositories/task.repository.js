@@ -4,16 +4,13 @@ import { Task } from "../models/index.js";
 // Mechanical translation of the service's due-date criteria into a where clause.
 function dueCriteriaToWhere(due) {
   if (!due) return {};
-  if (due.none) return { due_date: { [Op.is]: null } };
-  if (due.on) return { due_date: due.on };
-  if (due.from) return { due_date: { [Op.between]: [due.from, due.to] } };
-  if (due.before) {
-    return {
-      due_date: { [Op.lt]: due.before },
-      ...(due.incompleteOnly && { is_completed: false }),
-    };
-  }
-  return {};
+  const where = {};
+  if (due.none) where.due_date = { [Op.is]: null };
+  else if (due.on) where.due_date = due.on;
+  else if (due.from) where.due_date = { [Op.between]: [due.from, due.to] };
+  else if (due.before) where.due_date = { [Op.lt]: due.before };
+  if (due.incompleteOnly) where.is_completed = false;
+  return where;
 }
 
 class TaskRepository {

@@ -38,6 +38,20 @@ export function isDueSoon(task) {
   return diffMs >= 0 && diffMs <= 24 * 60 * 60 * 1000;
 }
 
+// Puts completed tasks below open ones. Completed tasks are ordered by when they
+// were completed, so the one just ticked lands at the very bottom. Returns 0 when
+// both are open (or both lack a completedAt) so the normal sort rank decides.
+export function compareByCompletion(a, b) {
+  const aDone = Boolean(a.isCompleted);
+  const bDone = Boolean(b.isCompleted);
+  if (aDone !== bDone) return aDone ? 1 : -1;
+  if (!aDone) return 0;
+  const aAt = a.completedAt ?? "";
+  const bAt = b.completedAt ?? "";
+  if (aAt === bAt) return 0;
+  return aAt < bAt ? -1 : 1;
+}
+
 export function getTaskSortRank(task) {
   const overdue = isOverdue(task);
   const dueToday = isDueTodayDate(task);

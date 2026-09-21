@@ -2,20 +2,31 @@ import { useCallback, useEffect, useRef, useState } from "react";
 import taskApi from "@api/taskApi";
 import { useToast } from "@contexts/toastContext";
 import {
+  compareByCompletion,
   DEFAULT_DUE_FILTER,
   getTaskSortRank,
   todayDateOnly,
 } from "@utils/task.utils";
 
-function sortTasks(tasks) {
-  return tasks.slice().sort((a, b) => getTaskSortRank(a) - getTaskSortRank(b));
+// completedLast moves finished tasks below the open ones (see compareByCompletion).
+function sortTasks(tasks, completedLast) {
+  return tasks
+    .slice()
+    .sort(
+      (a, b) =>
+        (completedLast ? compareByCompletion(a, b) : 0) ||
+        getTaskSortRank(a) - getTaskSortRank(b),
+    );
 }
 
 function isDueTodayOrUndated(task) {
   return !task.dueDate || task.dueDate <= todayDateOnly();
 }
 
-export function useTasks({ onChange } = {}) {
+// Options: completedLast (default false) lists completed tasks after the open
+// ones. It is opt-in so other surfaces that share this hook, e.g. the Home
+// dashboard preview, keep their current order.
+export function useTasks({ onChange, completedLast = false } = {}) {
   // tasks is what the list shows (search + due-date filter applied); allTasks
   // is every task and is what progress / the celebration are computed from, so
   // filtering can never change today's progress or unlock the reward.
@@ -135,7 +146,7 @@ export function useTasks({ onChange } = {}) {
   const done = tasksForProgress.filter((task) => task.isCompleted).length;
 
   return {
-    tasks: sortTasks(tasks),
+    tasks: sortTasks(tasks, completedLast),
     totalTasks: allTasks.length,
     progress: { total, done, pct: total === 0 ? 0 : Math.round((done / total) * 100) },
     loadTasks,

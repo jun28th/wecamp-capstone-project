@@ -5,7 +5,7 @@ export const CycleHistory = ({ cycleLogs }) => {
 
   return (
     <section data-od-id="cycle-history-section">
-      <h2 className="my-6">Cycle History</h2>
+      <h2 className="my-6">Period History</h2>
       <div
         className="bg-[var(--surface)] rounded-[var(--radius-card)] shadow-[var(--shadow-1)] p-5"
         id="cycle-history"
