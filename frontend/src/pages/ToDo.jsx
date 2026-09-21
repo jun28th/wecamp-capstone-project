@@ -28,7 +28,7 @@ function ToDo() {
     setSearchTerm,
     dueFilter,
     setDueFilter,
-  } = useTasks();
+  } = useTasks({ completedLast: true });
   const { goal, saveGoal, removeGoal } = useGoal();
   const phaseMessage = usePhaseMessage();
   const [celebrationOpen, setCelebrationOpen] = useCelebration(
