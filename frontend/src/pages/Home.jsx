@@ -1,65 +1,75 @@
-import Button from "../components/Button";
-import Card from "../components/Card";
-import Input from "../components/Input";
-import Tag from "../components/Tag";
-import ToDoCheckbox from "../components/ToDoCheckbox";
+import { useEffect, useState, useMemo, useCallback } from "react";
+import MoodCard from "@common/MoodCard";
+import { DashboardCalendar } from "@features/Home/DashboardCalendar";
+import PhaseMessage from "@common/PhaseMessage";
+import { CycleStats } from "@common/CycleStats";
+import { computeCycleStats } from "@utils/cycle.utils";
+import { getCycles } from "@api/cycleApi";
+import DashboardTask from "@features/Home/DashboardTask";
+import MoodTrend from "@features/Home/MoodTrend";
+import { usePhaseMessage } from "@hooks/usePhaseMessage";
 
-// Chỉ cần gọi component và đưa vào các props cần thiết
 function Home() {
+  // Mood
+  const [moodRefreshSignal, setMoodRefreshSignal] = useState(0);
+  const bumpMoodRefresh = useCallback(() => setMoodRefreshSignal((s) => s + 1), []);
+  // Dashboard Calendar
+  const [refreshSignal, setRefreshSignal] = useState(0);
+  const bumpRefresh = useCallback(() => setRefreshSignal((s) => s + 1), []);
+  // Task
+  const [taskRefreshSignal, setTaskRefreshSignal] = useState(0);
+  const bumpTaskRefresh = useCallback(() => setTaskRefreshSignal((s) => s + 1), []);
+  // Phase Message
+  const phaseMessage = usePhaseMessage(refreshSignal);
+  const [cycleLogsForStats, setCycleLogsForStats] = useState([]);
+
+  useEffect(() => {
+    let cancelled = false;
+    (async () => {
+      try {
+        const result = await getCycles();
+        if (!cancelled && result.success) {
+          setCycleLogsForStats(result.data);
+        }
+      } catch (error) {
+        console.error(error.response?.data?.message || error.message);
+      }
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [refreshSignal]);
+
+  const cycleStats = useMemo(
+    () => computeCycleStats(cycleLogsForStats),
+    [cycleLogsForStats],
+  );
+
   return (
     <div className="flex-col space-y-10">
-      <section>
-        <h2>Buttons</h2>
-        {/*Chọn 1 variant: default, outline, text, fab. Nếu không chọn sẽ mặc định chọn default*/}
-        <div class="row">
-          <Button>Blank</Button>
-          <Button variant="default">Default</Button>
-          <Button variant="outline">Outline</Button>
-          <Button variant="text">Text</Button>
-          <Button variant="fab">+</Button>
-        </div>
-      </section>
+      <div className="my-6" data-od-id="home-header">
+        <p className="mb-1 text-[13px] text-[var(--muted)]">Good morning,</p>
+        <h1>What's happening today? ✨</h1>
+      </div>
+      <PhaseMessage phaseMessage={phaseMessage} />
+      <MoodCard dashboard onSaved={bumpMoodRefresh}/>
 
-      <section>
-        <h2>Cards</h2>
-        {/*Chỉ cần thay đổi props today (today=true hoặc today=false) là được*/}
-        <div class="row">
-          <Card title="Uống nước" caption="8/8 ly hôm nay" />
-          <Card title="Hôm nay" caption="Ngày 14 · Rụng trứng" today />
-        </div>
-      </section>
+      <CycleStats stats={cycleStats} fullWidth />
 
-      <section>
-        <h2>Inputs</h2>
-        {/*Muốn hiển thị input bị lỗi, thêm props error vào trong Input*/}
-        <div class="row">
-          <Input placeholder="Thêm nhiệm vụ mới..." />
-          <Input
-            error="Vui lòng nhập nội dung"
-            placeholder="Thêm nhiệm vụ mới..."
+      <div className="card-grid cols-2">
+        <div className="col-grid-1 h-full" data-od-id="home-cycle-card">
+          <DashboardCalendar
+            refreshSignal={refreshSignal}
+            onRefreshData={bumpRefresh}
+            taskRefreshSignal={taskRefreshSignal}
           />
         </div>
-      </section>
-
-      <section>
-        <h2>To-do checkbox</h2>
-        {/*Chỉ cần thay đổi props checked (checked=true hoặc checked=false) là được*/}
-        <ToDoCheckbox text="Uống thuốc vitamin" />
-        <ToDoCheckbox text="Tập yoga 15 phút" checked />
-      </section>
-
-      <section>
-        <h2>Tags / Badges</h2>
-        {/*Chọn 1 variant: happy, calm, neutral, stressed, streak. Nếu không chọn sẽ mặc định chọn happy*/}
-        <div class="row">
-          <Tag />
-          <Tag variant="happy" />
-          <Tag variant="calm" />
-          <Tag variant="neutral" />
-          <Tag variant="stressed" />
-          <Tag variant="streak" />
+        <div className="col-grid-1" data-od-id="home-progress-and-tasks-column">
+          <DashboardTask onTasksChanged={bumpTaskRefresh}/>
         </div>
-      </section>
+      </div>
+
+      <MoodTrend refreshSignal={moodRefreshSignal} />
     </div>
   );
 }

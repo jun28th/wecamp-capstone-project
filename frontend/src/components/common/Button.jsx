@@ -3,6 +3,7 @@ const VARIANT_CLASS_MAP = {
   outline: "btn btn-secondary",
   text: "btn btn-text",
   fab: "fab",
+  miniNav : "mini-nav"
 };
 
 export default function Button({

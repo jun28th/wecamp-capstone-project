@@ -1,0 +1,48 @@
+import axiosClient from "./axiosClient.js";
+
+const dailyLogApi = {
+  async getTodayLog() {
+    try {
+      const response = await axiosClient.get("/dailyLog/");
+      return response.data;
+    } catch (error) {
+      console.error(
+        "getTodayLog failed:",
+        error.response?.data ?? error.message,
+      );
+      throw error;
+    }
+  },
+
+  async updateLog(payload) {
+    try {
+      const response = await axiosClient.patch("/dailyLog/", payload);
+      return response.data;
+    } catch (error) {
+      console.error("updateLog failed:", error.response?.data ?? error.message);
+      throw error;
+    }
+  },
+  async createLog(payload) {
+    try {
+      const response = await axiosClient.post("/dailyLog", payload);
+      return response.data;
+    } catch (error) {
+      console.error("createLog failed:", error.response?.data ?? error.message);
+      throw error;
+    }
+  },
+  async getMoodTrendData({ startDate, endDate }) {
+    try {
+      const response = await axiosClient.get("/dailyLog/mood-trend", {
+        params: { startDate, endDate },
+      });
+      return response.data;
+    } catch (error) {
+      console.error("getMoodTrendData failed:", error.response?.data ?? error.message);
+      throw error;
+    }
+  },
+};
+
+export default dailyLogApi;
