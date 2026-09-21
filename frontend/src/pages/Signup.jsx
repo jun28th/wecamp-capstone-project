@@ -4,23 +4,36 @@ import { Link, useNavigate } from "react-router-dom";
 import authApi from "@api/authApi";
 import { useAuth } from "@contexts/authContext";
 
+const FULL_NAME_MAX_LENGTH = 100;
+const EMAIL_MAX_LENGTH = 254;
+const PASSWORD_MIN_LENGTH = 6;
+const PASSWORD_MAX_LENGTH = 128;
+
 function validateSignUp({ fullName, email, password }) {
     const errors = {};
+    const trimmedName = fullName.trim();
+    const trimmedEmail = email.trim();
 
-    if (!fullName.trim()) {
+    if (!trimmedName) {
         errors.fullName = "Full name is required";
+    } else if (trimmedName.length > FULL_NAME_MAX_LENGTH) {
+        errors.fullName = `Full name must be at most ${FULL_NAME_MAX_LENGTH} characters`;
     }
 
-    if (!email.trim()) {
+    if (!trimmedEmail) {
         errors.email = "Email is required";
-    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+    } else if (trimmedEmail.length > EMAIL_MAX_LENGTH) {
+        errors.email = `Email must be at most ${EMAIL_MAX_LENGTH} characters`;
+    } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(trimmedEmail)) {
         errors.email = "Enter a valid email";
     }
 
     if (!password) {
         errors.password = "Password is required";
-    } else if (password.length < 6) {
-        errors.password = "Password must be at least 6 characters";
+    } else if (password.length < PASSWORD_MIN_LENGTH) {
+        errors.password = `Password must be at least ${PASSWORD_MIN_LENGTH} characters`;
+    } else if (password.length > PASSWORD_MAX_LENGTH) {
+        errors.password = `Password must be at most ${PASSWORD_MAX_LENGTH} characters`;
     }
 
     return errors;
