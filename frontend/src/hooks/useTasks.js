@@ -26,7 +26,7 @@ function isDueTodayOrUndated(task) {
 // Options: completedLast (default false) lists completed tasks after the open
 // ones. It is opt-in so other surfaces that share this hook, e.g. the Home
 // dashboard preview, keep their current order.
-export function useTasks({ completedLast = false } = {}) {
+export function useTasks({ onChange, completedLast = false } = {}) {
   // tasks is what the list shows (search + due-date filter applied); allTasks
   // is every task and is what progress / the celebration are computed from, so
   // filtering can never change today's progress or unlock the reward.
@@ -89,13 +89,14 @@ export function useTasks({ completedLast = false } = {}) {
         await taskApi.createTask(data);
         showToast("Task added successfully");
         await loadTasks();
+        onChange?.()
         return true;
       } catch (error) {
         showToast("Something went wrong, please try again", "error");
         return false;
       }
     },
-    [loadTasks, showToast],
+    [loadTasks, showToast, onChange],
   );
 
   const editTask = useCallback(

@@ -2,7 +2,7 @@ import React from "react";
 
 export const CycleButton = React.memo(
   ({ actionType, statusText, onOpenConfirm }) => {
-    const msg = actionType === "START" ? "Start cycle" : "End cycle";
+    const msg = actionType === "START" ? "Start period" : "End period";
 
     return (
       <div className="max-w-[560px] mx-auto">

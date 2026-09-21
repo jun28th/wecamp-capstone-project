@@ -17,14 +17,14 @@ class CycleLogController {
       const userId = req.user.id; 
       const { date } = req.body; 
       if (!date) {
-        throw new AppError("Thiếu thông tin date.", 400);
+        throw new AppError("Missing date information.", 400);
       }
 
       const result = await cycleLogService.startCycle(userId, date);
 
       return res.status(200).json({
         success: true,
-        message: "Tạo mới chu kỳ thành công.",
+        message: "Cycle started successfully.",
         data: result,
       });
     } catch (error) {
@@ -34,18 +34,18 @@ class CycleLogController {
 
   async endCycle(req, res, next) {
     try {
-      const userId = req.user.id; // Lấy từ middleware authen
+      const userId = req.user.id; 
       const { date } = req.body;
 
       if (!date) {
-        throw new AppError("Thiếu thông tin date.", 400);
+        throw new AppError("Missing date information.", 400);
       }
 
       const result = await cycleLogService.endCycle(userId, date);
 
       return res.status(200).json({
         success: true,
-        message: "Kết thúc chu kỳ thành công.",
+        message: "Cycle ended successfully.",
         data: result,
       });
     } catch (error) {
@@ -55,7 +55,7 @@ class CycleLogController {
 
   async getPrediction(req, res, next) {
     try {
-      const userId = req.user.id; // Lấy từ middleware authen
+      const userId = req.user.id; 
       const prediction = await cycleLogService.getPrediction(userId);
       return res.status(200).json({ success: true, data: prediction });
     } catch (error) {
@@ -68,7 +68,7 @@ class CycleLogController {
       const userId = req.user.id;
 
       if (!userId) {
-        throw new AppError("Thiếu thông tin định danh người dùng (userId)", 400);
+        throw new AppError("Missing user identifier (userId).", 400);
       }
 
       const result = await cycleLogService.getCurrentPhaseStatus(userId);
@@ -84,14 +84,14 @@ class CycleLogController {
       const { startDate, endDate } = req.body;
 
       if (!startDate || !endDate) {
-        throw new AppError( "Thiếu thông tin startDate hoặc endDate.", 400);
+        throw new AppError("Missing startDate or endDate information.", 400);
       }
 
       const result = await cycleLogService.createPastCycle(userId, startDate, endDate);
 
       return res.status(200).json({
         success: true,
-        message: "Log chu kỳ quá khứ thành công.",
+        message: "Past cycle logged successfully.",
         data: result,
       });
     } catch (error) {

@@ -4,7 +4,6 @@ import AppError from "../utils/AppError.js";
 import { computeCyclePrediction } from "./cyclePrediction.util.js";
 
 class CycleLogService {
-  // Lấy danh sách chu kỳ để render lịch FE
   async getUserCycles(userId) {
     return await cycleLogRepository.findAllByUser(userId);
   }
@@ -12,7 +11,7 @@ class CycleLogService {
   async startCycle(userId, date) {
     const activeCycle = await cycleLogRepository.findOpenCycleByUser(userId);
     if (activeCycle) {
-      throw new AppError("Bạn đang có một chu kỳ chưa kết thúc.", 400);
+      throw new AppError("You already have an open cycle.", 400);
     }
     const result = await cycleLogRepository.createCycleLog({
       userId,
@@ -26,12 +25,10 @@ class CycleLogService {
   async endCycle(userId, date) {
     const activeCycle = await cycleLogRepository.findOpenCycleByUser(userId);
     if (!activeCycle) {
-      throw new AppError("Không tìm thấy chu kỳ đang mở để kết thúc.", 400);
+      throw new AppError("No open cycle found to end.", 400);
     }
-    // Ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu
     if (new Date(date) < new Date(activeCycle.startDate)) {
-      
-      throw new AppError("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu.", 400);
+      throw new AppError("End date cannot be earlier than start date.", 400);
     }
     const result = await cycleLogRepository.updateEndDate(activeCycle.id, date);
     await this.recalculatePrediction(userId);
@@ -65,8 +62,6 @@ class CycleLogService {
       isOnPeriod: Boolean(openCycle),
     };
   }
-
-  //====PHASE MESSAGE======
 
   _calculateCycleLength(logs) {
     if (!logs || logs.length < 4) return 28;
@@ -144,9 +139,9 @@ class CycleLogService {
     if (!logs || logs.length === 0) return PHASE_CONTENT["noData"];
 
     let currentPhaseKey = "luteal";
-    if(safeCurrentDay > cycleLength){
+    if (safeCurrentDay > cycleLength) {
       currentPhaseKey = "delayed";
-    }else if (safeCurrentDay <= periodLength) {
+    } else if (safeCurrentDay <= periodLength) {
       currentPhaseKey = "menstrual";
     } else if (safeCurrentDay > periodLength && safeCurrentDay < ovulationDay) {
       currentPhaseKey = "follicular";
@@ -161,7 +156,6 @@ class CycleLogService {
   }
 
   async getCurrentPhaseStatus(userId) {
-    // Fetch recent logs (limit to 7 to get up to 6 intervals)
     const logs = await cycleLogRepository.getRecentLogs(userId, 7);
 
     let cycleLength = null;
@@ -174,21 +168,18 @@ class CycleLogService {
       const lastPeriodStartDate = new Date(latestLog.startDate);
       const today = new Date();
 
-      // Calculate currentDay (Day 1 = period start date)
       const timeDifference =
         today.setHours(0, 0, 0, 0) - lastPeriodStartDate.setHours(0, 0, 0, 0);
       const calculatedDay =
         Math.floor(timeDifference / (1000 * 60 * 60 * 24)) + 1;
       safeCurrentDay = calculatedDay < 1 ? 1 : calculatedDay;
 
-      // Calculate dynamic cycle length
       cycleLength = this._calculateCycleLength(logs);
 
       if (cycleLength < 20) {
         cycleLength = 28;
       }
 
-      // Determine period length from latest log's endDate, or default to 5 days
       periodLength = 5;
       let i = 0;
 
@@ -198,12 +189,10 @@ class CycleLogService {
       if (length > 0) {
         periodLength = length;
       }
-      console.log(periodLength);
 
       ovulationDay = cycleLength - 14;
     }
 
-    // Determine current phase key based on cycle timeline
     return this._determinPhase(
       logs,
       cycleLength,
@@ -212,28 +201,24 @@ class CycleLogService {
       periodLength,
     );
   }
+
   async createPastCycle(userId, startDate, endDate) {
-    // 1. Kiểm tra ngày kết thúc phải lớn hơn hoặc bằng ngày bắt đầu của chính chu kỳ đó
     if (new Date(endDate) < new Date(startDate)) {
-      throw new AppError("Ngày kết thúc không thể nhỏ hơn ngày bắt đầu.", 400);
+      throw new AppError("End date cannot be earlier than start date.", 400);
     }
 
-    // 2. Tìm chu kỳ tiếp theo (ví dụ chu kỳ đang mở có startDate = 13)
     const nextCycle = await cycleLogRepository.findNextCycle(userId, startDate);
 
-    // 3. Ràng buộc: endDate của chu kỳ quá khứ (n-1) phải nhỏ hơn startDate của chu kỳ kế tiếp (n)
     if (nextCycle && new Date(endDate) >= new Date(nextCycle.startDate)) {
-      throw new AppError("Ngày kết thúc của chu kỳ quá khứ phải nhỏ hơn ngày bắt đầu của chu kỳ tiếp theo.", 400);
+      throw new AppError("The end date of the past cycle must be earlier than the start date of the next cycle.", 400);
     }
 
-    // 4. Tạo mới chu kỳ quá khứ với đầy đủ start và end date
     const result = await cycleLogRepository.createCycleLog({
       userId,
       startDate,
       endDate,
     });
 
-    // 5. Tính toán lại dự đoán thống kê
     await this.recalculatePrediction(userId);
     return result;
   }
