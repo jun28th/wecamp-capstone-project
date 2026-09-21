@@ -4,18 +4,41 @@ import PillButton from "@common/PillButton";
 import FormField from "./FormField";
 import RowActionButton from "./RowActionButton";
 
+const REWARD_TEXT_MAX_LENGTH = 255;
+
+function validateReward(text) {
+  const trimmed = text.trim();
+
+  if (!trimmed) {
+    return "Reward cannot be empty";
+  }
+  if (trimmed.length > REWARD_TEXT_MAX_LENGTH) {
+    return `Reward must be at most ${REWARD_TEXT_MAX_LENGTH} characters`;
+  }
+  return null;
+}
+
 export default function GoalCard({ goal, unlocked, onSave, onRemove }) {
   const [editing, setEditing] = useState(false);
   const [rewardText, setRewardText] = useState("");
+  const [rewardError, setRewardError] = useState(null);
 
   function openForm() {
     setRewardText(goal?.rewardText ?? "");
+    setRewardError(null);
     setEditing(true);
   }
 
   function handleSubmit(event) {
     event.preventDefault();
-    if (!rewardText.trim()) return;
+
+    const error = validateReward(rewardText);
+    if (error) {
+      setRewardError(error);
+      return;
+    }
+
+    setRewardError(null);
     onSave(rewardText.trim());
     setEditing(false);
   }
@@ -31,7 +54,9 @@ export default function GoalCard({ goal, unlocked, onSave, onRemove }) {
             type="text"
             placeholder="e.g. Watch a movie tonight"
             value={rewardText}
+            maxLength={REWARD_TEXT_MAX_LENGTH}
             onChange={(event) => setRewardText(event.target.value)}
+            error={rewardError}
             autoFocus
           />
           <div className="flex justify-end gap-2.5">
