@@ -25,6 +25,7 @@ export function useGoal() {
         const data = await goalApi.setTodayGoal(rewardText);
         setGoal(data);
         showToast("Goal saved successfully");
+        localStorage.removeItem("celebration:progress")
         return true;
       } catch (error) {
         showToast("Something went wrong, please try again", "error");
